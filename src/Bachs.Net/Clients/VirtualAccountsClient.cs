@@ -1,0 +1,41 @@
+using Bachs.Net.Common;
+using Bachs.Net.Models.VirtualAccounts;
+
+namespace Bachs.Net.Clients;
+
+/// <summary>
+/// Client implementation for managing fixed virtual bank accounts.
+/// </summary>
+public class VirtualAccountsClient : BaseClient, IVirtualAccountsClient
+{
+    public VirtualAccountsClient(IBachsClient bachsClient) : base(bachsClient) { }
+
+    public Task<VirtualAccount> CreateAsync(
+        CreateVirtualAccountRequest request,
+        RequestOptions? requestOptions = null,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        return BachsClient.PostAsync<CreateVirtualAccountRequest, VirtualAccount>(
+            "v1/virtual-accounts",
+            request,
+            requestOptions,
+            cancellationToken);
+    }
+
+    public Task<VirtualAccount> GetAsync(
+        string currency = "NGN",
+        RequestOptions? requestOptions = null,
+        CancellationToken cancellationToken = default)
+    {
+        var path = QueryBuilder.BuildUrl("v1/virtual-accounts", new Dictionary<string, string>
+        {
+            ["currency"] = currency
+        });
+
+        return BachsClient.GetAsync<VirtualAccount>(
+            path,
+            requestOptions,
+            cancellationToken);
+    }
+}

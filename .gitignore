@@ -480,3 +480,11 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+src/Bachs.Net/guides/**
+src/Bachs.Net/guides/webhooks/overview.md
+src/Bachs.Net/guides/webhooks/replay-events.md
+src/Bachs.Net/guides/webhooks/events/checkout.completed.md
+src/Bachs.Net/guides/webhooks/events/checkout.expired.md
+src/Bachs.Net/api-reference/api-standards
+src/Bachs.Net/api-reference/permissions
+src/Bachs.Net/tasks/**

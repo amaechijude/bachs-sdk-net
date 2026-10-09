@@ -1,0 +1,63 @@
+using Bachs.Net.Common;
+using Bachs.Net.Models.Subscriptions;
+
+namespace Bachs.Net.Clients;
+
+/// <summary>
+/// Client implementation for managing subscriptions.
+/// </summary>
+public class SubscriptionsClient : BaseClient, ISubscriptionsClient
+{
+    public SubscriptionsClient(IBachsClient bachsClient) : base(bachsClient) { }
+
+    public Task<Subscription> GetAsync(
+        string subscriptionId,
+        RequestOptions? requestOptions = null,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(subscriptionId);
+        return BachsClient.GetAsync<Subscription>(
+            $"v1/subscriptions/{Uri.EscapeDataString(subscriptionId)}",
+            requestOptions,
+            cancellationToken);
+    }
+
+    public Task<BachsList<Subscription>> ListAsync(
+        ListSubscriptionsOptions? options = null,
+        RequestOptions? requestOptions = null,
+        CancellationToken cancellationToken = default)
+    {
+        var path = QueryBuilder.BuildUrl("v1/subscriptions", options?.ToQueryParameters());
+        return BachsClient.GetAsync<BachsList<Subscription>>(
+            path,
+            requestOptions ?? options,
+            cancellationToken);
+    }
+
+    public Task<Subscription> UpdateAsync(
+        string subscriptionId,
+        UpdateSubscriptionRequest request,
+        RequestOptions? requestOptions = null,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(subscriptionId);
+        ArgumentNullException.ThrowIfNull(request);
+        return BachsClient.PatchAsync<UpdateSubscriptionRequest, Subscription>(
+            $"v1/subscriptions/{Uri.EscapeDataString(subscriptionId)}",
+            request,
+            requestOptions,
+            cancellationToken);
+    }
+
+    public Task<Subscription> CancelAsync(
+        string subscriptionId,
+        RequestOptions? requestOptions = null,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(subscriptionId);
+        return BachsClient.DeleteAsync<Subscription>(
+            $"v1/subscriptions/{Uri.EscapeDataString(subscriptionId)}",
+            requestOptions,
+            cancellationToken);
+    }
+}
