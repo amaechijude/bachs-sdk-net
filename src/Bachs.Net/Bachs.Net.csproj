@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+
+    <!-- NuGet Package Properties -->
+    <PackageId>Bachs.Net</PackageId>
+    <Version>1.0.0</Version>
+    <Title>Bachs .NET SDK</Title>
+    <Authors>Amaechi Ugwu</Authors>
+    <Description>Modern, Developer-first C# / .NET 8+ SDK for Bachs (https://docs.bachs.io/) payments, billing, hosted checkout, subscriptions, and webhooks.</Description>
+    <PackageTags>bachs;payments;billing;checkout;subscriptions;fintech;sdk;webhooks;dotnet;csharp</PackageTags>
+    <PackageProjectUrl>https://docs.bachs.io/</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/amaechijude/Bachs.Net</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None
+      Include="..\..\README.md"
+      Pack="true"
+      PackagePath="\"
+      Condition="Exists('..\..\README.md')"
+    />
+  </ItemGroup>
+</Project>

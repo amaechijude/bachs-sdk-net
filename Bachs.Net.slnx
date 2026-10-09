@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Bachs.Net/Bachs.Net.csproj" />
+  </Folder>
+  <Folder Name="/test/">
+    <Project Path="test/Bachs.Test/Bachs.Test.csproj" />
+  </Folder>
+</Solution>
