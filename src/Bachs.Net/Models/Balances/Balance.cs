@@ -5,7 +5,7 @@ namespace Bachs.Net.Models.Balances;
 /// <summary>
 /// Snapshot of balances across currencies held by an account.
 /// </summary>
-public record Balance
+public sealed record Balance
 {
     /// <summary>
     /// Balance buckets by currency code (e.g. "USD", "NGN").
@@ -23,7 +23,7 @@ public record Balance
 /// <summary>
 /// Balance bucket for an individual currency.
 /// </summary>
-public record BalanceBucket
+public sealed record BalanceBucket
 {
     /// <summary>
     /// Funds currently available for payouts or conversions.
@@ -53,7 +53,7 @@ public record BalanceBucket
 /// <summary>
 /// Automatic payout schedule settings.
 /// </summary>
-public record BalanceSettings
+public sealed record BalanceSettings
 {
     [JsonPropertyName("payout_schedule")]
     public string? PayoutSchedule { get; init; }

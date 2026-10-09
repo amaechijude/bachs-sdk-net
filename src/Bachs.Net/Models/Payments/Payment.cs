@@ -6,7 +6,7 @@ namespace Bachs.Net.Models.Payments;
 /// <summary>
 /// Represents a payment or charge collected in Bachs.
 /// </summary>
-public record Payment
+public sealed record Payment
 {
     /// <summary>
     /// Unique identifier for the payment (starts with 'ch_').
@@ -96,7 +96,7 @@ public record Payment
 /// <summary>
 /// Breakdown of fees on a payment.
 /// </summary>
-public record PaymentFees
+public sealed record PaymentFees
 {
     [JsonPropertyName("amount")]
     public decimal Amount { get; init; }
@@ -108,7 +108,7 @@ public record PaymentFees
 /// <summary>
 /// Options for listing payments.
 /// </summary>
-public class ListPaymentsOptions : ListRequestOptions
+public sealed class ListPaymentsOptions : ListRequestOptions
 {
     /// <summary>
     /// Filter by customer ID.

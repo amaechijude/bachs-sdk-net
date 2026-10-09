@@ -6,7 +6,7 @@ namespace Bachs.Net.Models.Transfers;
 /// <summary>
 /// Represents an internal balance transfer between a platform and a connected account.
 /// </summary>
-public record Transfer
+public sealed record Transfer
 {
     [JsonPropertyName("id")]
     public string Id { get; init; } = string.Empty;
@@ -30,7 +30,7 @@ public record Transfer
     public DateTimeOffset CreatedAt { get; init; }
 }
 
-public class CreateTransferRequest
+public sealed class CreateTransferRequest
 {
     [JsonPropertyName("amount")]
     public decimal Amount { get; set; }
@@ -42,6 +42,6 @@ public class CreateTransferRequest
     public string Destination { get; set; } = string.Empty;
 }
 
-public class ListTransfersOptions : ListRequestOptions
+public sealed class ListTransfersOptions : ListRequestOptions
 {
 }

@@ -7,9 +7,9 @@ using Bachs.Net.Models.Products;
 
 namespace Bachs.Test;
 
-public class BachsClientTests
+public sealed class BachsClientTests
 {
-    private class MockHttpMessageHandler : HttpMessageHandler
+    private sealed class MockHttpMessageHandler : HttpMessageHandler
     {
         public HttpRequestMessage? LastRequest { get; private set; }
         public string? LastRequestBody { get; private set; }

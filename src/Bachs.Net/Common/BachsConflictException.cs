@@ -5,7 +5,18 @@ namespace Bachs.Net.Common;
 /// <summary>
 /// Exception thrown when a request conflicts with current server state or idempotency lock (HTTP 409).
 /// </summary>
-public class BachsConflictException : BachsApiException
+/// <remarks>
+/// Initializes a new instance of the <see cref="BachsConflictException"/> class.
+/// </remarks>
+public sealed class BachsConflictException(
+    HttpStatusCode statusCode,
+    string errorCode,
+    string detail,
+    string? docUrl = null,
+    BachsError? error = null,
+    RateLimitInfo? rateLimit = null,
+    string? rawResponse = null
+) : BachsApiException(statusCode, errorCode, detail, docUrl, error, rateLimit, rawResponse)
 {
     /// <summary>
     /// Gets whether this conflict was caused by a concurrent idempotency request in progress.
@@ -18,19 +29,4 @@ public class BachsConflictException : BachsApiException
     /// </summary>
     public bool IsIdempotencyConflict =>
         string.Equals(ErrorCode, "IDEMPOTENCY_CONFLICT", StringComparison.OrdinalIgnoreCase);
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="BachsConflictException"/> class.
-    /// </summary>
-    public BachsConflictException(
-        HttpStatusCode statusCode,
-        string errorCode,
-        string detail,
-        string? docUrl = null,
-        BachsError? error = null,
-        RateLimitInfo? rateLimit = null,
-        string? rawResponse = null)
-        : base(statusCode, errorCode, detail, docUrl, error, rateLimit, rawResponse)
-    {
-    }
 }

@@ -6,36 +6,36 @@ namespace Bachs.Net.Clients;
 /// <summary>
 /// Client implementation for managing fixed virtual bank accounts.
 /// </summary>
-public class VirtualAccountsClient : BaseClient, IVirtualAccountsClient
+public sealed class VirtualAccountsClient(IBachsClient bachsClient)
+    : BaseClient(bachsClient),
+        IVirtualAccountsClient
 {
-    public VirtualAccountsClient(IBachsClient bachsClient) : base(bachsClient) { }
-
     public Task<VirtualAccount> CreateAsync(
         CreateVirtualAccountRequest request,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         ArgumentNullException.ThrowIfNull(request);
         return BachsClient.PostAsync<CreateVirtualAccountRequest, VirtualAccount>(
             "v1/virtual-accounts",
             request,
             requestOptions,
-            cancellationToken);
+            cancellationToken
+        );
     }
 
     public Task<VirtualAccount> GetAsync(
         string currency = "NGN",
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
-        var path = QueryBuilder.BuildUrl("v1/virtual-accounts", new Dictionary<string, string>
-        {
-            ["currency"] = currency
-        });
+        var path = QueryBuilder.BuildUrl(
+            "v1/virtual-accounts",
+            new Dictionary<string, string> { ["currency"] = currency }
+        );
 
-        return BachsClient.GetAsync<VirtualAccount>(
-            path,
-            requestOptions,
-            cancellationToken);
+        return BachsClient.GetAsync<VirtualAccount>(path, requestOptions, cancellationToken);
     }
 }

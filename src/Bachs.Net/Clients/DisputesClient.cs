@@ -6,39 +6,42 @@ namespace Bachs.Net.Clients;
 /// <summary>
 /// Client implementation for managing disputes and chargebacks.
 /// </summary>
-public class DisputesClient : BaseClient, IDisputesClient
+public sealed class DisputesClient(IBachsClient bachsClient) : BaseClient(bachsClient), IDisputesClient
 {
-    public DisputesClient(IBachsClient bachsClient) : base(bachsClient) { }
-
     public Task<Dispute> GetAsync(
         string disputeId,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(disputeId);
         return BachsClient.GetAsync<Dispute>(
             $"v1/disputes/{Uri.EscapeDataString(disputeId)}",
             requestOptions,
-            cancellationToken);
+            cancellationToken
+        );
     }
 
     public Task<BachsList<Dispute>> ListAsync(
         ListDisputesOptions? options = null,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         var path = QueryBuilder.BuildUrl("v1/disputes", options?.ToQueryParameters());
         return BachsClient.GetAsync<BachsList<Dispute>>(
             path,
             requestOptions ?? options,
-            cancellationToken);
+            cancellationToken
+        );
     }
 
     public Task<Dispute> UpdateEvidenceAsync(
         string disputeId,
         UpdateDisputeEvidenceRequest request,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(disputeId);
         ArgumentNullException.ThrowIfNull(request);
@@ -46,18 +49,21 @@ public class DisputesClient : BaseClient, IDisputesClient
             $"v1/disputes/{Uri.EscapeDataString(disputeId)}/evidence",
             request,
             requestOptions,
-            cancellationToken);
+            cancellationToken
+        );
     }
 
     public Task<Dispute> SubmitAsync(
         string disputeId,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(disputeId);
         return BachsClient.PostAsync<Dispute>(
             $"v1/disputes/{Uri.EscapeDataString(disputeId)}/submit",
             requestOptions,
-            cancellationToken);
+            cancellationToken
+        );
     }
 }

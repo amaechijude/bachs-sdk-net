@@ -7,7 +7,7 @@ namespace Bachs.Net.Models.Customers;
 /// <summary>
 /// Represents a customer in Bachs.
 /// </summary>
-public record Customer
+public sealed record Customer
 {
     /// <summary>
     /// Unique identifier for the customer (starts with 'cust_').
@@ -67,7 +67,7 @@ public record Customer
 /// <summary>
 /// Parameters for creating a new customer.
 /// </summary>
-public class CreateCustomerRequest
+public sealed class CreateCustomerRequest
 {
     /// <summary>
     /// Customer's email address (required).
@@ -103,7 +103,7 @@ public class CreateCustomerRequest
 /// <summary>
 /// Parameters for updating an existing customer.
 /// </summary>
-public class UpdateCustomerRequest
+public sealed class UpdateCustomerRequest
 {
     /// <summary>
     /// Updated email address.
@@ -139,7 +139,7 @@ public class UpdateCustomerRequest
 /// <summary>
 /// Options for listing customers.
 /// </summary>
-public class ListCustomersOptions : ListRequestOptions
+public sealed class ListCustomersOptions : ListRequestOptions
 {
     /// <summary>
     /// Search term to filter customers by email or name.
@@ -160,7 +160,7 @@ public class ListCustomersOptions : ListRequestOptions
 /// <summary>
 /// Response when creating an authenticated customer portal session.
 /// </summary>
-public record CustomerPortalSession
+public sealed record CustomerPortalSession
 {
     /// <summary>
     /// The temporary authenticated URL to redirect the customer to.

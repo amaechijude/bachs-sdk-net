@@ -4,7 +4,7 @@ using Bachs.Net.Serialization;
 
 namespace Bachs.Test;
 
-public class BachsSerializationTests
+public sealed class BachsSerializationTests
 {
     [Fact]
     public void Serializes_DecimalAmount_AsTwoDecimalPlacesString()

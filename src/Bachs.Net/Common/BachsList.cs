@@ -6,7 +6,7 @@ namespace Bachs.Net.Common;
 /// Represents a paginated list of resources returned by the Bachs API.
 /// </summary>
 /// <typeparam name="T">The type of items in the list.</typeparam>
-public record BachsList<T>
+public sealed record BachsList<T>
 {
     /// <summary>
     /// Gets the list of items for the current page.

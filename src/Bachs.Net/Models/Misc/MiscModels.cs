@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace Bachs.Net.Models.Misc;
 
-public record PaymentMethodInfo
+public sealed record PaymentMethodInfo
 {
     [JsonPropertyName("method")]
     public string Method { get; init; } = string.Empty;
@@ -11,7 +11,7 @@ public record PaymentMethodInfo
     public IReadOnlyList<string> Currencies { get; init; } = Array.Empty<string>();
 }
 
-public record BankInfo
+public sealed record BankInfo
 {
     [JsonPropertyName("code")]
     public string Code { get; init; } = string.Empty;
@@ -20,7 +20,7 @@ public record BankInfo
     public string Name { get; init; } = string.Empty;
 }
 
-public class ResolveBankAccountRequest
+public sealed class ResolveBankAccountRequest
 {
     [JsonPropertyName("account_number")]
     public string AccountNumber { get; set; } = string.Empty;
@@ -29,7 +29,7 @@ public class ResolveBankAccountRequest
     public string BankCode { get; set; } = string.Empty;
 }
 
-public record ResolveBankAccountResponse
+public sealed record ResolveBankAccountResponse
 {
     [JsonPropertyName("account_number")]
     public string AccountNumber { get; init; } = string.Empty;

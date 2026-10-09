@@ -7,7 +7,7 @@ namespace Bachs.Net.Models.Payouts;
 /// <summary>
 /// Represents a payout / withdrawal in Bachs.
 /// </summary>
-public record Payout
+public sealed record Payout
 {
     /// <summary>
     /// Unique identifier for the payout (withdrawal ID).
@@ -61,7 +61,7 @@ public record Payout
 /// <summary>
 /// Parameters for creating a payout / withdrawal.
 /// </summary>
-public class CreatePayoutRequest
+public sealed class CreatePayoutRequest
 {
     /// <summary>
     /// The payout destination ID.
@@ -97,7 +97,7 @@ public class CreatePayoutRequest
 /// <summary>
 /// Quote for an international or cross-currency payout.
 /// </summary>
-public record PayoutQuote
+public sealed record PayoutQuote
 {
     [JsonPropertyName("quote_id")]
     public string QuoteId { get; init; } = string.Empty;
@@ -124,7 +124,7 @@ public record PayoutQuote
 /// <summary>
 /// Parameters for requesting a payout quote.
 /// </summary>
-public class CreatePayoutQuoteRequest
+public sealed class CreatePayoutQuoteRequest
 {
     [JsonPropertyName("destination_id")]
     public string DestinationId { get; set; } = string.Empty;
@@ -139,7 +139,7 @@ public class CreatePayoutQuoteRequest
 /// <summary>
 /// Represents a saved destination (bank account, mobile money, or crypto wallet).
 /// </summary>
-public record PayoutDestination
+public sealed record PayoutDestination
 {
     [JsonPropertyName("id")]
     public string Id { get; init; } = string.Empty;
@@ -166,7 +166,7 @@ public record PayoutDestination
 /// <summary>
 /// Parameters for creating a payout destination.
 /// </summary>
-public class CreatePayoutDestinationRequest
+public sealed class CreatePayoutDestinationRequest
 {
     [JsonPropertyName("type")]
     public string Type { get; set; } = string.Empty;
@@ -181,7 +181,7 @@ public class CreatePayoutDestinationRequest
 /// <summary>
 /// Parameters for updating a payout destination.
 /// </summary>
-public class UpdatePayoutDestinationRequest
+public sealed class UpdatePayoutDestinationRequest
 {
     [JsonPropertyName("details")]
     public IDictionary<string, object?> Details { get; set; } = new Dictionary<string, object?>();
@@ -190,7 +190,7 @@ public class UpdatePayoutDestinationRequest
 /// <summary>
 /// Options for listing payouts.
 /// </summary>
-public class ListPayoutsOptions : ListRequestOptions
+public sealed class ListPayoutsOptions : ListRequestOptions
 {
     public string? DestinationId { get; set; }
     public string? Status { get; set; }

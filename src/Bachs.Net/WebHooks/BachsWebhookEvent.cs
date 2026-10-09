@@ -7,7 +7,7 @@ namespace Bachs.Net.WebHooks;
 /// <summary>
 /// Represents a webhook event payload sent by Bachs.
 /// </summary>
-public record BachsWebhookEvent
+public sealed record BachsWebhookEvent
 {
     /// <summary>
     /// Unique identifier for the event (starts with 'evt_').

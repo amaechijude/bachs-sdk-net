@@ -5,7 +5,7 @@ namespace Bachs.Net.Common;
 /// <summary>
 /// Contains rate limiting information extracted from Bachs API response headers.
 /// </summary>
-public record RateLimitInfo
+public sealed record RateLimitInfo
 {
     /// <summary>
     /// Gets the maximum requests allowed in the current time window (from X-RateLimit-Limit).

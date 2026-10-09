@@ -7,7 +7,7 @@ namespace Bachs.Net.Serialization;
 /// <summary>
 /// Converts decimal values to and from decimal strings with 2 decimal places as expected by the Bachs API (e.g. "29.00").
 /// </summary>
-public class DecimalStringConverter : JsonConverter<decimal>
+public sealed class DecimalStringConverter : JsonConverter<decimal>
 {
     public override decimal Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
@@ -45,7 +45,7 @@ public class DecimalStringConverter : JsonConverter<decimal>
 /// <summary>
 /// Converts nullable decimal values to and from decimal strings with 2 decimal places.
 /// </summary>
-public class NullableDecimalStringConverter : JsonConverter<decimal?>
+public sealed class NullableDecimalStringConverter : JsonConverter<decimal?>
 {
     public override decimal? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {

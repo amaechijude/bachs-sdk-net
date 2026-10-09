@@ -7,7 +7,7 @@ namespace Bachs.Net.Models.Webhooks;
 /// <summary>
 /// Represents a configured webhook destination endpoint in Bachs.
 /// </summary>
-public record WebhookEndpoint
+public sealed record WebhookEndpoint
 {
     [JsonPropertyName("id")]
     public string Id { get; init; } = string.Empty;
@@ -31,7 +31,7 @@ public record WebhookEndpoint
     public DateTimeOffset CreatedAt { get; init; }
 }
 
-public class CreateWebhookEndpointRequest
+public sealed class CreateWebhookEndpointRequest
 {
     [JsonPropertyName("url")]
     public string Url { get; set; } = string.Empty;
@@ -40,7 +40,7 @@ public class CreateWebhookEndpointRequest
     public IList<string> Events { get; set; } = new List<string>();
 }
 
-public class UpdateWebhookEndpointRequest
+public sealed class UpdateWebhookEndpointRequest
 {
     [JsonPropertyName("url")]
     public string? Url { get; set; }
@@ -49,13 +49,13 @@ public class UpdateWebhookEndpointRequest
     public IList<string>? Events { get; set; }
 }
 
-public record SecretRotationResult
+public sealed record SecretRotationResult
 {
     [JsonPropertyName("secret")]
     public string Secret { get; init; } = string.Empty;
 }
 
-public record WebhookEventRecord
+public sealed record WebhookEventRecord
 {
     [JsonPropertyName("id")]
     public string Id { get; init; } = string.Empty;
@@ -73,6 +73,6 @@ public record WebhookEventRecord
     public JsonElement Data { get; init; }
 }
 
-public class ListWebhookEndpointsOptions : ListRequestOptions
+public sealed class ListWebhookEndpointsOptions : ListRequestOptions
 {
 }

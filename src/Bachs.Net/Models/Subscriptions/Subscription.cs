@@ -6,7 +6,7 @@ namespace Bachs.Net.Models.Subscriptions;
 /// <summary>
 /// Represents a recurring subscription in Bachs.
 /// </summary>
-public record Subscription
+public sealed record Subscription
 {
     /// <summary>
     /// Unique identifier for the subscription (starts with 'sub_').
@@ -78,7 +78,7 @@ public record Subscription
 /// <summary>
 /// Parameters for updating a subscription.
 /// </summary>
-public class UpdateSubscriptionRequest
+public sealed class UpdateSubscriptionRequest
 {
     /// <summary>
     /// New product ID to change the subscription's plan.
@@ -102,7 +102,7 @@ public class UpdateSubscriptionRequest
 /// <summary>
 /// Options for listing subscriptions.
 /// </summary>
-public class ListSubscriptionsOptions : ListRequestOptions
+public sealed class ListSubscriptionsOptions : ListRequestOptions
 {
     /// <summary>
     /// Filter by customer ID.

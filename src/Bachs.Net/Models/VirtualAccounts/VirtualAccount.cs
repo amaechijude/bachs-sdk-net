@@ -5,7 +5,7 @@ namespace Bachs.Net.Models.VirtualAccounts;
 /// <summary>
 /// Represents a fixed bank account number issued for continuous deposit collections.
 /// </summary>
-public record VirtualAccount
+public sealed record VirtualAccount
 {
     [JsonPropertyName("account_number")]
     public string AccountNumber { get; init; } = string.Empty;
@@ -29,7 +29,7 @@ public record VirtualAccount
     public DateTimeOffset CreatedAt { get; init; }
 }
 
-public class CreateVirtualAccountRequest
+public sealed class CreateVirtualAccountRequest
 {
     [JsonPropertyName("currency")]
     public string Currency { get; set; } = "NGN";

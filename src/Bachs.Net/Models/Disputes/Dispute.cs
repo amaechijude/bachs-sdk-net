@@ -6,7 +6,7 @@ namespace Bachs.Net.Models.Disputes;
 /// <summary>
 /// Represents a payment dispute / chargeback in Bachs.
 /// </summary>
-public record Dispute
+public sealed record Dispute
 {
     [JsonPropertyName("id")]
     public string Id { get; init; } = string.Empty;
@@ -36,7 +36,7 @@ public record Dispute
     public DateTimeOffset CreatedAt { get; init; }
 }
 
-public class UpdateDisputeEvidenceRequest
+public sealed class UpdateDisputeEvidenceRequest
 {
     [JsonPropertyName("customer_name")]
     public string? CustomerName { get; set; }
@@ -51,7 +51,7 @@ public class UpdateDisputeEvidenceRequest
     public IList<string>? DocumentIds { get; set; }
 }
 
-public class ListDisputesOptions : ListRequestOptions
+public sealed class ListDisputesOptions : ListRequestOptions
 {
     public string? Status { get; set; }
     public string? ChargeId { get; set; }

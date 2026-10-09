@@ -5,7 +5,7 @@ namespace Bachs.Net.Models.Products;
 /// <summary>
 /// Parameters for creating a new product.
 /// </summary>
-public class CreateProductRequest
+public sealed class CreateProductRequest
 {
     /// <summary>
     /// The name of the product shown to customers at checkout.
@@ -47,7 +47,7 @@ public class CreateProductRequest
 /// <summary>
 /// Parameters for updating an existing product.
 /// </summary>
-public class UpdateProductRequest
+public sealed class UpdateProductRequest
 {
     /// <summary>
     /// Updated name of the product.
@@ -89,7 +89,7 @@ public class UpdateProductRequest
 /// <summary>
 /// Pricing parameters when creating or updating a product.
 /// </summary>
-public class ProductPriceRequest
+public sealed class ProductPriceRequest
 {
     /// <summary>
     /// Pricing mode: 'fixed' (default), 'free', or 'custom'.
@@ -137,7 +137,7 @@ public class ProductPriceRequest
 /// <summary>
 /// Billing cycle parameters.
 /// </summary>
-public class ProductBillingCycleRequest
+public sealed class ProductBillingCycleRequest
 {
     /// <summary>
     /// Interval: 'day', 'week', 'month', or 'year'.
@@ -155,7 +155,7 @@ public class ProductBillingCycleRequest
 /// <summary>
 /// Trial period parameters.
 /// </summary>
-public class ProductTrialPeriodRequest
+public sealed class ProductTrialPeriodRequest
 {
     /// <summary>
     /// Interval: 'day', 'week', 'month', or 'year'.

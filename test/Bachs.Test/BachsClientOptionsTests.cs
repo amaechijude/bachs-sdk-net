@@ -2,7 +2,7 @@ using Bachs.Net.Common;
 
 namespace Bachs.Test;
 
-public class BachsClientOptionsTests
+public sealed class BachsClientOptionsTests
 {
     [Fact]
     public void Validate_ThrowsInvalidOperationException_WhenApiKeyIsEmpty()

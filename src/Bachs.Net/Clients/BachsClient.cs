@@ -12,7 +12,7 @@ namespace Bachs.Net.Clients;
 /// <summary>
 /// Primary client implementation for interacting with the Bachs Fintech API.
 /// </summary>
-public class BachsClient : IBachsClient, IDisposable
+public sealed class BachsClient : IBachsClient, IDisposable
 {
     private static readonly string SdkVersion =
         typeof(BachsClient).Assembly.GetName().Version?.ToString(3) ?? "1.0.0";

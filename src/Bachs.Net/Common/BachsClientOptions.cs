@@ -3,7 +3,7 @@ namespace Bachs.Net.Common;
 /// <summary>
 /// Configuration options for the Bachs API client.
 /// </summary>
-public class BachsClientOptions
+public sealed class BachsClientOptions
 {
     /// <summary>
     /// Default production base URL.

@@ -7,7 +7,7 @@ namespace Bachs.Net.Common;
 /// Represents a complete HTTP response from the Bachs API, including data and metadata.
 /// </summary>
 /// <typeparam name="T">The type of the parsed response data.</typeparam>
-public record BachsResponse<T>
+public sealed record BachsResponse<T>
 {
     /// <summary>
     /// Gets the parsed response data.

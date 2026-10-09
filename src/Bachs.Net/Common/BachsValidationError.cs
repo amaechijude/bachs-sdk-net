@@ -5,7 +5,7 @@ namespace Bachs.Net.Common;
 /// <summary>
 /// Details about an individual field-level validation error returned by the Bachs API.
 /// </summary>
-public record BachsValidationError
+public sealed record BachsValidationError
 {
     /// <summary>
     /// Gets the name of the request field that failed validation.

@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Bachs.Test;
 
-public class BachsServiceExtensionsTests
+public sealed class BachsServiceExtensionsTests
 {
     [Fact]
     public void AddBachsClient_Registers_Client_And_SubClients()

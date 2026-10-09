@@ -5,7 +5,7 @@ namespace Bachs.Net.Common;
 /// <summary>
 /// Details about the pagination state in a list response from the Bachs API.
 /// </summary>
-public record BachsPagination
+public sealed record BachsPagination
 {
     /// <summary>
     /// Gets the cursor to pass on your next request to fetch the following page.

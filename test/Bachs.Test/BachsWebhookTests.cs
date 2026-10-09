@@ -4,7 +4,7 @@ using Bachs.Net.WebHooks;
 
 namespace Bachs.Test;
 
-public class BachsWebhookTests
+public sealed class BachsWebhookTests
 {
     private const string Secret = "whsec_test_secret_key_12345";
 

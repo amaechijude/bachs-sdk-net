@@ -6,7 +6,7 @@ namespace Bachs.Net.Common;
 /// <summary>
 /// Represents the standard error response body returned by the Bachs API.
 /// </summary>
-public record BachsError
+public sealed record BachsError
 {
     /// <summary>
     /// Gets the stable, machine-readable error code (e.g., 'VALIDATION_ERROR', 'NOT_FOUND', 'UNAUTHORIZED').

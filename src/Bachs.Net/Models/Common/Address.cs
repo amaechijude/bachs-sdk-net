@@ -5,7 +5,7 @@ namespace Bachs.Net.Models.Common;
 /// <summary>
 /// Represents a physical or billing address.
 /// </summary>
-public record Address
+public sealed record Address
 {
     /// <summary>
     /// Address line 1 (e.g., street, PO Box, or company name).

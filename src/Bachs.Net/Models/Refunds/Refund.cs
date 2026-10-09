@@ -6,7 +6,7 @@ namespace Bachs.Net.Models.Refunds;
 /// <summary>
 /// Represents a refund in Bachs.
 /// </summary>
-public record Refund
+public sealed record Refund
 {
     /// <summary>
     /// Unique identifier for the refund (starts with 'ref_').
@@ -66,7 +66,7 @@ public record Refund
 /// <summary>
 /// Parameters for creating a refund.
 /// </summary>
-public class CreateRefundRequest
+public sealed class CreateRefundRequest
 {
     /// <summary>
     /// ID of the payment to refund (starts with 'ch_').
@@ -102,7 +102,7 @@ public class CreateRefundRequest
 /// <summary>
 /// Options for listing refunds.
 /// </summary>
-public class ListRefundsOptions : ListRequestOptions
+public sealed class ListRefundsOptions : ListRequestOptions
 {
     /// <summary>
     /// Filter by charge ID.

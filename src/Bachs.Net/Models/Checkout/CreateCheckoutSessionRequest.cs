@@ -6,7 +6,7 @@ namespace Bachs.Net.Models.Checkout;
 /// Request parameters to create a new checkout session.
 /// Provide either <see cref="ProductCart"/> or <see cref="Pricing"/>, never both.
 /// </summary>
-public class CreateCheckoutSessionRequest
+public sealed class CreateCheckoutSessionRequest
 {
     /// <summary>
     /// One or more catalog products being purchased.
@@ -82,7 +82,7 @@ public class CreateCheckoutSessionRequest
 /// <summary>
 /// Cart item for checkout session creation.
 /// </summary>
-public class CheckoutCartItemRequest
+public sealed class CheckoutCartItemRequest
 {
     /// <summary>
     /// The ID of the catalog product (starts with 'prod_').
@@ -106,7 +106,7 @@ public class CheckoutCartItemRequest
 /// <summary>
 /// Price override for a product cart item.
 /// </summary>
-public class CheckoutItemPricingOverrideRequest
+public sealed class CheckoutItemPricingOverrideRequest
 {
     /// <summary>
     /// Pricing mode: 'fixed' or 'custom'.
@@ -148,7 +148,7 @@ public class CheckoutItemPricingOverrideRequest
 /// <summary>
 /// Ad-hoc pricing request for dynamic checkout amounts without catalog products.
 /// </summary>
-public class CheckoutPricingRequest
+public sealed class CheckoutPricingRequest
 {
     /// <summary>
     /// The currency of the charge (e.g. "USD").
@@ -172,7 +172,7 @@ public class CheckoutPricingRequest
 /// <summary>
 /// Customer information attached when creating a checkout session.
 /// </summary>
-public class CheckoutCustomerRequest
+public sealed class CheckoutCustomerRequest
 {
     /// <summary>
     /// ID of an existing customer (starts with 'cust_').

@@ -5,7 +5,7 @@ namespace Bachs.Net.Models.Checkout;
 /// <summary>
 /// Represents a Bachs hosted checkout session.
 /// </summary>
-public record CheckoutSession
+public sealed record CheckoutSession
 {
     /// <summary>
     /// Unique identifier for the checkout session (starts with 'chk_').
@@ -95,7 +95,7 @@ public record CheckoutSession
 /// <summary>
 /// Customer record associated with a checkout session.
 /// </summary>
-public record CheckoutCustomerRecord
+public sealed record CheckoutCustomerRecord
 {
     [JsonPropertyName("id")]
     public string Id { get; init; } = string.Empty;
@@ -110,7 +110,7 @@ public record CheckoutCustomerRecord
 /// <summary>
 /// Contact details supplied by the customer at checkout.
 /// </summary>
-public record CheckoutCustomerDetails
+public sealed record CheckoutCustomerDetails
 {
     [JsonPropertyName("email")]
     public string Email { get; init; } = string.Empty;
@@ -125,7 +125,7 @@ public record CheckoutCustomerDetails
 /// <summary>
 /// Cart item in a checkout session.
 /// </summary>
-public record CheckoutCartItem
+public sealed record CheckoutCartItem
 {
     [JsonPropertyName("product_id")]
     public string ProductId { get; init; } = string.Empty;
@@ -140,7 +140,7 @@ public record CheckoutCartItem
 /// <summary>
 /// Pricing override for a cart item in a checkout session.
 /// </summary>
-public record CheckoutItemPricingOverride
+public sealed record CheckoutItemPricingOverride
 {
     [JsonPropertyName("price_type")]
     public string? PriceType { get; init; }
@@ -164,7 +164,7 @@ public record CheckoutItemPricingOverride
 /// <summary>
 /// Ad-hoc pricing definition for checkout sessions without a product catalog.
 /// </summary>
-public record CheckoutPricing
+public sealed record CheckoutPricing
 {
     [JsonPropertyName("currency")]
     public string Currency { get; init; } = string.Empty;
@@ -179,7 +179,7 @@ public record CheckoutPricing
 /// <summary>
 /// Charge summary linked to a completed checkout session.
 /// </summary>
-public record CheckoutChargeSummary
+public sealed record CheckoutChargeSummary
 {
     [JsonPropertyName("charge_id")]
     public string? ChargeId { get; init; }

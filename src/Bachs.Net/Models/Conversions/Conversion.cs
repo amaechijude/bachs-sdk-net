@@ -6,7 +6,7 @@ namespace Bachs.Net.Models.Conversions;
 /// <summary>
 /// Represents a currency conversion between balances.
 /// </summary>
-public record Conversion
+public sealed record Conversion
 {
     [JsonPropertyName("id")]
     public string Id { get; init; } = string.Empty;
@@ -42,7 +42,7 @@ public record Conversion
 /// <summary>
 /// Locked rate quote for a conversion.
 /// </summary>
-public record ConversionQuote
+public sealed record ConversionQuote
 {
     [JsonPropertyName("quote_id")]
     public string QuoteId { get; init; } = string.Empty;
@@ -66,7 +66,7 @@ public record ConversionQuote
     public DateTimeOffset ExpiresAt { get; init; }
 }
 
-public class CreateConversionQuoteRequest
+public sealed class CreateConversionQuoteRequest
 {
     [JsonPropertyName("source_currency")]
     public string SourceCurrency { get; set; } = string.Empty;
@@ -78,13 +78,13 @@ public class CreateConversionQuoteRequest
     public decimal Amount { get; set; }
 }
 
-public class ExecuteConversionRequest
+public sealed class ExecuteConversionRequest
 {
     [JsonPropertyName("quote_id")]
     public string QuoteId { get; set; } = string.Empty;
 }
 
-public class ListConversionsOptions : ListRequestOptions
+public sealed class ListConversionsOptions : ListRequestOptions
 {
     public string? Status { get; set; }
 

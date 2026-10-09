@@ -6,7 +6,7 @@ namespace Bachs.Net.Models.Products;
 /// <summary>
 /// Represents a Bachs catalog product.
 /// </summary>
-public record Product
+public sealed record Product
 {
     /// <summary>
     /// Unique identifier for the product (starts with 'prod_').
@@ -78,7 +78,7 @@ public record Product
 /// <summary>
 /// Pricing configuration for a product.
 /// </summary>
-public record ProductPrice
+public sealed record ProductPrice
 {
     /// <summary>
     /// The pricing type: 'fixed', 'free', or 'custom'.
@@ -126,7 +126,7 @@ public record ProductPrice
 /// <summary>
 /// Recurring cadence for a subscription product.
 /// </summary>
-public record ProductBillingCycle
+public sealed record ProductBillingCycle
 {
     /// <summary>
     /// Cadence unit: 'day', 'week', 'month', or 'year'.
@@ -144,7 +144,7 @@ public record ProductBillingCycle
 /// <summary>
 /// Free trial period on a subscription product.
 /// </summary>
-public record ProductTrialPeriod
+public sealed record ProductTrialPeriod
 {
     /// <summary>
     /// Cadence unit: 'day', 'week', 'month', or 'year'.
@@ -162,7 +162,7 @@ public record ProductTrialPeriod
 /// <summary>
 /// Options for listing products.
 /// </summary>
-public class ListProductsOptions : ListRequestOptions
+public sealed class ListProductsOptions : ListRequestOptions
 {
     /// <summary>
     /// Whether to include archived products in the response. Defaults to false.

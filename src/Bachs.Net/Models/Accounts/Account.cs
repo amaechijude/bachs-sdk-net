@@ -6,7 +6,7 @@ namespace Bachs.Net.Models.Accounts;
 /// <summary>
 /// Represents a connected account (sub-account) on Bachs platform.
 /// </summary>
-public record Account
+public sealed record Account
 {
     [JsonPropertyName("id")]
     public string Id { get; init; } = string.Empty;
@@ -30,7 +30,7 @@ public record Account
     public DateTimeOffset CreatedAt { get; init; }
 }
 
-public class CreateAccountRequest
+public sealed class CreateAccountRequest
 {
     [JsonPropertyName("type")]
     public string Type { get; set; } = "standard";
@@ -48,7 +48,7 @@ public class CreateAccountRequest
     public IList<string>? Capabilities { get; set; }
 }
 
-public class UpdateAccountRequest
+public sealed class UpdateAccountRequest
 {
     [JsonPropertyName("email")]
     public string? Email { get; set; }
@@ -57,7 +57,7 @@ public class UpdateAccountRequest
     public string? BusinessName { get; set; }
 }
 
-public class CreateAccountLinkRequest
+public sealed class CreateAccountLinkRequest
 {
     [JsonPropertyName("type")]
     public string Type { get; set; } = "onboarding";
@@ -69,7 +69,7 @@ public class CreateAccountLinkRequest
     public string? RefreshUrl { get; set; }
 }
 
-public record AccountLink
+public sealed record AccountLink
 {
     [JsonPropertyName("url")]
     public string Url { get; init; } = string.Empty;
@@ -78,7 +78,7 @@ public record AccountLink
     public DateTimeOffset ExpiresAt { get; init; }
 }
 
-public record Person
+public sealed record Person
 {
     [JsonPropertyName("id")]
     public string Id { get; init; } = string.Empty;
@@ -96,7 +96,7 @@ public record Person
     public PersonRelationship? Relationship { get; init; }
 }
 
-public record PersonRelationship
+public sealed record PersonRelationship
 {
     [JsonPropertyName("title")]
     public string? Title { get; init; }
@@ -108,7 +108,7 @@ public record PersonRelationship
     public bool Executive { get; init; }
 }
 
-public class CreatePersonRequest
+public sealed class CreatePersonRequest
 {
     [JsonPropertyName("first_name")]
     public string FirstName { get; set; } = string.Empty;
@@ -120,6 +120,6 @@ public class CreatePersonRequest
     public string? Email { get; set; }
 }
 
-public class ListAccountsOptions : ListRequestOptions
+public sealed class ListAccountsOptions : ListRequestOptions
 {
 }
