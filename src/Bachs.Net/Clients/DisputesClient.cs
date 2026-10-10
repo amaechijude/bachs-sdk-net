@@ -6,7 +6,9 @@ namespace Bachs.Net.Clients;
 /// <summary>
 /// Client implementation for managing disputes and chargebacks.
 /// </summary>
-public sealed class DisputesClient(IBachsClient bachsClient) : BaseClient(bachsClient), IDisputesClient
+public sealed class DisputesClient(IBachsClient bachsClient)
+    : BaseClient(bachsClient),
+        IDisputesClient
 {
     public Task<Dispute> GetAsync(
         string disputeId,

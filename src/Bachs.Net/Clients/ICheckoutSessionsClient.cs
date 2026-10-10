@@ -18,7 +18,8 @@ public interface ICheckoutSessionsClient
     Task<CheckoutSession> CreateAsync(
         CreateCheckoutSessionRequest request,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 
     /// <summary>
     /// Retrieves a checkout session by its ID.
@@ -30,5 +31,6 @@ public interface ICheckoutSessionsClient
     Task<CheckoutSession> GetAsync(
         string checkoutId,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 }

@@ -104,7 +104,8 @@ public interface IBachsClient
     Task<TResponse> GetAsync<TResponse>(
         string path,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 
     /// <summary>
     /// Sends a POST request with a JSON body and deserializes the JSON response body.
@@ -113,7 +114,8 @@ public interface IBachsClient
         string path,
         TRequest body,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 
     /// <summary>
     /// Sends an empty POST request and deserializes the JSON response body.
@@ -121,7 +123,8 @@ public interface IBachsClient
     Task<TResponse> PostAsync<TResponse>(
         string path,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 
     /// <summary>
     /// Sends a PATCH request with a JSON body and deserializes the JSON response body.
@@ -130,7 +133,8 @@ public interface IBachsClient
         string path,
         TRequest body,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 
     /// <summary>
     /// Sends a PUT request with a JSON body and deserializes the JSON response body.
@@ -139,7 +143,8 @@ public interface IBachsClient
         string path,
         TRequest body,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 
     /// <summary>
     /// Sends a DELETE request and deserializes the JSON response body.
@@ -147,7 +152,8 @@ public interface IBachsClient
     Task<TResponse> DeleteAsync<TResponse>(
         string path,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 
     /// <summary>
     /// Sends a DELETE request without expecting a response body.
@@ -155,7 +161,8 @@ public interface IBachsClient
     Task DeleteAsync(
         string path,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 
     /// <summary>
     /// Executes an HTTP request with retry handling and returns the complete <see cref="BachsResponse{TResponse}"/>.
@@ -163,5 +170,6 @@ public interface IBachsClient
     Task<BachsResponse<TResponse>> SendAsync<TResponse>(
         HttpRequestMessage request,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 }

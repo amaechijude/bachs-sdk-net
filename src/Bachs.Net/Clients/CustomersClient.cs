@@ -6,7 +6,9 @@ namespace Bachs.Net.Clients;
 /// <summary>
 /// Client implementation for managing customers and portal sessions.
 /// </summary>
-public sealed class CustomersClient(IBachsClient bachsClient) : BaseClient(bachsClient), ICustomersClient
+public sealed class CustomersClient(IBachsClient bachsClient)
+    : BaseClient(bachsClient),
+        ICustomersClient
 {
     public Task<Customer> CreateAsync(
         CreateCustomerRequest request,

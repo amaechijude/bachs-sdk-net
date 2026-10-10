@@ -12,73 +12,73 @@ namespace Bachs.Net.Extensions;
 /// </summary>
 public static class BachsServiceExtensions
 {
-    /// <summary>
-    /// Registers the Bachs API client and sub-clients in the dependency injection container.
-    /// </summary>
     /// <param name="services">The service collection.</param>
-    /// <param name="configureOptions">Delegate to configure <see cref="BachsClientOptions"/>.</param>
-    /// <returns>An <see cref="IHttpClientBuilder"/> for configuring the underlying HTTP client and resilience pipelines.</returns>
-    public static IHttpClientBuilder AddBachsClient(
-        this IServiceCollection services,
-        Action<BachsClientOptions> configureOptions
-    )
+    extension(IServiceCollection services)
     {
-        ArgumentNullException.ThrowIfNull(services);
-        ArgumentNullException.ThrowIfNull(configureOptions);
+        /// <summary>
+        /// Registers the Bachs API client and sub-clients in the dependency injection container.
+        /// </summary>
+        /// <remarks>
+        /// We recommend using the returned <see cref="IHttpClientBuilder"/> to configure standard
+        /// resilience handlers (e.g., Polly or <c>AddStandardResilienceHandler</c>). If you do so, ensure
+        /// <see cref="BachsClientOptions.MaxRetries"/> remains 0 (the default) to avoid nested retries.
+        /// </remarks>
+        /// <param name="configureOptions">Delegate to configure <see cref="BachsClientOptions"/>.</param>
+        /// <returns>An <see cref="IHttpClientBuilder"/> for configuring the underlying HTTP client and resilience pipelines.</returns>
+        public IHttpClientBuilder AddBachsClient(Action<BachsClientOptions> configureOptions)
+        {
+            ArgumentNullException.ThrowIfNull(services);
+            ArgumentNullException.ThrowIfNull(configureOptions);
 
-        services.Configure(configureOptions);
-        return RegisterClientCore(services);
-    }
+            services.Configure(configureOptions);
+            return RegisterClientCore(services);
+        }
 
-    /// <summary>
-    /// Registers the Bachs API client and sub-clients with options and an HTTP client builder configurator.
-    /// </summary>
-    /// <param name="services">The service collection.</param>
-    /// <param name="configureOptions">Delegate to configure <see cref="BachsClientOptions"/>.</param>
-    /// <param name="configureHttpClient">Delegate to configure the <see cref="IHttpClientBuilder"/> (e.g. resilience handlers).</param>
-    /// <returns>An <see cref="IHttpClientBuilder"/> for further configuration.</returns>
-    public static IHttpClientBuilder AddBachsClient(
-        this IServiceCollection services,
-        Action<BachsClientOptions> configureOptions,
-        Action<IHttpClientBuilder> configureHttpClient
-    )
-    {
-        ArgumentNullException.ThrowIfNull(configureHttpClient);
-        var builder = services.AddBachsClient(configureOptions);
-        configureHttpClient(builder);
-        return builder;
-    }
+        /// <summary>
+        /// Registers the Bachs API client and sub-clients with options and an HTTP client builder configurator.
+        /// </summary>
+        /// <param name="configureOptions">Delegate to configure <see cref="BachsClientOptions"/>.</param>
+        /// <param name="configureHttpClient">Delegate to configure the <see cref="IHttpClientBuilder"/> (e.g. resilience handlers).</param>
+        /// <returns>An <see cref="IHttpClientBuilder"/> for further configuration.</returns>
+        public IHttpClientBuilder AddBachsClient(
+            Action<BachsClientOptions> configureOptions,
+            Action<IHttpClientBuilder> configureHttpClient
+        )
+        {
+            ArgumentNullException.ThrowIfNull(configureHttpClient);
+            var builder = services.AddBachsClient(configureOptions);
+            configureHttpClient(builder);
+            return builder;
+        }
 
-    /// <summary>
-    /// Registers the Bachs API client with a secret API key.
-    /// </summary>
-    /// <param name="services">The service collection.</param>
-    /// <param name="apiKey">The Bachs secret key (sk_sandbox_... or sk_live_...).</param>
-    /// <returns>An <see cref="IHttpClientBuilder"/> for configuring the underlying HTTP client and resilience pipelines.</returns>
-    public static IHttpClientBuilder AddBachsClient(this IServiceCollection services, string apiKey)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(apiKey);
-        return services.AddBachsClient(options => options.ApiKey = apiKey);
-    }
+        /// <summary>
+        /// Registers the Bachs API client with a secret API key.
+        /// </summary>
+        /// <param name="apiKey">The Bachs secret key (sk_sandbox_... or sk_live_...).</param>
+        /// <returns>An <see cref="IHttpClientBuilder"/> for configuring the underlying HTTP client and resilience pipelines.</returns>
+        public IHttpClientBuilder AddBachsClient(string apiKey)
+        {
+            ArgumentException.ThrowIfNullOrWhiteSpace(apiKey);
+            return services.AddBachsClient(options => options.ApiKey = apiKey);
+        }
 
-    /// <summary>
-    /// Registers the Bachs API client with a secret API key and an HTTP client builder configurator.
-    /// </summary>
-    /// <param name="services">The service collection.</param>
-    /// <param name="apiKey">The Bachs secret key (sk_sandbox_... or sk_live_...).</param>
-    /// <param name="configureHttpClient">Delegate to configure the <see cref="IHttpClientBuilder"/> (e.g. resilience handlers).</param>
-    /// <returns>An <see cref="IHttpClientBuilder"/> for further configuration.</returns>
-    public static IHttpClientBuilder AddBachsClient(
-        this IServiceCollection services,
-        string apiKey,
-        Action<IHttpClientBuilder> configureHttpClient
-    )
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(apiKey);
-        ArgumentNullException.ThrowIfNull(configureHttpClient);
-        var builder = services.AddBachsClient(apiKey);
-        configureHttpClient(builder);
-        return builder;
+        /// <summary>
+        /// Registers the Bachs API client with a secret API key and an HTTP client builder configurator.
+        /// </summary>
+        /// <param name="apiKey">The Bachs secret key (sk_sandbox_... or sk_live_...).</param>
+        /// <param name="configureHttpClient">Delegate to configure the <see cref="IHttpClientBuilder"/> (e.g. resilience handlers).</param>
+        /// <returns>An <see cref="IHttpClientBuilder"/> for further configuration.</returns>
+        public IHttpClientBuilder AddBachsClient(
+            string apiKey,
+            Action<IHttpClientBuilder> configureHttpClient
+        )
+        {
+            ArgumentException.ThrowIfNullOrWhiteSpace(apiKey);
+            ArgumentNullException.ThrowIfNull(configureHttpClient);
+            var builder = services.AddBachsClient(apiKey);
+            configureHttpClient(builder);
+            return builder;
+        }
     }
 
     private static IHttpClientBuilder RegisterClientCore(IServiceCollection services)
@@ -110,8 +110,12 @@ public static class BachsServiceExtensions
         services.TryAddTransient(sp => sp.GetRequiredService<IBachsClient>().Accounts);
         services.TryAddTransient(sp => sp.GetRequiredService<IBachsClient>().VirtualAccounts);
         services.TryAddTransient(sp => sp.GetRequiredService<IBachsClient>().Webhooks);
-        services.TryAddTransient<IWebhookEventValidator>(sp => sp.GetRequiredService<IBachsClient>().Webhooks);
-        services.TryAddTransient<IWebhookValidator>(sp => sp.GetRequiredService<IBachsClient>().Webhooks);
+        services.TryAddTransient<IWebhookEventValidator>(sp =>
+            sp.GetRequiredService<IBachsClient>().Webhooks
+        );
+        services.TryAddTransient<IWebhookValidator>(sp =>
+            sp.GetRequiredService<IBachsClient>().Webhooks
+        );
         services.TryAddTransient(sp => sp.GetRequiredService<IBachsClient>().Misc);
 
         return builder;

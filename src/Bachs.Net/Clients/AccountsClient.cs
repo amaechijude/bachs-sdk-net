@@ -6,7 +6,9 @@ namespace Bachs.Net.Clients;
 /// <summary>
 /// Client implementation for managing connected accounts.
 /// </summary>
-public sealed class AccountsClient(IBachsClient bachsClient) : BaseClient(bachsClient), IAccountsClient
+public sealed class AccountsClient(IBachsClient bachsClient)
+    : BaseClient(bachsClient),
+        IAccountsClient
 {
     public Task<Account> CreateAsync(
         CreateAccountRequest request,

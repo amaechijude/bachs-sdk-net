@@ -8,10 +8,12 @@ public class BachsException : Exception
     /// <summary>
     /// Initializes a new instance of <see cref="BachsException"/> with a message.
     /// </summary>
-    public BachsException(string message) : base(message) { }
+    public BachsException(string message)
+        : base(message) { }
 
     /// <summary>
     /// Initializes a new instance of <see cref="BachsException"/> with a message and inner exception.
     /// </summary>
-    public BachsException(string message, Exception innerException) : base(message, innerException) { }
+    public BachsException(string message, Exception innerException)
+        : base(message, innerException) { }
 }

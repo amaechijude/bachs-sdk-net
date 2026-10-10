@@ -13,14 +13,16 @@ public interface IBalancesClient
     /// </summary>
     Task<Balance> GetBalancesAsync(
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 
     /// <summary>
     /// Retrieves current automatic payout balance settings.
     /// </summary>
     Task<BalanceSettings> GetSettingsAsync(
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 
     /// <summary>
     /// Updates automatic payout balance settings.
@@ -28,5 +30,6 @@ public interface IBalancesClient
     Task<BalanceSettings> UpdateSettingsAsync(
         BalanceSettings settings,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 }

@@ -6,11 +6,7 @@ namespace Bachs.Net.Serialization;
 
 public sealed class PriceJsonConverter : JsonConverter<Price>
 {
-    public override Price Read(
-        ref Utf8JsonReader reader,
-        Type type,
-        JsonSerializerOptions options
-    )
+    public override Price Read(ref Utf8JsonReader reader, Type type, JsonSerializerOptions options)
     {
         if (reader.TokenType == JsonTokenType.Number)
         {
@@ -25,12 +21,14 @@ public sealed class PriceJsonConverter : JsonConverter<Price>
                 return default;
             }
 
-            if (decimal.TryParse(
-                str.AsSpan(),
-                NumberStyles.AllowLeadingSign | NumberStyles.AllowDecimalPoint,
-                CultureInfo.InvariantCulture,
-                out var v
-            ))
+            if (
+                decimal.TryParse(
+                    str.AsSpan(),
+                    NumberStyles.AllowLeadingSign | NumberStyles.AllowDecimalPoint,
+                    CultureInfo.InvariantCulture,
+                    out var v
+                )
+            )
             {
                 return new Price(v);
             }

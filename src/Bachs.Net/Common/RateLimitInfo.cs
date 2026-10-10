@@ -35,22 +35,28 @@ public sealed record RateLimitInfo
     public static RateLimitInfo FromHeaders(HttpResponseHeaders headers)
     {
         int? limit = null;
-        if (headers.TryGetValues("X-RateLimit-Limit", out var limitValues) &&
-            int.TryParse(limitValues.FirstOrDefault(), out var parsedLimit))
+        if (
+            headers.TryGetValues("X-RateLimit-Limit", out var limitValues)
+            && int.TryParse(limitValues.FirstOrDefault(), out var parsedLimit)
+        )
         {
             limit = parsedLimit;
         }
 
         int? remaining = null;
-        if (headers.TryGetValues("X-RateLimit-Remaining", out var remainingValues) &&
-            int.TryParse(remainingValues.FirstOrDefault(), out var parsedRemaining))
+        if (
+            headers.TryGetValues("X-RateLimit-Remaining", out var remainingValues)
+            && int.TryParse(remainingValues.FirstOrDefault(), out var parsedRemaining)
+        )
         {
             remaining = parsedRemaining;
         }
 
         DateTimeOffset? reset = null;
-        if (headers.TryGetValues("X-RateLimit-Reset", out var resetValues) &&
-            long.TryParse(resetValues.FirstOrDefault(), out var resetSeconds))
+        if (
+            headers.TryGetValues("X-RateLimit-Reset", out var resetValues)
+            && long.TryParse(resetValues.FirstOrDefault(), out var resetSeconds)
+        )
         {
             reset = DateTimeOffset.FromUnixTimeSeconds(resetSeconds);
         }
@@ -68,8 +74,10 @@ public sealed record RateLimitInfo
                 retryAfter = delta > TimeSpan.Zero ? delta : TimeSpan.Zero;
             }
         }
-        else if (headers.TryGetValues("Retry-After", out var retryAfterValues) &&
-                 int.TryParse(retryAfterValues.FirstOrDefault(), out var seconds))
+        else if (
+            headers.TryGetValues("Retry-After", out var retryAfterValues)
+            && int.TryParse(retryAfterValues.FirstOrDefault(), out var seconds)
+        )
         {
             retryAfter = TimeSpan.FromSeconds(seconds);
         }
@@ -79,7 +87,7 @@ public sealed record RateLimitInfo
             Limit = limit,
             Remaining = remaining,
             Reset = reset,
-            RetryAfter = retryAfter
+            RetryAfter = retryAfter,
         };
     }
 }

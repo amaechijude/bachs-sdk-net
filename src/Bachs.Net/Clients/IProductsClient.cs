@@ -14,7 +14,8 @@ public interface IProductsClient
     Task<Product> CreateAsync(
         CreateProductRequest request,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 
     /// <summary>
     /// Retrieves a single product by its ID.
@@ -22,7 +23,8 @@ public interface IProductsClient
     Task<Product> GetAsync(
         string productId,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 
     /// <summary>
     /// Lists products in your catalog with pagination.
@@ -30,7 +32,8 @@ public interface IProductsClient
     Task<BachsList<Product>> ListAsync(
         ListProductsOptions? options = null,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 
     /// <summary>
     /// Updates an existing product.
@@ -39,7 +42,8 @@ public interface IProductsClient
         string productId,
         UpdateProductRequest request,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 
     /// <summary>
     /// Archives a product so it can no longer be used for new purchases.
@@ -47,7 +51,8 @@ public interface IProductsClient
     Task<Product> ArchiveAsync(
         string productId,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 
     /// <summary>
     /// Unarchives an archived product to active status.
@@ -55,5 +60,6 @@ public interface IProductsClient
     Task<Product> UnarchiveAsync(
         string productId,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 }

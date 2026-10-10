@@ -14,7 +14,8 @@ public interface IVirtualAccountsClient
     Task<VirtualAccount> CreateAsync(
         CreateVirtualAccountRequest request,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 
     /// <summary>
     /// Retrieves the fixed virtual bank account for your account or connected account.
@@ -22,5 +23,6 @@ public interface IVirtualAccountsClient
     Task<VirtualAccount> GetAsync(
         string currency = "NGN",
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 }

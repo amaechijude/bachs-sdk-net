@@ -13,7 +13,8 @@ public interface IMiscClient
     /// </summary>
     Task<IReadOnlyList<string>> GetSupportedCurrenciesAsync(
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 
     /// <summary>
     /// Lists banks available for payout destinations.
@@ -21,7 +22,8 @@ public interface IMiscClient
     Task<IReadOnlyList<BankInfo>> GetBanksAsync(
         string country = "NG",
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 
     /// <summary>
     /// Resolves and verifies bank account details for a destination.
@@ -29,5 +31,6 @@ public interface IMiscClient
     Task<ResolveBankAccountResponse> ResolveBankAccountAsync(
         ResolveBankAccountRequest request,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 }

@@ -43,6 +43,4 @@ public sealed record CreateTransferRequest
     public string Destination { get; init; } = string.Empty;
 }
 
-public sealed class ListTransfersOptions : ListRequestOptions
-{
-}
+public sealed class ListTransfersOptions : ListRequestOptions { }

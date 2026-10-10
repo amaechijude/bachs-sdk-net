@@ -14,7 +14,8 @@ public interface IPayoutsClient
     Task<Payout> CreateAsync(
         CreatePayoutRequest request,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 
     /// <summary>
     /// Requests a conversion quote for an international/cross-currency payout.
@@ -22,7 +23,8 @@ public interface IPayoutsClient
     Task<PayoutQuote> CreateQuoteAsync(
         CreatePayoutQuoteRequest request,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 
     /// <summary>
     /// Retrieves a payout by its withdrawal ID.
@@ -30,7 +32,8 @@ public interface IPayoutsClient
     Task<Payout> GetAsync(
         string withdrawalId,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 
     /// <summary>
     /// Lists payouts with pagination and filtering.
@@ -38,7 +41,8 @@ public interface IPayoutsClient
     Task<BachsList<Payout>> ListAsync(
         ListPayoutsOptions? options = null,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 }
 
 /// <summary>
@@ -52,7 +56,8 @@ public interface IPayoutDestinationsClient
     Task<PayoutDestination> CreateAsync(
         CreatePayoutDestinationRequest request,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 
     /// <summary>
     /// Retrieves a payout destination by its ID.
@@ -60,7 +65,8 @@ public interface IPayoutDestinationsClient
     Task<PayoutDestination> GetAsync(
         string destinationId,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 
     /// <summary>
     /// Lists saved payout destinations.
@@ -68,7 +74,8 @@ public interface IPayoutDestinationsClient
     Task<BachsList<PayoutDestination>> ListAsync(
         ListRequestOptions? options = null,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 
     /// <summary>
     /// Updates a payout destination.
@@ -77,7 +84,8 @@ public interface IPayoutDestinationsClient
         string destinationId,
         UpdatePayoutDestinationRequest request,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 
     /// <summary>
     /// Deletes a payout destination.
@@ -85,5 +93,6 @@ public interface IPayoutDestinationsClient
     Task DeleteAsync(
         string destinationId,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 }

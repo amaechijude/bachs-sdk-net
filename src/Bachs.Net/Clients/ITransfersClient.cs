@@ -14,7 +14,8 @@ public interface ITransfersClient
     Task<Transfer> CreateAsync(
         CreateTransferRequest request,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 
     /// <summary>
     /// Retrieves a transfer by its ID.
@@ -22,7 +23,8 @@ public interface ITransfersClient
     Task<Transfer> GetAsync(
         string transferId,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 
     /// <summary>
     /// Lists transfers with pagination.
@@ -30,5 +32,6 @@ public interface ITransfersClient
     Task<BachsList<Transfer>> ListAsync(
         ListTransfersOptions? options = null,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 }

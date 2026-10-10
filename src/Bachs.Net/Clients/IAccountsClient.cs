@@ -14,7 +14,8 @@ public interface IAccountsClient
     Task<Account> CreateAsync(
         CreateAccountRequest request,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 
     /// <summary>
     /// Retrieves a connected account by its ID.
@@ -22,7 +23,8 @@ public interface IAccountsClient
     Task<Account> GetAsync(
         string accountId,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 
     /// <summary>
     /// Lists connected accounts under your platform.
@@ -30,7 +32,8 @@ public interface IAccountsClient
     Task<BachsList<Account>> ListAsync(
         ListAccountsOptions? options = null,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 
     /// <summary>
     /// Updates a connected account.
@@ -39,7 +42,8 @@ public interface IAccountsClient
         string accountId,
         UpdateAccountRequest request,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 
     /// <summary>
     /// Creates a hosted onboarding link for an account to satisfy requirements.
@@ -48,12 +52,14 @@ public interface IAccountsClient
         string accountId,
         CreateAccountLinkRequest request,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 
     /// <summary>
     /// Retrieves the current platform account profile.
     /// </summary>
     Task<Account> GetMeAsync(
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 }

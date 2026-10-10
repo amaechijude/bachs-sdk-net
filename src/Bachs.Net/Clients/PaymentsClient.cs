@@ -6,7 +6,9 @@ namespace Bachs.Net.Clients;
 /// <summary>
 /// Client implementation for reading and listing payments.
 /// </summary>
-public sealed class PaymentsClient(IBachsClient bachsClient) : BaseClient(bachsClient), IPaymentsClient
+public sealed class PaymentsClient(IBachsClient bachsClient)
+    : BaseClient(bachsClient),
+        IPaymentsClient
 {
     public Task<Payment> GetAsync(
         string paymentId,

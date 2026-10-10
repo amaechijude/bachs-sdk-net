@@ -50,13 +50,23 @@ public sealed class BachsClientOptions
 
     /// <summary>
     /// Gets or sets the maximum number of retries for transient failures and rate limits.
-    /// Defaults to 2 retries. Set to 0 to disable automatic retries.
+    /// Defaults to 0.
+    /// <para>
+    /// Note: If you are registering this client via Dependency Injection and using a standard resilience
+    /// pipeline (like Polly or <c>AddStandardResilienceHandler</c>), leave this as 0 to prevent nested
+    /// exponential retries. For standalone usage without DI, you can set this to a positive integer
+    /// (e.g., 2) to enable built-in transient error handling.
+    /// </para>
     /// </summary>
-    public int MaxRetries { get; set; } = 2;
+    public int MaxRetries { get; set; } = 0;
 
     /// <summary>
     /// Gets or sets the maximum delay to wait when retrying rate-limited requests.
     /// Defaults to 30 seconds.
+    /// <para>
+    /// Note: This setting only applies if <see cref="MaxRetries"/> is greater than 0 (i.e., when using the built-in retry mechanism).
+    /// If you are using standard DI resilience handlers, delay configuration should be handled by your external policies.
+    /// </para>
     /// </summary>
     public TimeSpan MaxRetryDelay { get; set; } = TimeSpan.FromSeconds(30);
 

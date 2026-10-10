@@ -6,7 +6,9 @@ namespace Bachs.Net.Clients;
 /// <summary>
 /// Client implementation for reading balances and managing payout settings.
 /// </summary>
-public sealed class BalancesClient(IBachsClient bachsClient) : BaseClient(bachsClient), IBalancesClient
+public sealed class BalancesClient(IBachsClient bachsClient)
+    : BaseClient(bachsClient),
+        IBalancesClient
 {
     public Task<Balance> GetBalancesAsync(
         RequestOptions? requestOptions = null,

@@ -14,7 +14,8 @@ public interface IPaymentsClient
     Task<Payment> GetAsync(
         string paymentId,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 
     /// <summary>
     /// Lists payments with pagination and filtering.
@@ -22,5 +23,6 @@ public interface IPaymentsClient
     Task<BachsList<Payment>> ListAsync(
         ListPaymentsOptions? options = null,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 }

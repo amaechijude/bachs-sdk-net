@@ -20,5 +20,5 @@ public enum BachsEnvironment
     /// <summary>
     /// Custom base URL specified in configuration.
     /// </summary>
-    Custom
+    Custom,
 }

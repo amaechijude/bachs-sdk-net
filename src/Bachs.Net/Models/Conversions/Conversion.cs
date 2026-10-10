@@ -92,7 +92,8 @@ public sealed class ListConversionsOptions : ListRequestOptions
     public override IDictionary<string, string> ToQueryParameters()
     {
         var parameters = base.ToQueryParameters();
-        if (!string.IsNullOrWhiteSpace(Status)) parameters["status"] = Status;
+        if (!string.IsNullOrWhiteSpace(Status))
+            parameters["status"] = Status;
         return parameters;
     }
 }

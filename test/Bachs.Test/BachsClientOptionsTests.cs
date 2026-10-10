@@ -46,7 +46,7 @@ public sealed class BachsClientOptionsTests
         var options = new BachsClientOptions
         {
             ApiKey = "sk_sandbox_abc123",
-            BaseUrl = "https://my-custom-proxy.internal"
+            BaseUrl = "https://my-custom-proxy.internal",
         };
 
         var url = options.GetEffectiveBaseUrl();
@@ -60,7 +60,7 @@ public sealed class BachsClientOptionsTests
         var options = new BachsClientOptions
         {
             ApiKey = "sk_sandbox_test",
-            Environment = BachsEnvironment.Production
+            Environment = BachsEnvironment.Production,
         };
 
         var url = options.GetEffectiveBaseUrl();

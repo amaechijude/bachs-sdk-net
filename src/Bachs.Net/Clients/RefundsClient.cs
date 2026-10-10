@@ -6,7 +6,9 @@ namespace Bachs.Net.Clients;
 /// <summary>
 /// Client implementation for issuing and tracking refunds.
 /// </summary>
-public sealed class RefundsClient(IBachsClient bachsClient) : BaseClient(bachsClient), IRefundsClient
+public sealed class RefundsClient(IBachsClient bachsClient)
+    : BaseClient(bachsClient),
+        IRefundsClient
 {
     public Task<Refund> CreateAsync(
         CreateRefundRequest request,

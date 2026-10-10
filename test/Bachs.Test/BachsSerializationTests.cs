@@ -16,7 +16,7 @@ public sealed class BachsSerializationTests
         {
             Amount = 29.5m,
             Currency = "USD",
-            PriceType = "fixed"
+            PriceType = "fixed",
         };
 
         var json = BachsJsonSerializer.Serialize(product);
@@ -72,7 +72,7 @@ public sealed class BachsSerializationTests
         {
             Amount = 250.00m,
             Currency = "USD",
-            Destination = "acct_target_123"
+            Destination = "acct_target_123",
         };
 
         var transfer2 = transfer1 with { Amount = 350.00m };
@@ -89,7 +89,7 @@ public sealed class BachsSerializationTests
         {
             ChargeId = "ch_test_999",
             Reference = "ref-abc",
-            Amount = 15.5m
+            Amount = 15.5m,
         };
 
         var json = BachsJsonSerializer.Serialize(refundReq);
@@ -104,12 +104,8 @@ public sealed class BachsSerializationTests
         var request = new CreateProductRequest
         {
             Name = "Starter Plan",
-            Price = new ProductPriceRequest
-            {
-                Amount = 10.00m,
-                Currency = "USD"
-            },
-            Description = null // should be omitted
+            Price = new ProductPriceRequest { Amount = 10.00m, Currency = "USD" },
+            Description = null, // should be omitted
         };
 
         var json = BachsJsonSerializer.Serialize(request);

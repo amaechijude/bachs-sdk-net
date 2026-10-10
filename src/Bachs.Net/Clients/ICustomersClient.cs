@@ -14,7 +14,8 @@ public interface ICustomersClient
     Task<Customer> CreateAsync(
         CreateCustomerRequest request,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 
     /// <summary>
     /// Retrieves a customer by their ID.
@@ -22,7 +23,8 @@ public interface ICustomersClient
     Task<Customer> GetAsync(
         string customerId,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 
     /// <summary>
     /// Lists customers with pagination and optional search.
@@ -30,7 +32,8 @@ public interface ICustomersClient
     Task<BachsList<Customer>> ListAsync(
         ListCustomersOptions? options = null,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 
     /// <summary>
     /// Updates an existing customer record.
@@ -39,7 +42,8 @@ public interface ICustomersClient
         string customerId,
         UpdateCustomerRequest request,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 
     /// <summary>
     /// Creates a pre-authenticated customer portal session for self-service billing management.
@@ -47,5 +51,6 @@ public interface ICustomersClient
     Task<CustomerPortalSession> CreatePortalSessionAsync(
         string customerId,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 }

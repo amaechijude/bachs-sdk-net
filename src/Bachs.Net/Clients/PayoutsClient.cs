@@ -6,7 +6,9 @@ namespace Bachs.Net.Clients;
 /// <summary>
 /// Client implementation for managing payouts and quotes.
 /// </summary>
-public sealed class PayoutsClient(IBachsClient bachsClient) : BaseClient(bachsClient), IPayoutsClient
+public sealed class PayoutsClient(IBachsClient bachsClient)
+    : BaseClient(bachsClient),
+        IPayoutsClient
 {
     public Task<Payout> CreateAsync(
         CreatePayoutRequest request,

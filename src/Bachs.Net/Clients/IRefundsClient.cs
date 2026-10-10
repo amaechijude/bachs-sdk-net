@@ -14,7 +14,8 @@ public interface IRefundsClient
     Task<Refund> CreateAsync(
         CreateRefundRequest request,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 
     /// <summary>
     /// Retrieves a refund by its ID.
@@ -22,7 +23,8 @@ public interface IRefundsClient
     Task<Refund> GetAsync(
         string refundId,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 
     /// <summary>
     /// Lists refunds with pagination and filtering.
@@ -30,7 +32,8 @@ public interface IRefundsClient
     Task<BachsList<Refund>> ListAsync(
         ListRefundsOptions? options = null,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 
     /// <summary>
     /// Retrieves refunds associated with a specific charge/payment ID.
@@ -38,5 +41,6 @@ public interface IRefundsClient
     Task<BachsList<Refund>> GetByPaymentIdAsync(
         string paymentId,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 }

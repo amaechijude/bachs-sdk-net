@@ -234,7 +234,15 @@ public static class BachsWebhook
     )
     {
         ArgumentNullException.ThrowIfNull(payloadBytes);
-        if (!VerifySignature(payloadBytes, signatureHeader, secret, toleranceSeconds, timestampHeader))
+        if (
+            !VerifySignature(
+                payloadBytes,
+                signatureHeader,
+                secret,
+                toleranceSeconds,
+                timestampHeader
+            )
+        )
         {
             throw new BachsException(
                 "Webhook signature verification failed. The signature does not match or is stale."
@@ -304,7 +312,15 @@ public static class BachsWebhook
         ArgumentNullException.ThrowIfNull(payload);
         try
         {
-            if (!VerifySignature(payload, signatureHeader, secret, toleranceSeconds, timestampHeader))
+            if (
+                !VerifySignature(
+                    payload,
+                    signatureHeader,
+                    secret,
+                    toleranceSeconds,
+                    timestampHeader
+                )
+            )
             {
                 webhookEvent = null;
                 return false;
@@ -335,7 +351,15 @@ public static class BachsWebhook
         ArgumentNullException.ThrowIfNull(payloadBytes);
         try
         {
-            if (!VerifySignature(payloadBytes, signatureHeader, secret, toleranceSeconds, timestampHeader))
+            if (
+                !VerifySignature(
+                    payloadBytes,
+                    signatureHeader,
+                    secret,
+                    toleranceSeconds,
+                    timestampHeader
+                )
+            )
             {
                 webhookEvent = null;
                 return false;

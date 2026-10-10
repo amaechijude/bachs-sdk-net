@@ -6,7 +6,9 @@ namespace Bachs.Net.Clients;
 /// <summary>
 /// Client implementation for managing products and catalog pricing.
 /// </summary>
-public sealed class ProductsClient(IBachsClient bachsClient) : BaseClient(bachsClient), IProductsClient
+public sealed class ProductsClient(IBachsClient bachsClient)
+    : BaseClient(bachsClient),
+        IProductsClient
 {
     public Task<Product> CreateAsync(
         CreateProductRequest request,

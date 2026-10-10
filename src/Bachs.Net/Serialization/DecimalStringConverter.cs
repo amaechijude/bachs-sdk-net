@@ -9,7 +9,11 @@ namespace Bachs.Net.Serialization;
 /// </summary>
 public sealed class DecimalStringConverter : JsonConverter<decimal>
 {
-    public override decimal Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public override decimal Read(
+        ref Utf8JsonReader reader,
+        Type typeToConvert,
+        JsonSerializerOptions options
+    )
     {
         if (reader.TokenType == JsonTokenType.String)
         {
@@ -19,7 +23,14 @@ public sealed class DecimalStringConverter : JsonConverter<decimal>
                 return 0m;
             }
 
-            if (decimal.TryParse(stringValue, NumberStyles.Number | NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out var result))
+            if (
+                decimal.TryParse(
+                    stringValue,
+                    NumberStyles.Number | NumberStyles.AllowDecimalPoint,
+                    CultureInfo.InvariantCulture,
+                    out var result
+                )
+            )
             {
                 return result;
             }
@@ -47,7 +58,11 @@ public sealed class DecimalStringConverter : JsonConverter<decimal>
 /// </summary>
 public sealed class NullableDecimalStringConverter : JsonConverter<decimal?>
 {
-    public override decimal? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public override decimal? Read(
+        ref Utf8JsonReader reader,
+        Type typeToConvert,
+        JsonSerializerOptions options
+    )
     {
         if (reader.TokenType == JsonTokenType.Null)
         {
@@ -62,7 +77,14 @@ public sealed class NullableDecimalStringConverter : JsonConverter<decimal?>
                 return null;
             }
 
-            if (decimal.TryParse(stringValue, NumberStyles.Number | NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out var result))
+            if (
+                decimal.TryParse(
+                    stringValue,
+                    NumberStyles.Number | NumberStyles.AllowDecimalPoint,
+                    CultureInfo.InvariantCulture,
+                    out var result
+                )
+            )
             {
                 return result;
             }
@@ -75,7 +97,9 @@ public sealed class NullableDecimalStringConverter : JsonConverter<decimal?>
             return reader.GetDecimal();
         }
 
-        throw new JsonException($"Unexpected token type {reader.TokenType} when parsing nullable decimal.");
+        throw new JsonException(
+            $"Unexpected token type {reader.TokenType} when parsing nullable decimal."
+        );
     }
 
     public override void Write(Utf8JsonWriter writer, decimal? value, JsonSerializerOptions options)

@@ -1,8 +1,7 @@
 using System.Net;
 using System.Net.Http.Headers;
-using System.Reflection;
+using System.Net.Http.Json;
 using System.Text;
-using System.Text.Json;
 using Bachs.Net.Common;
 using Bachs.Net.Serialization;
 using Microsoft.Extensions.Options;
@@ -17,8 +16,13 @@ public sealed class BachsClient : IBachsClient, IDisposable
     private static readonly string SdkVersion =
         typeof(BachsClient).Assembly.GetName().Version?.ToString(3) ?? "1.0.0";
 
+    /// <summary>
+    /// Shared static HttpClient used for all standalone instances to prevent socket exhaustion.
+    /// It is stateless and does not hold API keys or base addresses.
+    /// </summary>
+    private static readonly HttpClient SharedHttpClient = CreateSharedHttpClient();
+
     private readonly HttpClient _httpClient;
-    private readonly bool _disposeHttpClient;
 
     public BachsClientOptions Options { get; }
     public HttpClient HttpClient => _httpClient;
@@ -46,12 +50,11 @@ public sealed class BachsClient : IBachsClient, IDisposable
     /// </summary>
     /// <param name="apiKey">Bachs secret key starting with 'sk_sandbox_' or 'sk_live_'.</param>
     public BachsClient(string apiKey)
-        : this(new BachsClientOptions { ApiKey = apiKey })
-    {
-    }
+        : this(new BachsClientOptions { ApiKey = apiKey }) { }
 
     /// <summary>
-    /// Initializes a new instance of <see cref="BachsClient"/> with options.
+    /// Initializes a new instance of <see cref="BachsClient"/> with options using a shared static HTTP client.
+    /// This is safe for high-throughput standalone usage without Dependency Injection.
     /// </summary>
     /// <param name="options">Client options.</param>
     public BachsClient(BachsClientOptions options)
@@ -60,8 +63,7 @@ public sealed class BachsClient : IBachsClient, IDisposable
         options.Validate();
 
         Options = options;
-        _httpClient = CreateConfiguredHttpClient(options);
-        _disposeHttpClient = true;
+        _httpClient = SharedHttpClient;
 
         CheckoutSessions = new CheckoutSessionsClient(this);
         Products = new ProductsClient(this);
@@ -87,9 +89,7 @@ public sealed class BachsClient : IBachsClient, IDisposable
     /// </summary>
     [Microsoft.Extensions.DependencyInjection.ActivatorUtilitiesConstructor]
     public BachsClient(HttpClient httpClient, IOptions<BachsClientOptions> options)
-        : this(httpClient, options?.Value ?? throw new ArgumentNullException(nameof(options)))
-    {
-    }
+        : this(httpClient, options.Value ?? throw new ArgumentNullException(nameof(options))) { }
 
     /// <summary>
     /// Initializes a new instance of <see cref="BachsClient"/> with an injected <see cref="HttpClient"/> and options.
@@ -100,8 +100,7 @@ public sealed class BachsClient : IBachsClient, IDisposable
         Options = options ?? throw new ArgumentNullException(nameof(options));
         Options.Validate();
 
-        _disposeHttpClient = false;
-        ConfigureHttpClientHeaders(_httpClient, Options);
+        ConfigureHttpClientHeaders(_httpClient);
 
         CheckoutSessions = new CheckoutSessionsClient(this);
         Products = new ProductsClient(this);
@@ -121,51 +120,37 @@ public sealed class BachsClient : IBachsClient, IDisposable
         Misc = new MiscClient(this);
     }
 
-    private static HttpClient CreateConfiguredHttpClient(BachsClientOptions options)
+    private static HttpClient CreateSharedHttpClient()
     {
-        var client = new HttpClient
-        {
-            BaseAddress = options.GetEffectiveBaseUrl(),
-            Timeout = options.Timeout
-        };
-
-        ConfigureHttpClientHeaders(client, options);
+        var client = new HttpClient();
+        ConfigureHttpClientHeaders(client);
         return client;
     }
 
-    private static void ConfigureHttpClientHeaders(HttpClient client, BachsClientOptions options)
+    private static void ConfigureHttpClientHeaders(HttpClient client)
     {
-        if (client.BaseAddress == null)
-        {
-            client.BaseAddress = options.GetEffectiveBaseUrl();
-        }
-
-        if (client.DefaultRequestHeaders.Authorization == null && !string.IsNullOrWhiteSpace(options.ApiKey))
-        {
-            client.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", options.ApiKey);
-        }
-
         if (!client.DefaultRequestHeaders.Accept.Any(h => h.MediaType == "application/json"))
-        {
             client.DefaultRequestHeaders.Accept.Add(
-                new MediaTypeWithQualityHeaderValue("application/json"));
-        }
+                new MediaTypeWithQualityHeaderValue("application/json")
+            );
 
-        if (!client.DefaultRequestHeaders.UserAgent.Any())
-        {
+        if (client.DefaultRequestHeaders.UserAgent is { Count: 0 })
             client.DefaultRequestHeaders.UserAgent.Add(
-                new ProductInfoHeaderValue("Bachs.Net", SdkVersion));
-        }
+                new ProductInfoHeaderValue("Bachs.Net", SdkVersion)
+            );
     }
+
+    private Uri BuildRequestUri(string path) => new(Options.GetEffectiveBaseUrl(), path);
 
     public async Task<TResponse> GetAsync<TResponse>(
         string path,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
-        using var request = new HttpRequestMessage(HttpMethod.Get, path);
-        var response = await SendAsync<TResponse>(request, requestOptions, cancellationToken).ConfigureAwait(false);
+        using var request = new HttpRequestMessage(HttpMethod.Get, BuildRequestUri(path));
+        var response = await SendAsync<TResponse>(request, requestOptions, cancellationToken)
+            .ConfigureAwait(false);
         return response.Data;
     }
 
@@ -173,23 +158,26 @@ public sealed class BachsClient : IBachsClient, IDisposable
         string path,
         TRequest body,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
-        using var request = new HttpRequestMessage(HttpMethod.Post, path);
-        var json = BachsJsonSerializer.Serialize(body);
-        request.Content = new StringContent(json, Encoding.UTF8, "application/json");
+        using var request = new HttpRequestMessage(HttpMethod.Post, BuildRequestUri(path));
+        request.Content = JsonContent.Create(body, options: BachsJsonSerializer.Options);
 
-        var response = await SendAsync<TResponse>(request, requestOptions, cancellationToken).ConfigureAwait(false);
+        var response = await SendAsync<TResponse>(request, requestOptions, cancellationToken)
+            .ConfigureAwait(false);
         return response.Data;
     }
 
     public async Task<TResponse> PostAsync<TResponse>(
         string path,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
-        using var request = new HttpRequestMessage(HttpMethod.Post, path);
-        var response = await SendAsync<TResponse>(request, requestOptions, cancellationToken).ConfigureAwait(false);
+        using var request = new HttpRequestMessage(HttpMethod.Post, BuildRequestUri(path));
+        var response = await SendAsync<TResponse>(request, requestOptions, cancellationToken)
+            .ConfigureAwait(false);
         return response.Data;
     }
 
@@ -197,13 +185,14 @@ public sealed class BachsClient : IBachsClient, IDisposable
         string path,
         TRequest body,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
-        using var request = new HttpRequestMessage(HttpMethod.Patch, path);
-        var json = BachsJsonSerializer.Serialize(body);
-        request.Content = new StringContent(json, Encoding.UTF8, "application/json");
+        using var request = new HttpRequestMessage(HttpMethod.Patch, BuildRequestUri(path));
+        request.Content = JsonContent.Create(body, options: BachsJsonSerializer.Options);
 
-        var response = await SendAsync<TResponse>(request, requestOptions, cancellationToken).ConfigureAwait(false);
+        var response = await SendAsync<TResponse>(request, requestOptions, cancellationToken)
+            .ConfigureAwait(false);
         return response.Data;
     }
 
@@ -211,141 +200,214 @@ public sealed class BachsClient : IBachsClient, IDisposable
         string path,
         TRequest body,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
-        using var request = new HttpRequestMessage(HttpMethod.Put, path);
-        var json = BachsJsonSerializer.Serialize(body);
-        request.Content = new StringContent(json, Encoding.UTF8, "application/json");
+        using var request = new HttpRequestMessage(HttpMethod.Put, BuildRequestUri(path));
+        request.Content = JsonContent.Create(body, options: BachsJsonSerializer.Options);
 
-        var response = await SendAsync<TResponse>(request, requestOptions, cancellationToken).ConfigureAwait(false);
+        var response = await SendAsync<TResponse>(request, requestOptions, cancellationToken)
+            .ConfigureAwait(false);
         return response.Data;
     }
 
     public async Task<TResponse> DeleteAsync<TResponse>(
         string path,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
-        using var request = new HttpRequestMessage(HttpMethod.Delete, path);
-        var response = await SendAsync<TResponse>(request, requestOptions, cancellationToken).ConfigureAwait(false);
+        using var request = new HttpRequestMessage(HttpMethod.Delete, BuildRequestUri(path));
+        var response = await SendAsync<TResponse>(request, requestOptions, cancellationToken)
+            .ConfigureAwait(false);
         return response.Data;
     }
 
     public async Task DeleteAsync(
         string path,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
-        using var request = new HttpRequestMessage(HttpMethod.Delete, path);
+        using var request = new HttpRequestMessage(HttpMethod.Delete, BuildRequestUri(path));
         await SendAsync<object>(request, requestOptions, cancellationToken).ConfigureAwait(false);
     }
 
     public async Task<BachsResponse<TResponse>> SendAsync<TResponse>(
         HttpRequestMessage request,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
-        ArgumentNullException.ThrowIfNull(request);
+        var maxRetries = Options.MaxRetries;
+        var needsCloning = maxRetries > 0;
 
-        // Buffer payload so we can retry on transient failures if needed
+        // Buffer payload only if we might retry
         byte[]? bodyBytes = null;
         string? contentType = null;
-        if (request.Content != null)
+        if (needsCloning && request.Content != null)
         {
-            bodyBytes = await request.Content.ReadAsByteArrayAsync(cancellationToken).ConfigureAwait(false);
+            bodyBytes = await request
+                .Content.ReadAsByteArrayAsync(cancellationToken)
+                .ConfigureAwait(false);
             contentType = request.Content.Headers.ContentType?.MediaType ?? "application/json";
         }
 
         var attempt = 0;
-        var maxRetries = Options.MaxRetries;
 
         while (true)
         {
             attempt++;
 
-            // Create copy of request for this attempt
-            using var currentRequest = CloneRequest(request, bodyBytes, contentType);
-            ApplyRequestHeaders(currentRequest, requestOptions);
+            // Use original request if no retries configured, else clone it
+            HttpRequestMessage currentRequest = needsCloning
+                ? CloneRequest(request, bodyBytes, contentType)
+                : request;
 
-            HttpResponseMessage? response = null;
             try
             {
-                response = await _httpClient.SendAsync(currentRequest, cancellationToken).ConfigureAwait(false);
-            }
-            catch (HttpRequestException) when (attempt <= maxRetries)
-            {
-                await ApplyBackoffDelay(attempt, null, cancellationToken).ConfigureAwait(false);
-                continue;
-            }
+                ApplyRequestHeaders(currentRequest, requestOptions);
 
-            var rateLimit = RateLimitInfo.FromHeaders(response.Headers);
-
-            // Handle transient retry on 429 or 5xx
-            if (attempt <= maxRetries && ShouldRetry(response.StatusCode))
-            {
-                var delay = rateLimit.RetryAfter;
-                response.Dispose();
-                await ApplyBackoffDelay(attempt, delay, cancellationToken).ConfigureAwait(false);
-                continue;
-            }
-
-            using (response)
-            {
-                var responseContent = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-
-                if (!response.IsSuccessStatusCode)
+                HttpResponseMessage response;
+                try
                 {
-                    BachsError? error = null;
-                    if (!string.IsNullOrWhiteSpace(responseContent))
+                    response = await _httpClient
+                        .SendAsync(currentRequest, cancellationToken)
+                        .ConfigureAwait(false);
+                }
+                catch (HttpRequestException) when (attempt <= maxRetries)
+                {
+                    await ApplyBackoffDelay(attempt, null, cancellationToken).ConfigureAwait(false);
+                    continue;
+                }
+
+                var rateLimit = RateLimitInfo.FromHeaders(response.Headers);
+
+                // Handle transient retry on 429 or 5xx
+                if (attempt <= maxRetries && ShouldRetry(response.StatusCode))
+                {
+                    var delay = rateLimit.RetryAfter;
+                    response.Dispose();
+                    await ApplyBackoffDelay(attempt, delay, cancellationToken)
+                        .ConfigureAwait(false);
+                    continue;
+                }
+
+                using (response)
+                {
+                    string? responseContent = null;
+                    TResponse data = default!;
+
+                    // Read content as string for errors so we can attach it to the exception
+                    if (!response.IsSuccessStatusCode)
                     {
-                        try
+                        responseContent = await response
+                            .Content.ReadAsStringAsync(cancellationToken)
+                            .ConfigureAwait(false);
+
+                        BachsError? error = null;
+                        if (!string.IsNullOrWhiteSpace(responseContent))
                         {
-                            error = BachsJsonSerializer.Deserialize<BachsError>(responseContent);
+                            try
+                            {
+                                error = BachsJsonSerializer.Deserialize<BachsError>(
+                                    responseContent
+                                );
+                            }
+                            catch
+                            {
+                                // Ignore JSON parsing failure for non-JSON error pages
+                            }
                         }
-                        catch
+
+                        if (Options.ThrowOnApiErrors)
                         {
-                            // Ignore JSON parsing failure for non-JSON error pages
+                            throw BachsApiException.Create(
+                                response.StatusCode,
+                                error,
+                                rateLimit,
+                                responseContent
+                            );
                         }
                     }
 
-                    if (Options.ThrowOnApiErrors)
+                    if (typeof(TResponse) == typeof(string))
                     {
-                        throw BachsApiException.Create(response.StatusCode, error, rateLimit, responseContent);
+                        responseContent ??= await response
+                            .Content.ReadAsStringAsync(cancellationToken)
+                            .ConfigureAwait(false);
+                        data = (TResponse)(object)responseContent;
                     }
-                }
+                    else if (response.StatusCode != HttpStatusCode.NoContent)
+                    {
+                        if (
+                            !response.IsSuccessStatusCode
+                            && !string.IsNullOrWhiteSpace(responseContent)
+                        )
+                        {
+                            data = BachsJsonSerializer.Deserialize<TResponse>(responseContent)!;
+                        }
+                        else if (response.IsSuccessStatusCode)
+                        {
+                            // Success path: stream deserialize directly without allocating string
+                            var stream = await response
+                                .Content.ReadAsStreamAsync(cancellationToken)
+                                .ConfigureAwait(false);
+                            try
+                            {
+                                data = (
+                                    await System
+                                        .Text.Json.JsonSerializer.DeserializeAsync<TResponse>(
+                                            stream,
+                                            BachsJsonSerializer.Options,
+                                            cancellationToken
+                                        )
+                                        .ConfigureAwait(false)
+                                )!;
+                            }
+                            catch (System.Text.Json.JsonException)
+                            {
+                                // Ignore potential empty success responses parsing failures
+                            }
+                        }
+                    }
 
-                TResponse data = default!;
-                if (typeof(TResponse) == typeof(string))
-                {
-                    data = (TResponse)(object)responseContent;
+                    return new BachsResponse<TResponse>
+                    {
+                        Data = data,
+                        StatusCode = response.StatusCode,
+                        RateLimit = rateLimit,
+                        Headers = response.Headers,
+                        RawJson = responseContent,
+                    };
                 }
-                else if (response.StatusCode != HttpStatusCode.NoContent && !string.IsNullOrWhiteSpace(responseContent))
+            }
+            finally
+            {
+                if (needsCloning)
                 {
-                    data = BachsJsonSerializer.Deserialize<TResponse>(responseContent)!;
+                    currentRequest.Dispose();
                 }
-
-                return new BachsResponse<TResponse>
-                {
-                    Data = data,
-                    StatusCode = response.StatusCode,
-                    RateLimit = rateLimit,
-                    Headers = response.Headers,
-                    RawJson = responseContent
-                };
             }
         }
     }
 
     private void ApplyRequestHeaders(HttpRequestMessage request, RequestOptions? requestOptions)
     {
-        // 1. Idempotency Key
+        // 1. Authorization
+        if (!string.IsNullOrWhiteSpace(Options.ApiKey))
+        {
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Options.ApiKey);
+        }
+
+        // 2. Idempotency Key
         if (!string.IsNullOrWhiteSpace(requestOptions?.IdempotencyKey))
         {
             request.Headers.Remove("Idempotency-Key");
             request.Headers.Add("Idempotency-Key", requestOptions.IdempotencyKey);
         }
 
-        // 2. Connected Account ID
+        // 3. Connected Account ID
         var accountId = requestOptions?.AccountId ?? Options.AccountId;
         if (!string.IsNullOrWhiteSpace(accountId))
         {
@@ -353,18 +415,21 @@ public sealed class BachsClient : IBachsClient, IDisposable
             request.Headers.Add("X-Account-Id", accountId);
         }
 
-        // 3. Custom headers
-        if (requestOptions?.CustomHeaders != null)
+        // 4. Custom headers
+        if (requestOptions?.CustomHeaders == null)
+            return;
+        foreach (var (headerKey, headerVal) in requestOptions.CustomHeaders)
         {
-            foreach (var (headerKey, headerVal) in requestOptions.CustomHeaders)
-            {
-                request.Headers.Remove(headerKey);
-                request.Headers.Add(headerKey, headerVal);
-            }
+            request.Headers.Remove(headerKey);
+            request.Headers.Add(headerKey, headerVal);
         }
     }
 
-    private static HttpRequestMessage CloneRequest(HttpRequestMessage original, byte[]? bodyBytes, string? contentType)
+    private static HttpRequestMessage CloneRequest(
+        HttpRequestMessage original,
+        byte[]? bodyBytes,
+        string? contentType
+    )
     {
         var clone = new HttpRequestMessage(original.Method, original.RequestUri);
         foreach (var header in original.Headers)
@@ -375,27 +440,35 @@ public sealed class BachsClient : IBachsClient, IDisposable
         if (bodyBytes != null)
         {
             clone.Content = new ByteArrayContent(bodyBytes);
-            clone.Content.Headers.ContentType = new MediaTypeHeaderValue(contentType ?? "application/json");
+            clone.Content.Headers.ContentType = new MediaTypeHeaderValue(
+                contentType ?? "application/json"
+            );
         }
 
         return clone;
     }
 
-    private static bool ShouldRetry(HttpStatusCode statusCode)
-    {
-        return statusCode == HttpStatusCode.TooManyRequests ||
-               statusCode == HttpStatusCode.InternalServerError ||
-               statusCode == HttpStatusCode.BadGateway ||
-               statusCode == HttpStatusCode.ServiceUnavailable ||
-               statusCode == HttpStatusCode.GatewayTimeout;
-    }
+    private static bool ShouldRetry(HttpStatusCode statusCode) =>
+        statusCode
+            is HttpStatusCode.TooManyRequests
+                or HttpStatusCode.InternalServerError
+                or HttpStatusCode.BadGateway
+                or HttpStatusCode.ServiceUnavailable
+                or HttpStatusCode.GatewayTimeout;
 
-    private async Task ApplyBackoffDelay(int attempt, TimeSpan? serverDelay, CancellationToken cancellationToken)
+    private async Task ApplyBackoffDelay(
+        int attempt,
+        TimeSpan? serverDelay,
+        CancellationToken cancellationToken
+    )
     {
         TimeSpan delay;
         if (serverDelay.HasValue && serverDelay.Value > TimeSpan.Zero)
         {
-            delay = serverDelay.Value > Options.MaxRetryDelay ? Options.MaxRetryDelay : serverDelay.Value;
+            delay =
+                serverDelay.Value > Options.MaxRetryDelay
+                    ? Options.MaxRetryDelay
+                    : serverDelay.Value;
         }
         else
         {
@@ -413,10 +486,7 @@ public sealed class BachsClient : IBachsClient, IDisposable
 
     public void Dispose()
     {
-        if (_disposeHttpClient)
-        {
-            _httpClient.Dispose();
-        }
-        GC.SuppressFinalize(this);
+        // No-op: the internal HttpClient is either shared statically or injected via DI,
+        // so BachsClient does not own its lifecycle.
     }
 }

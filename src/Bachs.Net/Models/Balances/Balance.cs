@@ -12,7 +12,8 @@ public sealed record Balance
     /// Balance buckets by currency code (e.g. "USD", "NGN").
     /// </summary>
     [JsonPropertyName("currencies")]
-    public IReadOnlyDictionary<string, BalanceBucket> Currencies { get; init; } = new Dictionary<string, BalanceBucket>();
+    public IReadOnlyDictionary<string, BalanceBucket> Currencies { get; init; } =
+        new Dictionary<string, BalanceBucket>();
 
     /// <summary>
     /// Consolidated available balance in USD.

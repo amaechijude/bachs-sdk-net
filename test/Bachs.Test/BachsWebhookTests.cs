@@ -215,7 +215,9 @@ public sealed class BachsWebhookTests
         var payload = """{"id":"evt_client_123","type":"collection.succeeded"}""";
         var header = "t=123,v1=abc";
 
-        Assert.Throws<InvalidOperationException>(() => client.Webhooks.ValidateEvent(payload, header));
+        Assert.Throws<InvalidOperationException>(() =>
+            client.Webhooks.ValidateEvent(payload, header)
+        );
     }
 
     [Fact]

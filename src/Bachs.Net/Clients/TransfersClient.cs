@@ -6,7 +6,9 @@ namespace Bachs.Net.Clients;
 /// <summary>
 /// Client implementation for managing transfers between platform and connected accounts.
 /// </summary>
-public sealed class TransfersClient(IBachsClient bachsClient) : BaseClient(bachsClient), ITransfersClient
+public sealed class TransfersClient(IBachsClient bachsClient)
+    : BaseClient(bachsClient),
+        ITransfersClient
 {
     public Task<Transfer> CreateAsync(
         CreateTransferRequest request,

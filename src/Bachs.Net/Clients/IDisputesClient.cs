@@ -14,7 +14,8 @@ public interface IDisputesClient
     Task<Dispute> GetAsync(
         string disputeId,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 
     /// <summary>
     /// Lists disputes with pagination and filtering.
@@ -22,7 +23,8 @@ public interface IDisputesClient
     Task<BachsList<Dispute>> ListAsync(
         ListDisputesOptions? options = null,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 
     /// <summary>
     /// Updates evidence drafts for a dispute.
@@ -31,7 +33,8 @@ public interface IDisputesClient
         string disputeId,
         UpdateDisputeEvidenceRequest request,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 
     /// <summary>
     /// Submits evidence for a dispute to the payment network for review.
@@ -39,5 +42,6 @@ public interface IDisputesClient
     Task<Dispute> SubmitAsync(
         string disputeId,
         RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default
+    );
 }
