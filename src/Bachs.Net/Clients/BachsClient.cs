@@ -53,6 +53,30 @@ public sealed class BachsClient : IBachsClient, IDisposable
         : this(new BachsClientOptions { ApiKey = apiKey }) { }
 
     /// <summary>
+    /// Initializes a new instance of <see cref="BachsClient"/> with the specified secret API key and retry configuration.
+    /// </summary>
+    /// <param name="apiKey"></param>
+    /// <param name="maxRetries"></param>
+    public BachsClient(string apiKey, int maxRetries)
+        : this(new BachsClientOptions { ApiKey = apiKey, MaxRetries = maxRetries }) { }
+
+    /// <summary>
+    /// Initializes a new instance of <see cref="BachsClient"/> with the specified secret API key and retry configuration.
+    /// </summary>
+    /// <param name="apiKey"></param>
+    /// <param name="maxRetries"></param>
+    /// <param name="maxRetryDelay"></param>
+    public BachsClient(string apiKey, int maxRetries, TimeSpan maxRetryDelay)
+        : this(
+            new BachsClientOptions
+            {
+                ApiKey = apiKey,
+                MaxRetries = maxRetries,
+                MaxRetryDelay = maxRetryDelay,
+            }
+        ) { }
+
+    /// <summary>
     /// Initializes a new instance of <see cref="BachsClient"/> with options using a shared static HTTP client.
     /// This is safe for high-throughput standalone usage without Dependency Injection.
     /// </summary>
@@ -476,9 +500,7 @@ public sealed class BachsClient : IBachsClient, IDisposable
             var milliseconds = (int)(200 * Math.Pow(2, attempt - 1)) + Random.Shared.Next(50, 150);
             delay = TimeSpan.FromMilliseconds(milliseconds);
             if (delay > Options.MaxRetryDelay)
-            {
                 delay = Options.MaxRetryDelay;
-            }
         }
 
         await Task.Delay(delay, cancellationToken).ConfigureAwait(false);
