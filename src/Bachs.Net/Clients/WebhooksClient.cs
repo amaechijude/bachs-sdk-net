@@ -1,12 +1,16 @@
+using System.Diagnostics.CodeAnalysis;
 using Bachs.Net.Common;
 using Bachs.Net.Models.Webhooks;
+using Bachs.Net.WebHooks;
 
 namespace Bachs.Net.Clients;
 
 /// <summary>
 /// Client implementation for managing webhook destination endpoints and events.
 /// </summary>
-public sealed class WebhooksClient(IBachsClient bachsClient) : BaseClient(bachsClient), IWebhooksClient
+public sealed class WebhooksClient(IBachsClient bachsClient)
+    : BaseClient(bachsClient),
+        IWebhooksClient
 {
     public Task<WebhookEndpoint> CreateEndpointAsync(
         CreateWebhookEndpointRequest request,
@@ -123,4 +127,165 @@ public sealed class WebhooksClient(IBachsClient bachsClient) : BaseClient(bachsC
             cancellationToken
         );
     }
+
+    private string ResolveSecret(string? secret)
+    {
+        if (!string.IsNullOrWhiteSpace(secret))
+        {
+            return secret;
+        }
+
+        if (!string.IsNullOrWhiteSpace(BachsClient.Options.WebhookSecret))
+        {
+            return BachsClient.Options.WebhookSecret;
+        }
+
+        throw new InvalidOperationException(
+            "Webhook secret must be provided either via the method parameter or configured in BachsClientOptions.WebhookSecret."
+        );
+    }
+
+    /// <inheritdoc />
+    public BachsWebhookEvent ValidateEvent(
+        string payload,
+        string signatureHeader,
+        string? secret = null,
+        int toleranceSeconds = BachsWebhook.DefaultToleranceSeconds,
+        string? timestampHeader = null
+    ) =>
+        BachsWebhook.ValidateEvent(
+            payload,
+            signatureHeader,
+            ResolveSecret(secret),
+            toleranceSeconds,
+            timestampHeader
+        );
+
+    /// <inheritdoc />
+    public BachsWebhookEvent ValidateEvent(
+        byte[] payloadBytes,
+        string signatureHeader,
+        string? secret = null,
+        int toleranceSeconds = BachsWebhook.DefaultToleranceSeconds,
+        string? timestampHeader = null
+    ) =>
+        BachsWebhook.ValidateEvent(
+            payloadBytes,
+            signatureHeader,
+            ResolveSecret(secret),
+            toleranceSeconds,
+            timestampHeader
+        );
+
+    /// <inheritdoc />
+    public bool TryValidateEvent(
+        string payload,
+        string signatureHeader,
+        [NotNullWhen(true)] out BachsWebhookEvent? webhookEvent,
+        string? secret = null,
+        int toleranceSeconds = BachsWebhook.DefaultToleranceSeconds,
+        string? timestampHeader = null
+    )
+    {
+        string resolvedSecret;
+        try
+        {
+            resolvedSecret = ResolveSecret(secret);
+        }
+        catch
+        {
+            webhookEvent = null;
+            return false;
+        }
+
+        return BachsWebhook.TryValidateEvent(
+            payload,
+            signatureHeader,
+            resolvedSecret,
+            out webhookEvent,
+            toleranceSeconds,
+            timestampHeader
+        );
+    }
+
+    /// <inheritdoc />
+    public bool TryValidateEvent(
+        byte[] payloadBytes,
+        string signatureHeader,
+        [NotNullWhen(true)] out BachsWebhookEvent? webhookEvent,
+        string? secret = null,
+        int toleranceSeconds = BachsWebhook.DefaultToleranceSeconds,
+        string? timestampHeader = null
+    )
+    {
+        string resolvedSecret;
+        try
+        {
+            resolvedSecret = ResolveSecret(secret);
+        }
+        catch
+        {
+            webhookEvent = null;
+            return false;
+        }
+
+        return BachsWebhook.TryValidateEvent(
+            payloadBytes,
+            signatureHeader,
+            resolvedSecret,
+            out webhookEvent,
+            toleranceSeconds,
+            timestampHeader
+        );
+    }
+
+    /// <inheritdoc />
+    public bool VerifySignature(
+        string payload,
+        string signatureHeader,
+        string? secret = null,
+        int toleranceSeconds = BachsWebhook.DefaultToleranceSeconds,
+        string? timestampHeader = null
+    ) =>
+        BachsWebhook.VerifySignature(
+            payload,
+            signatureHeader,
+            ResolveSecret(secret),
+            toleranceSeconds,
+            timestampHeader
+        );
+
+    /// <inheritdoc />
+    public bool VerifySignature(
+        byte[] payloadBytes,
+        string signatureHeader,
+        string? secret = null,
+        int toleranceSeconds = BachsWebhook.DefaultToleranceSeconds,
+        string? timestampHeader = null
+    ) =>
+        BachsWebhook.VerifySignature(
+            payloadBytes,
+            signatureHeader,
+            ResolveSecret(secret),
+            toleranceSeconds,
+            timestampHeader
+        );
+
+    /// <inheritdoc />
+    public BachsWebhookEvent ConstructEvent(
+        string payload,
+        string signatureHeader,
+        string? secret = null,
+        int toleranceSeconds = BachsWebhook.DefaultToleranceSeconds,
+        string? timestampHeader = null
+    ) => ValidateEvent(payload, signatureHeader, secret, toleranceSeconds, timestampHeader);
+
+    /// <inheritdoc />
+    public BachsWebhookEvent ConstructEvent(
+        byte[] payloadBytes,
+        string signatureHeader,
+        string? secret = null,
+        int toleranceSeconds = BachsWebhook.DefaultToleranceSeconds,
+        string? timestampHeader = null
+    ) => ValidateEvent(payloadBytes, signatureHeader, secret, toleranceSeconds, timestampHeader);
 }

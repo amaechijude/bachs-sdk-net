@@ -249,9 +249,10 @@ Console.WriteLine($"Created product: {product.Id}");
 In your ASP.NET Core Web API:
 
 ```csharp
+using Bachs.Net.Clients;
 using Bachs.Net.WebHooks;
 
-app.MapPost("/api/webhooks/bachs", async (HttpRequest request, IConfiguration config) =>
+app.MapPost("/api/webhooks/bachs", async (HttpRequest request, IWebhooksClient webhooks) =>
 {
     // Read the raw body
     using var reader = new StreamReader(request.Body);
@@ -265,12 +266,12 @@ app.MapPost("/api/webhooks/bachs", async (HttpRequest request, IConfiguration co
     }
 
     var timestamp = request.Headers["X-Bachs-Timestamp"].ToString();
-    var secret = config["Bachs:WebhookSecret"]!;
 
     try
     {
-        // Verifies the signature (and timestamp tolerance) and parses the event
-        var webhookEvent = BachsWebhook.ConstructEvent(rawBody, signature, secret, timestampHeader: timestamp);
+        // Validates signature, anti-replay timestamp tolerance (5 mins), and parses event.
+        // Uses configured BachsClientOptions.WebhookSecret if secret parameter is omitted.
+        var webhookEvent = webhooks.ValidateEvent(rawBody, signature, timestampHeader: timestamp);
 
         switch (webhookEvent.Type)
         {

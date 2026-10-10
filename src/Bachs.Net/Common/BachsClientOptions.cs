@@ -39,6 +39,11 @@ public sealed class BachsClientOptions
     public string? AccountId { get; set; }
 
     /// <summary>
+    /// Gets or sets the default webhook signing secret used for verifying incoming webhook events.
+    /// </summary>
+    public string? WebhookSecret { get; set; }
+
+    /// <summary>
     /// Gets or sets the HTTP request timeout. Defaults to 30 seconds.
     /// </summary>
     public TimeSpan Timeout { get; set; } = TimeSpan.FromSeconds(30);
@@ -79,7 +84,7 @@ public sealed class BachsClientOptions
             {
                 BachsEnvironment.Production => new Uri(DefaultProductionBaseUrl + "/"),
                 BachsEnvironment.Sandbox => new Uri(DefaultSandboxBaseUrl + "/"),
-                _ => new Uri(DefaultSandboxBaseUrl + "/")
+                _ => new Uri(DefaultSandboxBaseUrl + "/"),
             };
         }
 

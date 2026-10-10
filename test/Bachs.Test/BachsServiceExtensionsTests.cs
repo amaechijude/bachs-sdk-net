@@ -1,5 +1,6 @@
 using Bachs.Net.Clients;
 using Bachs.Net.Extensions;
+using Bachs.Net.WebHooks;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Bachs.Test;
@@ -34,6 +35,8 @@ public sealed class BachsServiceExtensionsTests
         Assert.NotNull(serviceProvider.GetService<IAccountsClient>());
         Assert.NotNull(serviceProvider.GetService<IVirtualAccountsClient>());
         Assert.NotNull(serviceProvider.GetService<IWebhooksClient>());
+        Assert.NotNull(serviceProvider.GetService<IWebhookEventValidator>());
+        Assert.NotNull(serviceProvider.GetService<IWebhookValidator>());
         Assert.NotNull(serviceProvider.GetService<IMiscClient>());
     }
 

@@ -4,10 +4,10 @@ The Webhooks client allows programmatic registration and management of webhook d
 
 In addition to the client, the SDK provides the static [`BachsWebhook`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/WebHooks/BachsWebhook.cs) class for cryptographic signature verification.
 
-- **Interface**: [`IWebhooksClient`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Clients/IWebhooksClient.cs)
+- **Interface**: [`IWebhooksClient`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Clients/IWebhooksClient.cs) (implements [`IWebhookEventValidator`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/WebHooks/IWebhookEventValidator.cs))
 - **Implementation**: [`WebhooksClient`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Clients/WebhooksClient.cs)
 - **Property**: `client.Webhooks`
-- **DI Service**: `services.AddBachsClient(...)` registers `IWebhooksClient` as a transient service.
+- **DI Service**: `services.AddBachsClient(...)` registers `IWebhooksClient`, `IWebhookEventValidator`, and `IWebhookValidator` as transient services.
 
 ---
 
@@ -15,6 +15,9 @@ In addition to the client, the SDK provides the static [`BachsWebhook`](https://
 
 | Method | HTTP | Path | Description |
 |---|---|---|---|
+| [`ValidateEvent`](#cryptographic-signature-verification) | - | Local | Validates signature, verifies timestamp tolerance, and parses incoming webhook event. |
+| [`TryValidateEvent`](#cryptographic-signature-verification) | - | Local | Safely validates an incoming webhook delivery without throwing exceptions. |
+| [`VerifySignature`](#cryptographic-signature-verification) | - | Local | Cryptographically verifies the webhook signature header against payload. |
 | [`CreateEndpointAsync`](#1-create-a-webhook-endpoint) | `POST` | `/v1/webhooks/endpoints` | Registers a new HTTPS destination endpoint and generates a signing secret. |
 | [`GetEndpointAsync`](#2-retrieve-an-endpoint) | `GET` | `/v1/webhooks/endpoints/{endpointId}` | Retrieves endpoint details and subscribed topics. |
 | [`ListEndpointsAsync`](#3-list-endpoints) | `GET` | `/v1/webhooks/endpoints` | Lists all configured webhook destinations. |
@@ -109,12 +112,27 @@ foreach (var evt in events.Data)
 
 ## Cryptographic Signature Verification
 
-When receiving webhooks in your ASP.NET Core application, use [`BachsWebhook.ConstructEvent`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/WebHooks/BachsWebhook.cs#L22):
+You can validate incoming webhook deliveries either through the webhook client interface ([`IWebhooksClient`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Clients/IWebhooksClient.cs) / [`IWebhookEventValidator`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/WebHooks/IWebhookEventValidator.cs)) or the static [`BachsWebhook`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/WebHooks/BachsWebhook.cs) class.
+
+### Validating via `IWebhooksClient` (Recommended in ASP.NET Core)
+
+Configure `WebhookSecret` in client options:
 
 ```csharp
-using Bachs.Net.WebHooks;
+builder.Services.AddBachsClient(options =>
+{
+    options.ApiKey = builder.Configuration["Bachs:ApiKey"]!;
+    options.WebhookSecret = builder.Configuration["Bachs:WebhookSecret"]!;
+});
+```
 
-app.MapPost("/webhooks/bachs", async (HttpRequest request, IConfiguration config) =>
+Then inject `IWebhooksClient` (or `IWebhookEventValidator`) directly into your webhook handler:
+
+```csharp
+using Bachs.Net.Clients;
+using Bachs.Net.Common;
+
+app.MapPost("/webhooks/bachs", async (HttpRequest request, IWebhooksClient webhooks) =>
 {
     using var reader = new StreamReader(request.Body);
     var rawPayload = await reader.ReadToEndAsync();
@@ -127,22 +145,19 @@ app.MapPost("/webhooks/bachs", async (HttpRequest request, IConfiguration config
     }
 
     var timestamp = request.Headers["X-Bachs-Timestamp"].ToString();
-    var secret = config["Bachs:WebhookSecret"]!;
 
     try
     {
-        // Validates HMAC SHA-256 signature, replay tolerance (5 minutes), and returns strongly-typed event
-        var webhookEvent = BachsWebhook.ConstructEvent(
+        // Validates HMAC SHA-256 signature, verifies timestamp tolerance (5 minutes),
+        // and returns the strongly-typed event. Uses BachsClientOptions.WebhookSecret by default.
+        var webhookEvent = webhooks.ValidateEvent(
             rawPayload,
             signature,
-            secret,
-            toleranceSeconds: 300,
             timestampHeader: timestamp
         );
 
         if (webhookEvent.Type == "collection.succeeded")
         {
-            // Deserialize event payload data
             var paymentData = webhookEvent.GetData<Dictionary<string, object>>();
             // Fulfill purchase
         }
@@ -154,6 +169,22 @@ app.MapPost("/webhooks/bachs", async (HttpRequest request, IConfiguration config
         return Results.BadRequest(new { error = ex.Message });
     }
 });
+```
+
+> **Tip**: You can also use `webhooks.TryValidateEvent(rawPayload, signature, out var webhookEvent)` if you prefer non-throwing control flow.
+
+### Validating via Static `BachsWebhook`
+
+```csharp
+using Bachs.Net.WebHooks;
+
+var webhookEvent = BachsWebhook.ValidateEvent(
+    rawPayload,
+    signature,
+    secret: config["Bachs:WebhookSecret"]!,
+    toleranceSeconds: 300,
+    timestampHeader: timestamp
+);
 ```
 
 ---
