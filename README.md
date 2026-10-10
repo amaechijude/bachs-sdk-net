@@ -101,6 +101,59 @@ app.MapPost("/create-checkout", async (ICheckoutSessionsClient checkoutClient) =
 
 ---
 
+### 3. Custom Resilience with Microsoft.Extensions.Http.Resilience
+
+`AddBachsClient` returns an `IHttpClientBuilder`, allowing you to seamlessly integrate your own resilience pipelines via [Microsoft.Extensions.Http.Resilience](https://www.nuget.org/packages/Microsoft.Extensions.Http.Resilience):
+
+```bash
+dotnet add package Microsoft.Extensions.Http.Resilience
+```
+
+#### Standard Resilience Handler (Recommended)
+
+When using Microsoft's standard resilience handler (retry, circuit breaker, rate limiter, and timeout), disable internal retries by setting `MaxRetries = 0`:
+
+```csharp
+builder.Services.AddBachsClient(options =>
+{
+    options.ApiKey = builder.Configuration["Bachs:ApiKey"]!;
+    options.MaxRetries = 0; // Handled by Polly / Microsoft Resilience pipeline
+})
+.AddStandardResilienceHandler();
+```
+
+#### Custom Pipeline Configuration
+
+You can also customize retry parameters, timeouts, and hedged requests:
+
+```csharp
+builder.Services.AddBachsClient(options =>
+{
+    options.ApiKey = builder.Configuration["Bachs:ApiKey"]!;
+    options.MaxRetries = 0;
+})
+.AddStandardResilienceHandler(options =>
+{
+    options.AttemptTimeout.Timeout = TimeSpan.FromSeconds(15);
+    options.CircuitBreaker.SamplingDuration = TimeSpan.FromSeconds(30);
+    options.TotalRequestTimeout.Timeout = TimeSpan.FromSeconds(60);
+});
+```
+
+Or configure inline via delegate:
+
+```csharp
+builder.Services.AddBachsClient(
+    apiKey: builder.Configuration["Bachs:ApiKey"]!,
+    configureHttpClient: httpClientBuilder =>
+    {
+        httpClientBuilder.AddStandardResilienceHandler();
+    }
+);
+```
+
+---
+
 ## Sub API Clients & Documentation
 
 `Bachs.Net` provides 16 domain-focused clients. Access them directly via `client.<Resource>` on `IBachsClient` or inject their interfaces individually using ASP.NET Core Dependency Injection:
