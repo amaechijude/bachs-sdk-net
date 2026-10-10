@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using Bachs.Net.Common;
+using Bachs.Net.Serialization;
 
 namespace Bachs.Net.Models.Payments;
 
@@ -21,10 +22,10 @@ public sealed record Payment
     public string ChargeId => Id;
 
     /// <summary>
-    /// The payment amount as a decimal.
+    /// The payment amount as a Price.
     /// </summary>
     [JsonPropertyName("amount")]
-    public decimal Amount { get; init; }
+    public Price Amount { get; init; }
 
     /// <summary>
     /// Currency code (e.g., "USD", "NGN").
@@ -66,7 +67,7 @@ public sealed record Payment
     /// Total amount refunded against this payment so far.
     /// </summary>
     [JsonPropertyName("refunded_amount")]
-    public decimal? RefundedAmount { get; init; }
+    public Price? RefundedAmount { get; init; }
 
     /// <summary>
     /// Whether this payment is eligible for a refund.
@@ -99,7 +100,7 @@ public sealed record Payment
 public sealed record PaymentFees
 {
     [JsonPropertyName("amount")]
-    public decimal Amount { get; init; }
+    public Price Amount { get; init; }
 
     [JsonPropertyName("currency")]
     public string Currency { get; init; } = string.Empty;

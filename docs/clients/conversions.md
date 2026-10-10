@@ -99,9 +99,9 @@ foreach (var item in history.Data)
 ### [`ConversionQuote`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Conversions/Conversion.cs)
 - `QuoteId` (`string`): Unique quote identifier to pass to `ExecuteAsync`.
 - `SourceCurrency` (`string`): Currency debited.
-- `SourceAmount` (`decimal`): Debit amount.
+- `SourceAmount` (`Price`): Debit amount.
 - `TargetCurrency` (`string`): Currency credited.
-- `TargetAmount` (`decimal`): Credit amount.
+- `TargetAmount` (`Price`): Credit amount.
 - `Rate` (`decimal`): Conversion multiplier.
 - `ExpiresAt` (`DateTimeOffset`): Expiration timestamp of the guaranteed rate.
 
@@ -109,9 +109,9 @@ foreach (var item in history.Data)
 - `Id` (`string`): Starts with `conv_`.
 - `QuoteId` (`string`): Quote utilized for the conversion.
 - `SourceCurrency` (`string`): Origin currency code.
-- `SourceAmount` (`decimal`): Debited amount.
+- `SourceAmount` (`Price`): Debited amount.
 - `TargetCurrency` (`string`): Destination currency code.
-- `TargetAmount` (`decimal`): Credited amount.
+- `TargetAmount` (`Price`): Credited amount.
 - `Rate` (`decimal`): Effective rate.
 - `Status` (`string`): `completed`, `pending`, `failed`.
 - `CreatedAt` (`DateTimeOffset`): Timestamp of execution.

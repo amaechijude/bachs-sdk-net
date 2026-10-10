@@ -1,6 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Bachs.Net.Common;
+using Bachs.Net.Serialization;
 
 namespace Bachs.Net.Models.Payouts;
 
@@ -25,7 +26,7 @@ public sealed record Payout
     /// The payout amount.
     /// </summary>
     [JsonPropertyName("amount")]
-    public decimal Amount { get; init; }
+    public Price Amount { get; init; }
 
     /// <summary>
     /// The currency of the payout.
@@ -61,37 +62,37 @@ public sealed record Payout
 /// <summary>
 /// Parameters for creating a payout / withdrawal.
 /// </summary>
-public sealed class CreatePayoutRequest
+public sealed record CreatePayoutRequest
 {
     /// <summary>
     /// The payout destination ID.
     /// </summary>
     [JsonPropertyName("destination_id")]
-    public string DestinationId { get; set; } = string.Empty;
+    public string DestinationId { get; init; } = string.Empty;
 
     /// <summary>
     /// The amount to pay out.
     /// </summary>
     [JsonPropertyName("amount")]
-    public decimal Amount { get; set; }
+    public Price Amount { get; init; }
 
     /// <summary>
     /// The currency of the payout.
     /// </summary>
     [JsonPropertyName("currency")]
-    public string Currency { get; set; } = string.Empty;
+    public string Currency { get; init; } = string.Empty;
 
     /// <summary>
     /// Unique reference for this payout.
     /// </summary>
     [JsonPropertyName("reference")]
-    public string? Reference { get; set; }
+    public string? Reference { get; init; }
 
     /// <summary>
     /// Optional quote ID if this payout involves currency conversion.
     /// </summary>
     [JsonPropertyName("quote_id")]
-    public string? QuoteId { get; set; }
+    public string? QuoteId { get; init; }
 }
 
 /// <summary>
@@ -106,13 +107,13 @@ public sealed record PayoutQuote
     public string SourceCurrency { get; init; } = string.Empty;
 
     [JsonPropertyName("source_amount")]
-    public decimal SourceAmount { get; init; }
+    public Price SourceAmount { get; init; }
 
     [JsonPropertyName("destination_currency")]
     public string DestinationCurrency { get; init; } = string.Empty;
 
     [JsonPropertyName("destination_amount")]
-    public decimal DestinationAmount { get; init; }
+    public Price DestinationAmount { get; init; }
 
     [JsonPropertyName("rate")]
     public decimal Rate { get; init; }
@@ -124,16 +125,16 @@ public sealed record PayoutQuote
 /// <summary>
 /// Parameters for requesting a payout quote.
 /// </summary>
-public sealed class CreatePayoutQuoteRequest
+public sealed record CreatePayoutQuoteRequest
 {
     [JsonPropertyName("destination_id")]
-    public string DestinationId { get; set; } = string.Empty;
+    public string DestinationId { get; init; } = string.Empty;
 
     [JsonPropertyName("amount")]
-    public decimal Amount { get; set; }
+    public Price Amount { get; init; }
 
     [JsonPropertyName("currency")]
-    public string Currency { get; set; } = string.Empty;
+    public string Currency { get; init; } = string.Empty;
 }
 
 /// <summary>
@@ -166,25 +167,25 @@ public sealed record PayoutDestination
 /// <summary>
 /// Parameters for creating a payout destination.
 /// </summary>
-public sealed class CreatePayoutDestinationRequest
+public sealed record CreatePayoutDestinationRequest
 {
     [JsonPropertyName("type")]
-    public string Type { get; set; } = string.Empty;
+    public string Type { get; init; } = string.Empty;
 
     [JsonPropertyName("currency")]
-    public string Currency { get; set; } = string.Empty;
+    public string Currency { get; init; } = string.Empty;
 
     [JsonPropertyName("details")]
-    public IDictionary<string, object?> Details { get; set; } = new Dictionary<string, object?>();
+    public IDictionary<string, object?> Details { get; init; } = new Dictionary<string, object?>();
 }
 
 /// <summary>
 /// Parameters for updating a payout destination.
 /// </summary>
-public sealed class UpdatePayoutDestinationRequest
+public sealed record UpdatePayoutDestinationRequest
 {
     [JsonPropertyName("details")]
-    public IDictionary<string, object?> Details { get; set; } = new Dictionary<string, object?>();
+    public IDictionary<string, object?> Details { get; init; } = new Dictionary<string, object?>();
 }
 
 /// <summary>

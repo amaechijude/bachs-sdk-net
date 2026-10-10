@@ -76,13 +76,13 @@ foreach (var item in page.Data)
 ## Models
 
 ### [`CreateTransferRequest`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Transfers/Transfer.cs)
-- `Amount` (`decimal`): Monetary value to transfer.
+- `Amount` (`Price`): Monetary value to transfer.
 - `Currency` (`string`): Currency code (must match source and destination account currency capability).
 - `Destination` (`string`): Connected account identifier starting with `acc_`.
 
 ### [`Transfer`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Transfers/Transfer.cs)
 - `Id` (`string`): Starts with `tr_`.
-- `Amount` (`decimal`): Transferred amount.
+- `Amount` (`Price`): Transferred amount.
 - `Currency` (`string`): Three-letter currency code.
 - `Destination` (`string`): Recipient connected account ID.
 - `Status` (`string`): `succeeded`, `pending`, `failed`.

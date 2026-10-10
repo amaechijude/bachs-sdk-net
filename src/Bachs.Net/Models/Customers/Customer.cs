@@ -67,73 +67,73 @@ public sealed record Customer
 /// <summary>
 /// Parameters for creating a new customer.
 /// </summary>
-public sealed class CreateCustomerRequest
+public sealed record CreateCustomerRequest
 {
     /// <summary>
     /// Customer's email address (required).
     /// </summary>
     [JsonPropertyName("email")]
-    public string Email { get; set; } = string.Empty;
+    public string Email { get; init; } = string.Empty;
 
     /// <summary>
     /// Customer's full name.
     /// </summary>
     [JsonPropertyName("name")]
-    public string? Name { get; set; }
+    public string? Name { get; init; }
 
     /// <summary>
     /// Customer's phone number.
     /// </summary>
     [JsonPropertyName("phone_number")]
-    public string? PhoneNumber { get; set; }
+    public string? PhoneNumber { get; init; }
 
     /// <summary>
     /// Customer's billing address.
     /// </summary>
     [JsonPropertyName("billing_address")]
-    public Address? BillingAddress { get; set; }
+    public Address? BillingAddress { get; init; }
 
     /// <summary>
     /// Custom key-value pairs.
     /// </summary>
     [JsonPropertyName("metadata")]
-    public IDictionary<string, string>? Metadata { get; set; }
+    public IDictionary<string, string>? Metadata { get; init; }
 }
 
 /// <summary>
 /// Parameters for updating an existing customer.
 /// </summary>
-public sealed class UpdateCustomerRequest
+public sealed record UpdateCustomerRequest
 {
     /// <summary>
     /// Updated email address.
     /// </summary>
     [JsonPropertyName("email")]
-    public string? Email { get; set; }
+    public string? Email { get; init; }
 
     /// <summary>
     /// Updated name.
     /// </summary>
     [JsonPropertyName("name")]
-    public string? Name { get; set; }
+    public string? Name { get; init; }
 
     /// <summary>
     /// Updated phone number.
     /// </summary>
     [JsonPropertyName("phone_number")]
-    public string? PhoneNumber { get; set; }
+    public string? PhoneNumber { get; init; }
 
     /// <summary>
     /// Updated billing address. Note: Sending an address completely replaces the stored address.
     /// </summary>
     [JsonPropertyName("billing_address")]
-    public Address? BillingAddress { get; set; }
+    public Address? BillingAddress { get; init; }
 
     /// <summary>
     /// Custom key-value pairs.
     /// </summary>
     [JsonPropertyName("metadata")]
-    public IDictionary<string, string>? Metadata { get; set; }
+    public IDictionary<string, string>? Metadata { get; init; }
 }
 
 /// <summary>

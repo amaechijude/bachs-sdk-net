@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Bachs.Net.Serialization;
 
 namespace Bachs.Net.Models.Balances;
 
@@ -17,7 +18,7 @@ public sealed record Balance
     /// Consolidated available balance in USD.
     /// </summary>
     [JsonPropertyName("total_usd")]
-    public decimal? TotalUsd { get; init; }
+    public Price? TotalUsd { get; init; }
 }
 
 /// <summary>
@@ -29,19 +30,19 @@ public sealed record BalanceBucket
     /// Funds currently available for payouts or conversions.
     /// </summary>
     [JsonPropertyName("available")]
-    public decimal Available { get; init; }
+    public Price Available { get; init; }
 
     /// <summary>
     /// Funds held in reserve or locked for open disputes.
     /// </summary>
     [JsonPropertyName("locked")]
-    public decimal Locked { get; init; }
+    public Price Locked { get; init; }
 
     /// <summary>
     /// Funds still settling from incoming payments.
     /// </summary>
     [JsonPropertyName("pending")]
-    public decimal Pending { get; init; }
+    public Price Pending { get; init; }
 
     /// <summary>
     /// Currency code (e.g., "USD", "NGN").

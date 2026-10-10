@@ -61,18 +61,17 @@ foreach (var tx in payments.Data)
 
 ### [`Payment`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Payments/Payment.cs)
 - `Id` (`string`): Starts with `ch_`.
-- `Amount` (`decimal`): Transaction monetary amount parsed with high precision.
+- `Amount` (`Price`): Transaction monetary amount parsed with high precision.
 - `Currency` (`string`): Three-letter ISO currency code (e.g., `USD`, `NGN`, `EUR`).
 - `Status` (`string`): `succeeded`, `pending`, `failed`, or `refunded`.
 - `CustomerId` (`string?`): Associated customer identifier (`cus_...`).
 - `PaymentMethod` (`string?`): Type of instrument used (`card`, `bank_transfer`, `ussd`, `mobile_money`).
-- `Fees` (`PaymentFees?`): Breakdown of processing fees and VAT deductions.
+- `Fees` (`PaymentFees?`): Breakdown of processing fees.
 - `CreatedAt` (`DateTimeOffset`): Timestamp of transaction execution.
 
 ### [`PaymentFees`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Payments/Payment.cs)
-- `BachsFee` (`decimal`): Core platform fee deduction.
-- `VatFee` (`decimal`): Local regulatory tax/VAT charged on the fee.
-- `TotalFee` (`decimal`): Sum of processing fees and taxes.
+- `Amount` (`Price`): Processing fee deduction.
+- `Currency` (`string`): Fee currency code.
 
 ---
 

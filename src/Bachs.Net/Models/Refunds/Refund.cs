@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using Bachs.Net.Common;
+using Bachs.Net.Serialization;
 
 namespace Bachs.Net.Models.Refunds;
 
@@ -27,10 +28,10 @@ public sealed record Refund
     public string ChargeId { get; init; } = string.Empty;
 
     /// <summary>
-    /// The refunded amount as a decimal.
+    /// The refunded amount as a price.
     /// </summary>
     [JsonPropertyName("amount")]
-    public decimal Amount { get; init; }
+    public Price Amount { get; init; }
 
     /// <summary>
     /// Currency code (e.g., "USD").
@@ -66,37 +67,37 @@ public sealed record Refund
 /// <summary>
 /// Parameters for creating a refund.
 /// </summary>
-public sealed class CreateRefundRequest
+public sealed record CreateRefundRequest
 {
     /// <summary>
     /// ID of the payment to refund (starts with 'ch_').
     /// </summary>
     [JsonPropertyName("charge_id")]
-    public string ChargeId { get; set; } = string.Empty;
+    public string ChargeId { get; init; } = string.Empty;
 
     /// <summary>
     /// Unique external reference for this refund request.
     /// </summary>
     [JsonPropertyName("reference")]
-    public string Reference { get; set; } = string.Empty;
+    public string Reference { get; init; } = string.Empty;
 
     /// <summary>
-    /// Amount to refund. Omit for a full refund, or supply a decimal for a partial refund.
+    /// Amount to refund. Omit for a full refund, or supply a price for a partial refund.
     /// </summary>
     [JsonPropertyName("amount")]
-    public decimal? Amount { get; set; }
+    public Price? Amount { get; init; }
 
     /// <summary>
     /// Reason for the refund.
     /// </summary>
     [JsonPropertyName("reason")]
-    public string? Reason { get; set; }
+    public string? Reason { get; init; }
 
     /// <summary>
     /// Crypto wallet address to receive the refund (for crypto payments).
     /// </summary>
     [JsonPropertyName("refund_address")]
-    public string? RefundAddress { get; set; }
+    public string? RefundAddress { get; init; }
 }
 
 /// <summary>

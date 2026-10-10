@@ -78,25 +78,25 @@ public sealed record Subscription
 /// <summary>
 /// Parameters for updating a subscription.
 /// </summary>
-public sealed class UpdateSubscriptionRequest
+public sealed record UpdateSubscriptionRequest
 {
     /// <summary>
     /// New product ID to change the subscription's plan.
     /// </summary>
     [JsonPropertyName("product_id")]
-    public string? ProductId { get; set; }
+    public string? ProductId { get; init; }
 
     /// <summary>
     /// Whether to cancel the subscription at the end of the current billing cycle.
     /// </summary>
     [JsonPropertyName("cancel_at_period_end")]
-    public bool? CancelAtPeriodEnd { get; set; }
+    public bool? CancelAtPeriodEnd { get; init; }
 
     /// <summary>
     /// Updated custom key-value pairs.
     /// </summary>
     [JsonPropertyName("metadata")]
-    public IDictionary<string, string>? Metadata { get; set; }
+    public IDictionary<string, string>? Metadata { get; init; }
 }
 
 /// <summary>

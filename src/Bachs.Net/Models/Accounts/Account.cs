@@ -30,43 +30,43 @@ public sealed record Account
     public DateTimeOffset CreatedAt { get; init; }
 }
 
-public sealed class CreateAccountRequest
+public sealed record CreateAccountRequest
 {
     [JsonPropertyName("type")]
-    public string Type { get; set; } = "standard";
+    public string Type { get; init; } = "standard";
 
     [JsonPropertyName("country")]
-    public string Country { get; set; } = string.Empty;
+    public string Country { get; init; } = string.Empty;
 
     [JsonPropertyName("email")]
-    public string? Email { get; set; }
+    public string? Email { get; init; }
 
     [JsonPropertyName("business_name")]
-    public string? BusinessName { get; set; }
+    public string? BusinessName { get; init; }
 
     [JsonPropertyName("capabilities")]
-    public IList<string>? Capabilities { get; set; }
+    public IList<string>? Capabilities { get; init; }
 }
 
-public sealed class UpdateAccountRequest
+public sealed record UpdateAccountRequest
 {
     [JsonPropertyName("email")]
-    public string? Email { get; set; }
+    public string? Email { get; init; }
 
     [JsonPropertyName("business_name")]
-    public string? BusinessName { get; set; }
+    public string? BusinessName { get; init; }
 }
 
-public sealed class CreateAccountLinkRequest
+public sealed record CreateAccountLinkRequest
 {
     [JsonPropertyName("type")]
-    public string Type { get; set; } = "onboarding";
+    public string Type { get; init; } = "onboarding";
 
     [JsonPropertyName("return_url")]
-    public string ReturnUrl { get; set; } = string.Empty;
+    public string ReturnUrl { get; init; } = string.Empty;
 
     [JsonPropertyName("refresh_url")]
-    public string? RefreshUrl { get; set; }
+    public string? RefreshUrl { get; init; }
 }
 
 public sealed record AccountLink
@@ -108,16 +108,16 @@ public sealed record PersonRelationship
     public bool Executive { get; init; }
 }
 
-public sealed class CreatePersonRequest
+public sealed record CreatePersonRequest
 {
     [JsonPropertyName("first_name")]
-    public string FirstName { get; set; } = string.Empty;
+    public string FirstName { get; init; } = string.Empty;
 
     [JsonPropertyName("last_name")]
-    public string LastName { get; set; } = string.Empty;
+    public string LastName { get; init; } = string.Empty;
 
     [JsonPropertyName("email")]
-    public string? Email { get; set; }
+    public string? Email { get; init; }
 }
 
 public sealed class ListAccountsOptions : ListRequestOptions

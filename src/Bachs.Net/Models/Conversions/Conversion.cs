@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using Bachs.Net.Common;
+using Bachs.Net.Serialization;
 
 namespace Bachs.Net.Models.Conversions;
 
@@ -21,13 +22,13 @@ public sealed record Conversion
     public string SourceCurrency { get; init; } = string.Empty;
 
     [JsonPropertyName("source_amount")]
-    public decimal SourceAmount { get; init; }
+    public Price SourceAmount { get; init; }
 
     [JsonPropertyName("target_currency")]
     public string TargetCurrency { get; init; } = string.Empty;
 
     [JsonPropertyName("target_amount")]
-    public decimal TargetAmount { get; init; }
+    public Price TargetAmount { get; init; }
 
     [JsonPropertyName("rate")]
     public decimal Rate { get; init; }
@@ -51,13 +52,13 @@ public sealed record ConversionQuote
     public string SourceCurrency { get; init; } = string.Empty;
 
     [JsonPropertyName("source_amount")]
-    public decimal SourceAmount { get; init; }
+    public Price SourceAmount { get; init; }
 
     [JsonPropertyName("target_currency")]
     public string TargetCurrency { get; init; } = string.Empty;
 
     [JsonPropertyName("target_amount")]
-    public decimal TargetAmount { get; init; }
+    public Price TargetAmount { get; init; }
 
     [JsonPropertyName("rate")]
     public decimal Rate { get; init; }
@@ -66,22 +67,22 @@ public sealed record ConversionQuote
     public DateTimeOffset ExpiresAt { get; init; }
 }
 
-public sealed class CreateConversionQuoteRequest
+public sealed record CreateConversionQuoteRequest
 {
     [JsonPropertyName("source_currency")]
-    public string SourceCurrency { get; set; } = string.Empty;
+    public string SourceCurrency { get; init; } = string.Empty;
 
     [JsonPropertyName("target_currency")]
-    public string TargetCurrency { get; set; } = string.Empty;
+    public string TargetCurrency { get; init; } = string.Empty;
 
     [JsonPropertyName("amount")]
-    public decimal Amount { get; set; }
+    public Price Amount { get; init; }
 }
 
-public sealed class ExecuteConversionRequest
+public sealed record ExecuteConversionRequest
 {
     [JsonPropertyName("quote_id")]
-    public string QuoteId { get; set; } = string.Empty;
+    public string QuoteId { get; init; } = string.Empty;
 }
 
 public sealed class ListConversionsOptions : ListRequestOptions

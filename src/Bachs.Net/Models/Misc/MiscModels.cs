@@ -20,13 +20,13 @@ public sealed record BankInfo
     public string Name { get; init; } = string.Empty;
 }
 
-public sealed class ResolveBankAccountRequest
+public sealed record ResolveBankAccountRequest
 {
     [JsonPropertyName("account_number")]
-    public string AccountNumber { get; set; } = string.Empty;
+    public string AccountNumber { get; init; } = string.Empty;
 
     [JsonPropertyName("bank_code")]
-    public string BankCode { get; set; } = string.Empty;
+    public string BankCode { get; init; } = string.Empty;
 }
 
 public sealed record ResolveBankAccountResponse

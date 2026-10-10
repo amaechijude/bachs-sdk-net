@@ -29,8 +29,8 @@ public sealed record VirtualAccount
     public DateTimeOffset CreatedAt { get; init; }
 }
 
-public sealed class CreateVirtualAccountRequest
+public sealed record CreateVirtualAccountRequest
 {
     [JsonPropertyName("currency")]
-    public string Currency { get; set; } = "NGN";
+    public string Currency { get; init; } = "NGN";
 }

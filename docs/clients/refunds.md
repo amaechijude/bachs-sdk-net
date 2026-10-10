@@ -102,14 +102,14 @@ Console.WriteLine($"Total refunds issued for charge: {refunds.Data.Count}");
 
 ### [`CreateRefundRequest`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Refunds/Refund.cs)
 - `PaymentId` (`string`): The payment identifier starting with `ch_`.
-- `Amount` (`decimal?`): Amount to refund. If omitted, the entire remaining charge balance is refunded.
+- `Amount` (`Price?`): Amount to refund. If omitted, the entire remaining charge balance is refunded.
 - `Reason` (`string?`): Explanation for the refund for audit trails and customer receipts.
 - `Metadata` (`IDictionary<string, string>?`): Optional metadata key-value pairs.
 
 ### [`Refund`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Refunds/Refund.cs)
 - `Id` (`string`): Starts with `ref_`.
 - `PaymentId` (`string`): Target charge identifier.
-- `Amount` (`decimal`): Monetary value refunded.
+- `Amount` (`Price`): Monetary value refunded.
 - `Currency` (`string`): Currency code matching the original payment.
 - `Status` (`string`): `pending`, `succeeded`, or `failed`.
 - `Reason` (`string?`): Reason provided during initiation.

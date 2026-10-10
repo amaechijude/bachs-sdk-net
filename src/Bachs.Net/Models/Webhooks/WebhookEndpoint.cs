@@ -31,22 +31,22 @@ public sealed record WebhookEndpoint
     public DateTimeOffset CreatedAt { get; init; }
 }
 
-public sealed class CreateWebhookEndpointRequest
+public sealed record CreateWebhookEndpointRequest
 {
     [JsonPropertyName("url")]
-    public string Url { get; set; } = string.Empty;
+    public string Url { get; init; } = string.Empty;
 
     [JsonPropertyName("events")]
-    public IList<string> Events { get; set; } = new List<string>();
+    public IList<string> Events { get; init; } = new List<string>();
 }
 
-public sealed class UpdateWebhookEndpointRequest
+public sealed record UpdateWebhookEndpointRequest
 {
     [JsonPropertyName("url")]
-    public string? Url { get; set; }
+    public string? Url { get; init; }
 
     [JsonPropertyName("events")]
-    public IList<string>? Events { get; set; }
+    public IList<string>? Events { get; init; }
 }
 
 public sealed record SecretRotationResult

@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using Bachs.Net.Common;
+using Bachs.Net.Serialization;
 
 namespace Bachs.Net.Models.Products;
 
@@ -90,7 +91,7 @@ public sealed record ProductPrice
     /// The charge amount for fixed pricing (e.g., "12.00").
     /// </summary>
     [JsonPropertyName("amount")]
-    public decimal? Amount { get; init; }
+    public Price? Amount { get; init; }
 
     /// <summary>
     /// The primary currency of the product (e.g., "USD").
@@ -102,25 +103,25 @@ public sealed record ProductPrice
     /// Suggested price shown prefilled for custom pricing.
     /// </summary>
     [JsonPropertyName("preset_amount")]
-    public decimal? PresetAmount { get; init; }
+    public Price? PresetAmount { get; init; }
 
     /// <summary>
     /// Lower bound for custom pricing.
     /// </summary>
     [JsonPropertyName("minimum_amount")]
-    public decimal? MinimumAmount { get; init; }
+    public Price? MinimumAmount { get; init; }
 
     /// <summary>
     /// Upper bound for custom pricing.
     /// </summary>
     [JsonPropertyName("maximum_amount")]
-    public decimal? MaximumAmount { get; init; }
+    public Price? MaximumAmount { get; init; }
 
     /// <summary>
     /// Price overrides for specific local currencies.
     /// </summary>
     [JsonPropertyName("currency_options")]
-    public IReadOnlyDictionary<string, decimal>? CurrencyOptions { get; init; }
+    public IReadOnlyDictionary<string, Price>? CurrencyOptions { get; init; }
 }
 
 /// <summary>

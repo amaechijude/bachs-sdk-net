@@ -136,7 +136,7 @@ Console.WriteLine("Payout destination removed.");
 
 ### [`Payout`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Payouts/Payout.cs)
 - `Id` (`string`): Starts with `wd_`.
-- `Amount` (`decimal`): Monetary withdrawal value.
+- `Amount` (`Price`): Monetary withdrawal value.
 - `Currency` (`string`): Currency code.
 - `Status` (`string`): `pending`, `processing`, `completed`, `failed`.
 - `DestinationId` (`string`): Target payout destination identifier.

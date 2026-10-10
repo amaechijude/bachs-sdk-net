@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Bachs.Net.Serialization;
 
 namespace Bachs.Net.Models.Checkout;
 
@@ -146,19 +147,19 @@ public sealed record CheckoutItemPricingOverride
     public string? PriceType { get; init; }
 
     [JsonPropertyName("amount")]
-    public decimal? Amount { get; init; }
+    public Price? Amount { get; init; }
 
     [JsonPropertyName("currency")]
     public string? Currency { get; init; }
 
     [JsonPropertyName("preset_amount")]
-    public decimal? PresetAmount { get; init; }
+    public Price? PresetAmount { get; init; }
 
     [JsonPropertyName("minimum_amount")]
-    public decimal? MinimumAmount { get; init; }
+    public Price? MinimumAmount { get; init; }
 
     [JsonPropertyName("maximum_amount")]
-    public decimal? MaximumAmount { get; init; }
+    public Price? MaximumAmount { get; init; }
 }
 
 /// <summary>
@@ -170,10 +171,10 @@ public sealed record CheckoutPricing
     public string Currency { get; init; } = string.Empty;
 
     [JsonPropertyName("amount")]
-    public decimal Amount { get; init; }
+    public Price Amount { get; init; }
 
     [JsonPropertyName("currency_options")]
-    public IReadOnlyDictionary<string, decimal>? CurrencyOptions { get; init; }
+    public IReadOnlyDictionary<string, Price>? CurrencyOptions { get; init; }
 }
 
 /// <summary>
@@ -188,7 +189,7 @@ public sealed record CheckoutChargeSummary
     public string? Status { get; init; }
 
     [JsonPropertyName("amount")]
-    public decimal? Amount { get; init; }
+    public Price? Amount { get; init; }
 
     [JsonPropertyName("currency")]
     public string? Currency { get; init; }

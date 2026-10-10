@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using Bachs.Net.Common;
+using Bachs.Net.Serialization;
 
 namespace Bachs.Net.Models.Disputes;
 
@@ -18,7 +19,7 @@ public sealed record Dispute
     public string ChargeId { get; init; } = string.Empty;
 
     [JsonPropertyName("amount")]
-    public decimal Amount { get; init; }
+    public Price Amount { get; init; }
 
     [JsonPropertyName("currency")]
     public string Currency { get; init; } = string.Empty;
@@ -36,19 +37,19 @@ public sealed record Dispute
     public DateTimeOffset CreatedAt { get; init; }
 }
 
-public sealed class UpdateDisputeEvidenceRequest
+public sealed record UpdateDisputeEvidenceRequest
 {
     [JsonPropertyName("customer_name")]
-    public string? CustomerName { get; set; }
+    public string? CustomerName { get; init; }
 
     [JsonPropertyName("customer_email")]
-    public string? CustomerEmail { get; set; }
+    public string? CustomerEmail { get; init; }
 
     [JsonPropertyName("explanation")]
-    public string? Explanation { get; set; }
+    public string? Explanation { get; init; }
 
     [JsonPropertyName("document_ids")]
-    public IList<string>? DocumentIds { get; set; }
+    public IList<string>? DocumentIds { get; init; }
 }
 
 public sealed class ListDisputesOptions : ListRequestOptions

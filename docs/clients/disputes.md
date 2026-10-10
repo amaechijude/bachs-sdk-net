@@ -92,7 +92,7 @@ Console.WriteLine($"Dispute submitted! Status: {submitted.Status}"); // 'under_r
 ### [`Dispute`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Disputes/Dispute.cs)
 - `Id` (`string`): Starts with `dp_`.
 - `ChargeId` (`string`): Disputed transaction identifier (`ch_...`).
-- `Amount` (`decimal`): Monetary value under dispute.
+- `Amount` (`Price`): Monetary value under dispute.
 - `Currency` (`string`): Currency code.
 - `Status` (`string`): `needs_response`, `under_review`, `won`, `lost`.
 - `Reason` (`string?`): Dispute code (e.g., `fraudulent`, `unrecognized`, `product_not_received`).
