@@ -2,7 +2,7 @@
 
 Welcome to the comprehensive reference documentation for the **Bachs .NET SDK** (`Bachs.Net`).
 
-This guide details all 16 specialized sub-clients available through [`IBachsClient`](file:///home/amaechi/code/nuget/Bachs.Net/src/Bachs.Net/Clients/IBachsClient.cs), enabling seamless integration with Bachs payment infrastructure, hosted checkout, product catalog, customer management, subscriptions, payouts, Connect accounts, and webhooks.
+This guide details all 16 specialized sub-clients available through [`IBachsClient`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Clients/IBachsClient.cs), enabling seamless integration with Bachs payment infrastructure, hosted checkout, product catalog, customer management, subscriptions, payouts, Connect accounts, and webhooks.
 
 ---
 
@@ -24,7 +24,7 @@ This guide details all 16 specialized sub-clients available through [`IBachsClie
    app.MapPost("/checkout", async (ICheckoutSessionsClient checkoutClient) => { ... });
    ```
 
-All sub-clients inherit from [`BaseClient`](file:///home/amaechi/code/nuget/Bachs.Net/src/Bachs.Net/Clients/BaseClient.cs), execute resilient HTTP requests with built-in retries and exponential backoff (or through custom `Microsoft.Extensions.Http.Resilience` pipelines configured on `IHttpClientBuilder`), and deserialize responses directly into strongly-typed C# models.
+All sub-clients inherit from [`BaseClient`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Clients/BaseClient.cs), execute resilient HTTP requests with built-in retries and exponential backoff (or through custom `Microsoft.Extensions.Http.Resilience` pipelines configured on `IHttpClientBuilder`), and deserialize responses directly into strongly-typed C# models.
 
 ---
 
@@ -53,7 +53,7 @@ All sub-clients inherit from [`BaseClient`](file:///home/amaechi/code/nuget/Bach
 
 ## Common Features Across All Clients
 
-### 1. Per-Request Options ([`RequestOptions`](file:///home/amaechi/code/nuget/Bachs.Net/src/Bachs.Net/Common/RequestOptions.cs))
+### 1. Per-Request Options ([`RequestOptions`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Common/RequestOptions.cs))
 All write and read operations accept an optional `RequestOptions` parameter:
 ```csharp
 var options = new RequestOptions
@@ -66,7 +66,7 @@ var options = new RequestOptions
 var response = await client.Payments.GetAsync("ch_123", options);
 ```
 
-### 2. Pagination Options ([`ListRequestOptions`](file:///home/amaechi/code/nuget/Bachs.Net/src/Bachs.Net/Common/ListRequestOptions.cs))
+### 2. Pagination Options ([`ListRequestOptions`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Common/ListRequestOptions.cs))
 All list operations accept specialized options derived from `ListRequestOptions`:
 ```csharp
 var listOptions = new ListPaymentsOptions
@@ -81,10 +81,10 @@ Console.WriteLine($"Retrieved {page.Data.Count} items. HasMore: {page.Pagination
 ```
 
 ### 3. Error Handling
-The SDK provides typed exceptions inheriting from [`BachsApiException`](file:///home/amaechi/code/nuget/Bachs.Net/src/Bachs.Net/Common/BachsApiException.cs):
-- [`BachsValidationException`](file:///home/amaechi/code/nuget/Bachs.Net/src/Bachs.Net/Common/BachsValidationException.cs) — HTTP 400 / 422 with `ValidationErrors` list.
-- [`BachsAuthenticationException`](file:///home/amaechi/code/nuget/Bachs.Net/src/Bachs.Net/Common/BachsAuthenticationException.cs) — HTTP 401 Unauthorized.
-- [`BachsForbiddenException`](file:///home/amaechi/code/nuget/Bachs.Net/src/Bachs.Net/Common/BachsForbiddenException.cs) — HTTP 403 Forbidden.
-- [`BachsNotFoundException`](file:///home/amaechi/code/nuget/Bachs.Net/src/Bachs.Net/Common/BachsNotFoundException.cs) — HTTP 404 Not Found.
-- [`BachsConflictException`](file:///home/amaechi/code/nuget/Bachs.Net/src/Bachs.Net/Common/BachsConflictException.cs) — HTTP 409 Conflict.
-- [`BachsRateLimitException`](file:///home/amaechi/code/nuget/Bachs.Net/src/Bachs.Net/Common/BachsRateLimitException.cs) — HTTP 429 Too Many Requests with `RetryAfter` parsed from header.
+The SDK provides typed exceptions inheriting from [`BachsApiException`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Common/BachsApiException.cs):
+- [`BachsValidationException`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Common/BachsValidationException.cs) — HTTP 400 / 422 with `ValidationErrors` list.
+- [`BachsAuthenticationException`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Common/BachsAuthenticationException.cs) — HTTP 401 Unauthorized.
+- [`BachsForbiddenException`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Common/BachsForbiddenException.cs) — HTTP 403 Forbidden.
+- [`BachsNotFoundException`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Common/BachsNotFoundException.cs) — HTTP 404 Not Found.
+- [`BachsConflictException`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Common/BachsConflictException.cs) — HTTP 409 Conflict.
+- [`BachsRateLimitException`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Common/BachsRateLimitException.cs) — HTTP 429 Too Many Requests with `RetryAfter` parsed from header.

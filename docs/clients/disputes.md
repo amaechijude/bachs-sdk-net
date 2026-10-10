@@ -2,8 +2,8 @@
 
 The Disputes client allows you to manage payment disputes, query chargebacks, submit defense evidence before deadlines, and formally challenge claims.
 
-- **Interface**: [`IDisputesClient`](file:///home/amaechi/code/nuget/Bachs.Net/src/Bachs.Net/Clients/IDisputesClient.cs)
-- **Implementation**: [`DisputesClient`](file:///home/amaechi/code/nuget/Bachs.Net/src/Bachs.Net/Clients/DisputesClient.cs)
+- **Interface**: [`IDisputesClient`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Clients/IDisputesClient.cs)
+- **Implementation**: [`DisputesClient`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Clients/DisputesClient.cs)
 - **Property**: `client.Disputes`
 - **DI Service**: `services.AddBachsClient(...)` registers `IDisputesClient` as a transient service.
 
@@ -89,7 +89,7 @@ Console.WriteLine($"Dispute submitted! Status: {submitted.Status}"); // 'under_r
 
 ## Models
 
-### [`Dispute`](file:///home/amaechi/code/nuget/Bachs.Net/src/Bachs.Net/Models/Disputes/Dispute.cs)
+### [`Dispute`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Disputes/Dispute.cs)
 - `Id` (`string`): Starts with `dp_`.
 - `ChargeId` (`string`): Disputed transaction identifier (`ch_...`).
 - `Amount` (`decimal`): Monetary value under dispute.
@@ -99,7 +99,7 @@ Console.WriteLine($"Dispute submitted! Status: {submitted.Status}"); // 'under_r
 - `EvidenceDueDate` (`DateTimeOffset?`): Final deadline to provide defense evidence.
 - `CreatedAt` (`DateTimeOffset`): Timestamp when dispute was opened.
 
-### [`UpdateDisputeEvidenceRequest`](file:///home/amaechi/code/nuget/Bachs.Net/src/Bachs.Net/Models/Disputes/Dispute.cs)
+### [`UpdateDisputeEvidenceRequest`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Disputes/Dispute.cs)
 - `CustomerName` (`string?`): Name on customer file.
 - `CustomerEmail` (`string?`): Contact email.
 - `Explanation` (`string?`): Detailed written narrative refuting the dispute.

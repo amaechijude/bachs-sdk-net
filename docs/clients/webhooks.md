@@ -2,10 +2,10 @@
 
 The Webhooks client allows programmatic registration and management of webhook destination endpoints, subscribing to specific event topics, performing zero-downtime secret rotations, and inspecting past delivered webhook events.
 
-In addition to the client, the SDK provides the static [`BachsWebhook`](file:///home/amaechi/code/nuget/Bachs.Net/src/Bachs.Net/WebHooks/BachsWebhook.cs) class for cryptographic signature verification.
+In addition to the client, the SDK provides the static [`BachsWebhook`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/WebHooks/BachsWebhook.cs) class for cryptographic signature verification.
 
-- **Interface**: [`IWebhooksClient`](file:///home/amaechi/code/nuget/Bachs.Net/src/Bachs.Net/Clients/IWebhooksClient.cs)
-- **Implementation**: [`WebhooksClient`](file:///home/amaechi/code/nuget/Bachs.Net/src/Bachs.Net/Clients/WebhooksClient.cs)
+- **Interface**: [`IWebhooksClient`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Clients/IWebhooksClient.cs)
+- **Implementation**: [`WebhooksClient`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Clients/WebhooksClient.cs)
 - **Property**: `client.Webhooks`
 - **DI Service**: `services.AddBachsClient(...)` registers `IWebhooksClient` as a transient service.
 
@@ -109,7 +109,7 @@ foreach (var evt in events.Data)
 
 ## Cryptographic Signature Verification
 
-When receiving webhooks in your ASP.NET Core application, use [`BachsWebhook.ConstructEvent`](file:///home/amaechi/code/nuget/Bachs.Net/src/Bachs.Net/WebHooks/BachsWebhook.cs#L22):
+When receiving webhooks in your ASP.NET Core application, use [`BachsWebhook.ConstructEvent`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/WebHooks/BachsWebhook.cs#L22):
 
 ```csharp
 using Bachs.Net.WebHooks;
@@ -160,7 +160,7 @@ app.MapPost("/webhooks/bachs", async (HttpRequest request, IConfiguration config
 
 ## Models
 
-### [`WebhookEndpoint`](file:///home/amaechi/code/nuget/Bachs.Net/src/Bachs.Net/Models/Webhooks/WebhookEndpoint.cs)
+### [`WebhookEndpoint`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Webhooks/WebhookEndpoint.cs)
 - `Id` (`string`): Starts with `we_`.
 - `Url` (`string`): Destination HTTPS URL.
 - `Events` (`IReadOnlyList<string>`): Subscribed event patterns.
@@ -168,7 +168,7 @@ app.MapPost("/webhooks/bachs", async (HttpRequest request, IConfiguration config
 - `Status` (`string`): `active`, `disabled`.
 - `CreatedAt` (`DateTimeOffset`): Creation timestamp.
 
-### [`WebhookEventRecord`](file:///home/amaechi/code/nuget/Bachs.Net/src/Bachs.Net/Models/Webhooks/WebhookEndpoint.cs)
+### [`WebhookEventRecord`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Webhooks/WebhookEndpoint.cs)
 - `Id` (`string`): Starts with `evt_`.
 - `Type` (`string`): Event topic code (e.g. `collection.succeeded`).
 - `Data` (`JsonElement`): Raw event payload dictionary.

@@ -2,8 +2,8 @@
 
 The Payments client provides access to captured transactions, settled charges, customer payment methods, and processing fees across all rails supported by Bachs.
 
-- **Interface**: [`IPaymentsClient`](file:///home/amaechi/code/nuget/Bachs.Net/src/Bachs.Net/Clients/IPaymentsClient.cs)
-- **Implementation**: [`PaymentsClient`](file:///home/amaechi/code/nuget/Bachs.Net/src/Bachs.Net/Clients/PaymentsClient.cs)
+- **Interface**: [`IPaymentsClient`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Clients/IPaymentsClient.cs)
+- **Implementation**: [`PaymentsClient`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Clients/PaymentsClient.cs)
 - **Property**: `client.Payments`
 - **DI Service**: `services.AddBachsClient(...)` registers `IPaymentsClient` as a transient service.
 
@@ -59,7 +59,7 @@ foreach (var tx in payments.Data)
 
 ## Models
 
-### [`Payment`](file:///home/amaechi/code/nuget/Bachs.Net/src/Bachs.Net/Models/Payments/Payment.cs)
+### [`Payment`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Payments/Payment.cs)
 - `Id` (`string`): Starts with `ch_`.
 - `Amount` (`decimal`): Transaction monetary amount parsed with high precision.
 - `Currency` (`string`): Three-letter ISO currency code (e.g., `USD`, `NGN`, `EUR`).
@@ -69,7 +69,7 @@ foreach (var tx in payments.Data)
 - `Fees` (`PaymentFees?`): Breakdown of processing fees and VAT deductions.
 - `CreatedAt` (`DateTimeOffset`): Timestamp of transaction execution.
 
-### [`PaymentFees`](file:///home/amaechi/code/nuget/Bachs.Net/src/Bachs.Net/Models/Payments/Payment.cs)
+### [`PaymentFees`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Payments/Payment.cs)
 - `BachsFee` (`decimal`): Core platform fee deduction.
 - `VatFee` (`decimal`): Local regulatory tax/VAT charged on the fee.
 - `TotalFee` (`decimal`): Sum of processing fees and taxes.

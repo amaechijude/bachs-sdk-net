@@ -2,8 +2,8 @@
 
 The Refunds client handles issuing full and partial refunds against previously captured payments, inspecting refund statuses, and looking up all refunds tied to a specific transaction.
 
-- **Interface**: [`IRefundsClient`](file:///home/amaechi/code/nuget/Bachs.Net/src/Bachs.Net/Clients/IRefundsClient.cs)
-- **Implementation**: [`RefundsClient`](file:///home/amaechi/code/nuget/Bachs.Net/src/Bachs.Net/Clients/RefundsClient.cs)
+- **Interface**: [`IRefundsClient`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Clients/IRefundsClient.cs)
+- **Implementation**: [`RefundsClient`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Clients/RefundsClient.cs)
 - **Property**: `client.Refunds`
 - **DI Service**: `services.AddBachsClient(...)` registers `IRefundsClient` as a transient service.
 
@@ -100,13 +100,13 @@ Console.WriteLine($"Total refunds issued for charge: {refunds.Data.Count}");
 
 ## Models
 
-### [`CreateRefundRequest`](file:///home/amaechi/code/nuget/Bachs.Net/src/Bachs.Net/Models/Refunds/Refund.cs)
+### [`CreateRefundRequest`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Refunds/Refund.cs)
 - `PaymentId` (`string`): The payment identifier starting with `ch_`.
 - `Amount` (`decimal?`): Amount to refund. If omitted, the entire remaining charge balance is refunded.
 - `Reason` (`string?`): Explanation for the refund for audit trails and customer receipts.
 - `Metadata` (`IDictionary<string, string>?`): Optional metadata key-value pairs.
 
-### [`Refund`](file:///home/amaechi/code/nuget/Bachs.Net/src/Bachs.Net/Models/Refunds/Refund.cs)
+### [`Refund`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Refunds/Refund.cs)
 - `Id` (`string`): Starts with `ref_`.
 - `PaymentId` (`string`): Target charge identifier.
 - `Amount` (`decimal`): Monetary value refunded.

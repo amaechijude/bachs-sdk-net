@@ -10,7 +10,7 @@ In `Bachs.Net`, payouts functionality is split into two specialized interfaces:
 
 ## Payouts Client
 
-- **Interface**: [`IPayoutsClient`](file:///home/amaechi/code/nuget/Bachs.Net/src/Bachs.Net/Clients/IPayoutsClient.cs)
+- **Interface**: [`IPayoutsClient`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Clients/IPayoutsClient.cs)
 - **Property**: `client.Payouts`
 - **DI Service**: `services.AddBachsClient(...)` registers `IPayoutsClient` as a transient service.
 
@@ -89,7 +89,7 @@ foreach (var item in page.Data)
 
 ## Payout Destinations Client
 
-- **Interface**: [`IPayoutDestinationsClient`](file:///home/amaechi/code/nuget/Bachs.Net/src/Bachs.Net/Clients/IPayoutsClient.cs#L47)
+- **Interface**: [`IPayoutDestinationsClient`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Clients/IPayoutsClient.cs#L47)
 - **Property**: `client.PayoutDestinations`
 - **DI Service**: `services.AddBachsClient(...)` registers `IPayoutDestinationsClient` as a transient service.
 
@@ -134,7 +134,7 @@ Console.WriteLine("Payout destination removed.");
 
 ## Models
 
-### [`Payout`](file:///home/amaechi/code/nuget/Bachs.Net/src/Bachs.Net/Models/Payouts/Payout.cs)
+### [`Payout`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Payouts/Payout.cs)
 - `Id` (`string`): Starts with `wd_`.
 - `Amount` (`decimal`): Monetary withdrawal value.
 - `Currency` (`string`): Currency code.
@@ -143,7 +143,7 @@ Console.WriteLine("Payout destination removed.");
 - `Narration` (`string?`): Transfer description shown on bank statements.
 - `CreatedAt` (`DateTimeOffset`): Timestamp of payout initiation.
 
-### [`PayoutDestination`](file:///home/amaechi/code/nuget/Bachs.Net/src/Bachs.Net/Models/Payouts/Payout.cs)
+### [`PayoutDestination`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Payouts/Payout.cs)
 - `Id` (`string`): Starts with `dest_`.
 - `Type` (`string`): Destination category (`bank_account`, `mobile_money`, `crypto`).
 - `Details` (`IDictionary<string, object?>?`): Provider-specific destination attributes.

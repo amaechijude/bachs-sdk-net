@@ -2,8 +2,8 @@
 
 The Customers client manages customer records, contact information, billing addresses, and self-service Customer Portal sessions in Bachs.
 
-- **Interface**: [`ICustomersClient`](file:///home/amaechi/code/nuget/Bachs.Net/src/Bachs.Net/Clients/ICustomersClient.cs)
-- **Implementation**: [`CustomersClient`](file:///home/amaechi/code/nuget/Bachs.Net/src/Bachs.Net/Clients/CustomersClient.cs)
+- **Interface**: [`ICustomersClient`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Clients/ICustomersClient.cs)
+- **Implementation**: [`CustomersClient`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Clients/CustomersClient.cs)
 - **Property**: `client.Customers`
 - **DI Service**: `services.AddBachsClient(...)` registers `ICustomersClient` as a transient service.
 
@@ -119,7 +119,7 @@ Console.WriteLine($"Session expires at: {portal.ExpiresAt}");
 
 ## Models
 
-### [`Customer`](file:///home/amaechi/code/nuget/Bachs.Net/src/Bachs.Net/Models/Customers/Customer.cs)
+### [`Customer`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Customers/Customer.cs)
 - `Id` (`string`): Starts with `cus_`.
 - `Email` (`string`): Customer email address.
 - `Name` (`string?`): Full name or business entity.
@@ -127,7 +127,7 @@ Console.WriteLine($"Session expires at: {portal.ExpiresAt}");
 - `BillingAddress` (`Address?`): Street address, city, country, postal code.
 - `CreatedAt` (`DateTimeOffset`): Timestamp of creation.
 
-### [`CustomerPortalSession`](file:///home/amaechi/code/nuget/Bachs.Net/src/Bachs.Net/Models/Customers/Customer.cs)
+### [`CustomerPortalSession`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Customers/Customer.cs)
 - `Id` (`string`): Portal session ID.
 - `Url` (`string`): Hosted URL to redirect the customer.
 - `ExpiresAt` (`DateTimeOffset?`): Expiration timestamp of the portal session link.

@@ -2,8 +2,8 @@
 
 The Checkout Sessions client enables you to create and inspect hosted checkout pages on Bachs. Customers are redirected to the secure hosted URL to complete payments via cards, bank transfers, mobile money, and alternative payment methods.
 
-- **Interface**: [`ICheckoutSessionsClient`](file:///home/amaechi/code/nuget/Bachs.Net/src/Bachs.Net/Clients/ICheckoutSessionsClient.cs)
-- **Implementation**: [`CheckoutSessionsClient`](file:///home/amaechi/code/nuget/Bachs.Net/src/Bachs.Net/Clients/CheckoutSessionsClient.cs)
+- **Interface**: [`ICheckoutSessionsClient`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Clients/ICheckoutSessionsClient.cs)
+- **Implementation**: [`CheckoutSessionsClient`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Clients/CheckoutSessionsClient.cs)
 - **Property**: `client.CheckoutSessions`
 - **DI Service**: `services.AddBachsClient(...)` registers `ICheckoutSessionsClient` as a transient service.
 
@@ -98,7 +98,7 @@ Console.WriteLine($"Total Amount: {session.Pricing?.Amount} {session.Pricing?.Cu
 
 ## Request & Response Models
 
-### [`CreateCheckoutSessionRequest`](file:///home/amaechi/code/nuget/Bachs.Net/src/Bachs.Net/Models/Checkout/CreateCheckoutSessionRequest.cs)
+### [`CreateCheckoutSessionRequest`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Checkout/CreateCheckoutSessionRequest.cs)
 - `Pricing` (`CheckoutPricingRequest?`): Direct currency and monetary amount.
 - `ProductCart` (`IList<CheckoutCartItemRequest>?`): Items referenced from catalog with quantities.
 - `Customer` (`CheckoutCustomerRequest?`): Pre-filled buyer email and name.
@@ -106,7 +106,7 @@ Console.WriteLine($"Total Amount: {session.Pricing?.Amount} {session.Pricing?.Cu
 - `CancelUrl` (`string`): Absolute URL to redirect the buyer if they cancel checkout.
 - `Metadata` (`IDictionary<string, string>?`): Key-value pairs attached to the session.
 
-### [`CheckoutSession`](file:///home/amaechi/code/nuget/Bachs.Net/src/Bachs.Net/Models/Checkout/CheckoutSession.cs)
+### [`CheckoutSession`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Checkout/CheckoutSession.cs)
 - `Id` (`string`): Unique session ID starting with `chk_`.
 - `Status` (`string`): `open`, `completed`, or `expired`.
 - `PaymentStatus` (`string`): `unpaid`, `paid`, or `no_payment_required`.
