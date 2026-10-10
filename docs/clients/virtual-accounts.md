@@ -1,0 +1,85 @@
+# Dedicated Virtual Accounts Client
+
+The Virtual Accounts client provides fixed, permanent virtual bank accounts (e.g., Nigerian NUBAN accounts) that your users or customers can transfer funds into at any time for continuous automated payment collections.
+
+- **Interface**: [`IVirtualAccountsClient`](file:///home/amaechi/code/nuget/Bachs.Net/src/Bachs.Net/Clients/IVirtualAccountsClient.cs)
+- **Implementation**: [`VirtualAccountsClient`](file:///home/amaechi/code/nuget/Bachs.Net/src/Bachs.Net/Clients/VirtualAccountsClient.cs)
+- **Property**: `client.VirtualAccounts`
+- **DI Service**: `services.AddBachsClient(...)` registers `IVirtualAccountsClient` as a transient service.
+
+---
+
+## Methods Overview
+
+| Method | HTTP | Path | Description |
+|---|---|---|---|
+| [`CreateAsync`](#1-create-a-virtual-account) | `POST` | `/v1/virtual-accounts` | Provisions a new permanent virtual deposit account. |
+| [`GetAsync`](#2-retrieve-a-virtual-account) | `GET` | `/v1/virtual-accounts?currency={currency}` | Retrieves existing virtual account coordinates for a currency. |
+
+---
+
+## Usage Examples
+
+### 1. Create a Dedicated Virtual Account
+
+Generate a virtual bank account for bank transfer collections:
+
+```csharp
+using Bachs.Net.Clients;
+using Bachs.Net.Common;
+using Bachs.Net.Models.VirtualAccounts;
+
+var account = await client.VirtualAccounts.CreateAsync(new CreateVirtualAccountRequest
+{
+    Currency = "NGN"
+}, new RequestOptions
+{
+    IdempotencyKey = "va_provision_ngn_01"
+});
+
+Console.WriteLine($"Bank Name: {account.BankName}");
+Console.WriteLine($"Account Number: {account.AccountNumber}");
+Console.WriteLine($"Account Name: {account.AccountName}");
+Console.WriteLine($"Status: {account.Status}"); // 'active'
+```
+
+#### Provisioning for a Customer or Connected Account:
+```csharp
+var customerAccount = await client.VirtualAccounts.CreateAsync(
+    new CreateVirtualAccountRequest { Currency = "NGN" },
+    new RequestOptions { AccountId = "acc_merchant_123" }
+);
+```
+
+---
+
+### 2. Retrieve Virtual Account Details
+
+```csharp
+var existing = await client.VirtualAccounts.GetAsync(currency: "NGN");
+
+Console.WriteLine($"Account: {existing.AccountNumber} ({existing.BankName})");
+```
+
+---
+
+## Models
+
+### [`CreateVirtualAccountRequest`](file:///home/amaechi/code/nuget/Bachs.Net/src/Bachs.Net/Models/VirtualAccounts/VirtualAccount.cs)
+- `Currency` (`string`): Target currency code (defaults to `"NGN"`).
+
+### [`VirtualAccount`](file:///home/amaechi/code/nuget/Bachs.Net/src/Bachs.Net/Models/VirtualAccounts/VirtualAccount.cs)
+- `AccountNumber` (`string`): The 10-digit NUBAN account number.
+- `AccountName` (`string`): Beneficiary name returned upon bank lookup.
+- `BankName` (`string`): Financial institution name (e.g., Wema Bank, Sterling Bank).
+- `BankCode` (`string?`): Central bank code for the institution.
+- `Currency` (`string`): Currency code (`NGN`).
+- `Status` (`string`): `active`, `suspended`.
+- `CreatedAt` (`DateTimeOffset`): Provisioning timestamp.
+
+---
+
+## Associated Webhooks
+
+- `virtual_account.assigned`: Fired when a virtual account number is assigned and ready to receive deposits.
+- `collection.succeeded`: Fired whenever a customer transfers money into the virtual account number.

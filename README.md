@@ -101,6 +101,33 @@ app.MapPost("/create-checkout", async (ICheckoutSessionsClient checkoutClient) =
 
 ---
 
+## Sub API Clients & Documentation
+
+`Bachs.Net` provides 16 domain-focused clients. Access them directly via `client.<Resource>` on `IBachsClient` or inject their interfaces individually using ASP.NET Core Dependency Injection:
+
+| Client | Interface | Access Property | Capabilities | Guide |
+|---|---|---|---|---|
+| **Hosted Checkout** | `ICheckoutSessionsClient` | `client.CheckoutSessions` | Create checkout pages, pricing, cart items, customer details | [Documentation](docs/clients/checkout-sessions.md) |
+| **Products & Catalog** | `IProductsClient` | `client.Products` | Products, recurring pricing, intervals, trial periods, archiving | [Documentation](docs/clients/products.md) |
+| **Customers & Portal** | `ICustomersClient` | `client.Customers` | Customer profiles, contact details, hosted Customer Portal sessions | [Documentation](docs/clients/customers.md) |
+| **Subscriptions** | `ISubscriptionsClient` | `client.Subscriptions` | Recurring billing, plan switching/upgrades, cancellations | [Documentation](docs/clients/subscriptions.md) |
+| **Payments & Charges** | `IPaymentsClient` | `client.Payments` | Transaction lookups, payment statuses, platform fee audits | [Documentation](docs/clients/payments.md) |
+| **Refunds** | `IRefundsClient` | `client.Refunds` | Full and partial refunds, chargeback refunds | [Documentation](docs/clients/refunds.md) |
+| **Payouts & Quotes** | `IPayoutsClient` | `client.Payouts` | Withdrawals, cross-currency FX quotes, status tracking | [Documentation](docs/clients/payouts.md#payouts-client) |
+| **Payout Destinations** | `IPayoutDestinationsClient` | `client.PayoutDestinations` | Bank accounts, mobile money, crypto destination management | [Documentation](docs/clients/payouts.md#payout-destinations-client) |
+| **Balances & Settings** | `IBalancesClient` | `client.Balances` | Multi-currency ledger balances, sweep payout schedules | [Documentation](docs/clients/balances.md) |
+| **Currency Conversions**| `IConversionsClient` | `client.Conversions` | Real-time FX quotes and balance conversions | [Documentation](docs/clients/conversions.md) |
+| **Internal Transfers** | `ITransfersClient` | `client.Transfers` | Internal balance movements to connected accounts | [Documentation](docs/clients/transfers.md) |
+| **Disputes** | `IDisputesClient` | `client.Disputes` | Chargeback inquiries, evidence uploads, formal defense | [Documentation](docs/clients/disputes.md) |
+| **Connected Accounts** | `IAccountsClient` | `client.Accounts` | Bachs Connect marketplace onboarding, KYC account links | [Documentation](docs/clients/accounts.md) |
+| **Virtual Accounts** | `IVirtualAccountsClient` | `client.VirtualAccounts` | Permanent virtual bank accounts for deposit collections | [Documentation](docs/clients/virtual-accounts.md) |
+| **Webhook Endpoints** | `IWebhooksClient` | `client.Webhooks` | Endpoint registration, secret rotation, event history | [Documentation](docs/clients/webhooks.md) |
+| **Reference & Utilities**| `IMiscClient` | `client.Misc` | Supported currencies, Nigerian bank codes, account lookup | [Documentation](docs/clients/misc.md) |
+
+> 📖 **Full Documentation Hub**: View the [Complete API Client Documentation Directory](docs/README.md) for architecture, error handling, and request option patterns.
+
+---
+
 ## Usage Examples
 
 ### Hosted Checkout Sessions
