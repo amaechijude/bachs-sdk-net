@@ -10,14 +10,14 @@ public sealed class CheckoutSessionsClient(IBachsClient bachsClient)
     : BaseClient(bachsClient),
         ICheckoutSessionsClient
 {
-    public Task<CheckoutSession> CreateAsync(
+    public Task<CreateCheckoutSessionResponse> CreateAsync(
         CreateCheckoutSessionRequest request,
         RequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {
         ArgumentNullException.ThrowIfNull(request);
-        return BachsClient.PostAsync<CreateCheckoutSessionRequest, CheckoutSession>(
+        return BachsClient.PostAsync<CreateCheckoutSessionRequest, CreateCheckoutSessionResponse>(
             "v1/checkout-sessions",
             request,
             requestOptions,
@@ -25,14 +25,14 @@ public sealed class CheckoutSessionsClient(IBachsClient bachsClient)
         );
     }
 
-    public Task<CheckoutSession> GetAsync(
+    public Task<GetCheckoutSessionResponse> GetAsync(
         string checkoutId,
         RequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(checkoutId);
-        return BachsClient.GetAsync<CheckoutSession>(
+        return BachsClient.GetAsync<GetCheckoutSessionResponse>(
             $"v1/checkout-sessions/{Uri.EscapeDataString(checkoutId)}",
             requestOptions,
             cancellationToken

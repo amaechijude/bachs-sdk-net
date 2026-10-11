@@ -14,8 +14,8 @@ public interface ICheckoutSessionsClient
     /// <param name="request">The checkout session creation parameters.</param>
     /// <param name="requestOptions">Optional per-request options (e.g. idempotency key).</param>
     /// <param name="cancellationToken">Cancellation token.</param>
-    /// <returns>The created checkout session with the hosted checkout URL.</returns>
-    Task<CheckoutSession> CreateAsync(
+    /// <returns>The created checkout session response containing the hosted checkout URL.</returns>
+    Task<CreateCheckoutSessionResponse> CreateAsync(
         CreateCheckoutSessionRequest request,
         RequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -27,8 +27,8 @@ public interface ICheckoutSessionsClient
     /// <param name="checkoutId">The checkout session ID (starts with 'chk_').</param>
     /// <param name="requestOptions">Optional per-request options.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
-    /// <returns>The checkout session details.</returns>
-    Task<CheckoutSession> GetAsync(
+    /// <returns>The detailed checkout session details including resolved line items and charges.</returns>
+    Task<GetCheckoutSessionResponse> GetAsync(
         string checkoutId,
         RequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default

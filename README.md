@@ -190,22 +190,23 @@ using Bachs.Net.Clients;
 using Bachs.Net.Common;
 using Bachs.Net.Models.Checkout;
 
-// Create a checkout session with product catalog items
-var session = await client.CheckoutSessions.CreateAsync(
-    new CreateCheckoutSessionRequest
+// Create a checkout session with product catalog items using the builder
+var request = CreateCheckoutSessionRequestBuilder
+    .WithProductCart(new List<CheckoutCartItemRequest>
     {
-        ProductCart = new List<CheckoutCartItemRequest>
-        {
-            new() { ProductId = "prod_pro_plan", Quantity = 1 }
-        },
-        Customer = new CheckoutCustomerRequest
-        {
-            Email = "buyer@example.com",
-            Name = "Alex Smith"
-        },
-        SuccessUrl = "https://myapp.com/success",
-        CancelUrl = "https://myapp.com/cart"
-    },
+        new() { ProductId = "prod_pro_plan", Quantity = 1 }
+    })
+    .WithCustomer(new CheckoutCustomerRequest
+    {
+        Email = "buyer@example.com",
+        Name = "Alex Smith"
+    })
+    .WithSuccessUrl("https://myapp.com/success")
+    .WithCancelUrl("https://myapp.com/cart")
+    .Build();
+
+var session = await client.CheckoutSessions.CreateAsync(
+    request,
     // Optional request options: specify idempotency key
     new RequestOptions("order-invoice-1002")
 );
