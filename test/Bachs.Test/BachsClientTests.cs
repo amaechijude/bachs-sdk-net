@@ -3,6 +3,7 @@ using System.Text;
 using Bachs.Net.Clients;
 using Bachs.Net.Common;
 using Bachs.Net.Models.Checkout;
+using Bachs.Net.Models.Common;
 using Bachs.Net.Models.Products;
 
 namespace Bachs.Test;
@@ -95,7 +96,7 @@ public sealed class BachsClientTests
         var result = await client.CheckoutSessions.CreateAsync(
             new CreateCheckoutSessionRequest
             {
-                Pricing = new CheckoutPricingRequest { Currency = "USD", Amount = 50.00m },
+                Pricing = new CheckoutPricingRequest { Currency = Currency.USD, Amount = 50.00m },
                 SuccessUrl = "https://example.com/success",
             },
             requestOptions

@@ -87,7 +87,7 @@ Once onboarded, execute operations (such as creating checkout sessions or reques
 ```csharp
 var merchantSession = await client.CheckoutSessions.CreateAsync(new CreateCheckoutSessionRequest
 {
-    Pricing = new CheckoutPricingRequest { Currency = "USD", Amount = 100.00m },
+    Pricing = new CheckoutPricingRequest { Currency = Currency.USD, Amount = 100.00m }, // Currency defaults to Currency.USD
     SuccessUrl = "https://shop.com/success",
     CancelUrl = "https://shop.com/cancel"
 }, new RequestOptions

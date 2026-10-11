@@ -83,7 +83,7 @@ app.MapPost("/create-checkout", async (ICheckoutSessionsClient checkoutClient) =
     {
         Pricing = new CheckoutPricingRequest
         {
-            Currency = "USD",
+            Currency = Currency.USD,
             Amount = 49.99m
         },
         Customer = new CheckoutCustomerRequest
@@ -228,7 +228,7 @@ var product = await client.Products.CreateAsync(new CreateProductRequest
     {
         PriceType = "fixed",
         Amount = 29.00m,
-        Currency = "USD"
+        Currency = Currency.USD
     },
     BillingCycle = new ProductBillingCycleRequest
     {

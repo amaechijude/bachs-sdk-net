@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using Bachs.Net.Common;
+using Bachs.Net.Models.Common;
 using Bachs.Net.Serialization;
 
 namespace Bachs.Net.Models.Refunds;
@@ -34,10 +35,10 @@ public sealed record Refund
     public Price Amount { get; init; }
 
     /// <summary>
-    /// Currency code (e.g., "USD").
+    /// Currency code (e.g., Currency.USD).
     /// </summary>
     [JsonPropertyName("currency")]
-    public string Currency { get; init; } = string.Empty;
+    public Currency Currency { get; init; } = Currency.USD;
 
     /// <summary>
     /// Status of the refund ('succeeded', 'processing', 'failed').

@@ -62,11 +62,12 @@ Console.WriteLine($"Redirect Customer to: {session.CheckoutUrl}");
 using Bachs.Net.Clients;
 using Bachs.Net.Common;
 using Bachs.Net.Models.Checkout;
+using Bachs.Net.Models.Common;
 
 var request = CreateCheckoutSessionRequestBuilder
     .WithPricing(new CheckoutPricingRequest
     {
-        Currency = "USD",
+        Currency = Currency.USD, // Defaults to Currency.USD
         Amount = 49.99m // Transparent decimal Price handling
     })
     .WithCustomer(new CheckoutCustomerRequest
@@ -126,7 +127,7 @@ if (session.Products != null)
 - `Customer` (`CheckoutCustomerRequest?`): Customer ID or contact details.
 - `SuccessUrl` (`string?`): Absolute redirect URL on success.
 - `CancelUrl` (`string?`): Absolute redirect URL on cancellation.
-- `BillingCurrency` (`string?`): Checkout billing currency override.
+- `BillingCurrency` (`Currency?`): Checkout billing currency override.
 - `PaymentMethodTypes` (`IList<string>?`): Corridor restrictions (e.g. `USD_CARD`, `NGN_BANK_TRANSFER`).
 - `Reference` (`string?`): External order reference.
 - `PlatformFee` (`Price?`): Platform fee cut from merchant proceeds.
@@ -152,7 +153,8 @@ if (session.Products != null)
 - `PaymentStatus` (`string?`): Payment state (`succeeded`, `requires_payment_method`, etc.).
 - `SourceType` (`string?`): Creation origin (`CHECKOUT_SESSION`, `API`).
 - `Amount` (`Price?`): Total amount charged.
-- `Currency` (`string?`): Currency of the session.
+- `Currency` (`Currency?`): Currency of the session.
+- `BillingCurrency` (`Currency?`): Presentment currency for checkout.
 - `Charge` (`CheckoutPaymentResponse?`): Attached charge details once payment is attempted.
 - `Customer` (`CheckoutCustomer?`): Attached customer profile.
 - `CustomerDetails` (`CheckoutCustomerDetails?`): Buyer details collected during checkout.

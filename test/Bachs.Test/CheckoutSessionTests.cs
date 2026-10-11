@@ -4,6 +4,7 @@ using System.Text.Json;
 using Bachs.Net.Clients;
 using Bachs.Net.Common;
 using Bachs.Net.Models.Checkout;
+using Bachs.Net.Models.Common;
 using Bachs.Net.Serialization;
 
 namespace Bachs.Test;
@@ -82,7 +83,7 @@ public sealed class CheckoutSessionTests
         Assert.Equal("Jane Doe", request.Customer.Name);
         Assert.Equal("https://example.com/checkout/success", request.SuccessUrl);
         Assert.Equal("https://example.com/checkout/cancel", request.CancelUrl);
-        Assert.Equal("USD", request.BillingCurrency);
+        Assert.Equal(Currency.USD, request.BillingCurrency);
         Assert.Equal(2, request.PaymentMethodTypes?.Count);
         Assert.Equal("order_9876", request.Reference);
         Assert.Equal(5.00m, request.PlatformFee?.Value);
@@ -102,7 +103,7 @@ public sealed class CheckoutSessionTests
             .WithPricing(
                 new CheckoutPricingRequest
                 {
-                    Currency = "USD",
+                    Currency = Currency.USD,
                     Amount = 49.99m,
                     PriceType = "fixed",
                 }
@@ -117,7 +118,7 @@ public sealed class CheckoutSessionTests
             .Build();
 
         Assert.NotNull(request.Pricing);
-        Assert.Equal("USD", request.Pricing.Currency);
+        Assert.Equal(Currency.USD, request.Pricing.Currency);
         Assert.Equal(49.99m, request.Pricing.Amount?.Value);
         Assert.Equal("fixed", request.Pricing.PriceType);
         Assert.NotNull(request.Pricing.CurrencyOptions);
@@ -158,7 +159,7 @@ public sealed class CheckoutSessionTests
             .Build();
 
         Assert.NotNull(request.Pricing);
-        Assert.Equal("USD", request.Pricing.Currency);
+        Assert.Equal(Currency.USD, request.Pricing.Currency);
         Assert.Equal(99.00m, request.Pricing.Amount?.Value);
         Assert.Equal("custom", request.Pricing.PriceType);
         Assert.Equal(20.00m, request.Pricing.PresetAmount?.Value);
@@ -219,10 +220,7 @@ public sealed class CheckoutSessionTests
     public void RawPricingBuilder_ThrowsWhenCurrencyIsBlank()
     {
         var builder = RawPricingCheckoutRequestBuilder.Create();
-        builder.WithPricing(new CheckoutPricingRequest { Currency = "   ", Amount = 10.00m });
-
-        var ex = Assert.Throws<InvalidOperationException>(() => builder.Build());
-        Assert.Contains("valid Currency", ex.Message);
+        Assert.Throws<ArgumentException>(() => builder.WithCurrency("   "));
     }
 
     [Fact]
@@ -326,7 +324,7 @@ public sealed class CheckoutSessionTests
         Assert.Equal("succeeded", response.PaymentStatus);
         Assert.Equal("CHECKOUT_SESSION", response.SourceType);
         Assert.Equal(50.00m, response.Amount?.Value);
-        Assert.Equal("USD", response.Currency);
+        Assert.Equal(Currency.USD, response.Currency);
         Assert.Equal("order_9876", response.Reference);
         Assert.NotNull(response.Charge);
         Assert.Equal("pay_1a2b3c4d5e", response.Charge.PaymentId);
@@ -345,7 +343,7 @@ public sealed class CheckoutSessionTests
         Assert.Equal("prod_abc123", response.Products[0].ProductId);
         Assert.Equal("Premium Plan", response.Products[0].ProductName);
         Assert.Equal(50.00m, response.Products[0].UnitAmount.Value);
-        Assert.Equal("NGN", response.BillingCurrency);
+        Assert.Equal(Currency.NGN, response.BillingCurrency);
         Assert.Equal("CART", response.SessionMode);
         Assert.Equal("ORD-9876", response.Metadata?["order_id"]);
         Assert.NotNull(response.CompletedAt);

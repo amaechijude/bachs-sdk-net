@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Bachs.Net.Models.Common;
 using Bachs.Net.Serialization;
 
 namespace Bachs.Net.Models.Checkout;
@@ -52,11 +53,11 @@ public sealed record CreateCheckoutSessionRequest
     public string? ReturnUrl { get; init; }
 
     /// <summary>
-    /// Optional checkout billing currency (e.g., "USD", "NGN").
+    /// Optional checkout billing currency (e.g., Currency.USD, Currency.NGN).
     /// If omitted, defaults to product pricing currency.
     /// </summary>
     [JsonPropertyName("billing_currency")]
-    public string? BillingCurrency { get; init; }
+    public Currency? BillingCurrency { get; init; }
 
     /// <summary>
     /// Restricts checkout to specific payment methods (e.g. 'USD_CARD', 'NGN_BANK_TRANSFER', 'MOMO_GHS', 'CRYPTO').
@@ -157,10 +158,10 @@ public sealed record CheckoutItemPricingOverrideRequest
     public Price? Amount { get; init; }
 
     /// <summary>
-    /// Currency code (e.g., "USD").
+    /// Currency code (e.g., Currency.USD).
     /// </summary>
     [JsonPropertyName("currency")]
-    public string? Currency { get; init; }
+    public Currency? Currency { get; init; }
 
     /// <summary>
     /// Suggested price shown prefilled for custom/pay-what-you-want pricing.
@@ -187,10 +188,10 @@ public sealed record CheckoutItemPricingOverrideRequest
 public sealed record CheckoutPricingRequest
 {
     /// <summary>
-    /// The currency of the charge (e.g. "USD", "NGN"). Defaults to "USD".
+    /// The currency of the charge (e.g. Currency.USD, Currency.NGN). Defaults to Currency.USD.
     /// </summary>
     [JsonPropertyName("currency")]
-    public string Currency { get; init; } = "USD";
+    public Currency Currency { get; init; } = Currency.USD;
 
     /// <summary>
     /// The charge amount (e.g., "42.00"). Required for fixed pricing; omit for custom/free pricing.

@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Bachs.Net.Models.Common;
 using Bachs.Net.Serialization;
 
 namespace Bachs.Net.Models.Products;
@@ -105,10 +106,10 @@ public sealed record ProductPriceRequest
     public Price? Amount { get; init; }
 
     /// <summary>
-    /// Primary currency code (e.g., "USD").
+    /// Primary currency code (e.g., Currency.USD). Defaults to Currency.USD.
     /// </summary>
     [JsonPropertyName("currency")]
-    public string Currency { get; init; } = "USD";
+    public Currency Currency { get; init; } = Currency.USD;
 
     /// <summary>
     /// Suggested price shown prefilled for custom pricing.

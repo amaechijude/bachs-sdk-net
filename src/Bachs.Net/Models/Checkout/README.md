@@ -20,6 +20,7 @@ Use `CreateCheckoutSessionRequestBuilder.WithProductCart(...)` or `ProductCartCh
 
 ```csharp
 using Bachs.Net.Models.Checkout;
+using Bachs.Net.Models.Common;
 
 // Using the static entry point:
 var request = CreateCheckoutSessionRequestBuilder
@@ -39,7 +40,7 @@ var request = CreateCheckoutSessionRequestBuilder
     })
     .WithSuccessUrl("https://example.com/checkout/success")
     .WithCancelUrl("https://example.com/checkout/cancel")
-    .WithBillingCurrency("USD")
+    .WithBillingCurrency(Currency.USD)
     .WithPaymentMethodTypes("USD_CARD", "NGN_BANK_TRANSFER")
     .WithPlatformFee(5.00m)
     .WithTransferData("acct_dest_123", 44.00m)
@@ -70,25 +71,26 @@ Use `CreateCheckoutSessionRequestBuilder.WithPricing(...)` or `RawPricingCheckou
 
 ```csharp
 using Bachs.Net.Models.Checkout;
+using Bachs.Net.Models.Common;
 
 // Using the static entry point:
 var request = CreateCheckoutSessionRequestBuilder
     .WithPricing(new CheckoutPricingRequest
     {
-        Currency = "USD",
+        Currency = Currency.USD, // Defaults to Currency.USD
         Amount = 49.99m,
         PriceType = "fixed"
     })
     .WithNewCustomer("buyer@example.com", "Jane Doe")
     .WithSuccessUrl("https://example.com/checkout/success")
     .WithCancelUrl("https://example.com/checkout/cancel")
-    .WithCurrencyOption("NGN", 75000.00m)
+    .WithCurrencyOption(Currency.NGN, 75000.00m)
     .WithCustomerCreationAlways()
     .Build();
 
-// Or fluent convenience methods:
+// Or fluent convenience methods (currency defaults to Currency.USD):
 var request = CreateCheckoutSessionRequestBuilder
-    .ForRawPricing("USD")
+    .ForRawPricing(Currency.USD)
     .WithAmount(25.00m)
     .WithCustomer(new CheckoutCustomerRequest { Email = "buyer@example.com" })
     .WithSuccessUrl("https://example.com/checkout/success")
@@ -96,7 +98,7 @@ var request = CreateCheckoutSessionRequestBuilder
 ```
 
 ### Constraints enforced by `RawPricingCheckoutRequestBuilder`:
-- `Pricing` must be supplied with a non-empty `Currency`.
+- `Pricing` must be supplied with a valid `Currency` (defaults to `Currency.USD`).
 - Root `ProductCart` is guaranteed to be `null` (enforcing mutual exclusivity).
 
 ---

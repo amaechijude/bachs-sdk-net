@@ -1,6 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Bachs.Net.Common;
+using Bachs.Net.Models.Common;
 using Bachs.Net.Serialization;
 
 namespace Bachs.Net.Models.Payouts;
@@ -32,7 +33,7 @@ public sealed record Payout
     /// The currency of the payout.
     /// </summary>
     [JsonPropertyName("currency")]
-    public string Currency { get; init; } = string.Empty;
+    public Currency Currency { get; init; } = Currency.USD;
 
     /// <summary>
     /// ID of the destination bank account, mobile money wallet, or crypto wallet.
@@ -77,10 +78,10 @@ public sealed record CreatePayoutRequest
     public Price Amount { get; init; }
 
     /// <summary>
-    /// The currency of the payout.
+    /// The currency of the payout. Defaults to <see cref="Currency.USD"/>.
     /// </summary>
     [JsonPropertyName("currency")]
-    public string Currency { get; init; } = string.Empty;
+    public Currency Currency { get; init; } = Currency.USD;
 
     /// <summary>
     /// Unique reference for this payout.
@@ -104,13 +105,13 @@ public sealed record PayoutQuote
     public string QuoteId { get; init; } = string.Empty;
 
     [JsonPropertyName("source_currency")]
-    public string SourceCurrency { get; init; } = string.Empty;
+    public Currency SourceCurrency { get; init; } = Currency.USD;
 
     [JsonPropertyName("source_amount")]
     public Price SourceAmount { get; init; }
 
     [JsonPropertyName("destination_currency")]
-    public string DestinationCurrency { get; init; } = string.Empty;
+    public Currency DestinationCurrency { get; init; } = Currency.USD;
 
     [JsonPropertyName("destination_amount")]
     public Price DestinationAmount { get; init; }
@@ -134,7 +135,7 @@ public sealed record CreatePayoutQuoteRequest
     public Price Amount { get; init; }
 
     [JsonPropertyName("currency")]
-    public string Currency { get; init; } = string.Empty;
+    public Currency Currency { get; init; } = Currency.USD;
 }
 
 /// <summary>
@@ -152,7 +153,7 @@ public sealed record PayoutDestination
     public string Type { get; init; } = string.Empty;
 
     [JsonPropertyName("currency")]
-    public string Currency { get; init; } = string.Empty;
+    public Currency Currency { get; init; } = Currency.USD;
 
     [JsonPropertyName("is_usable")]
     public bool IsUsable { get; init; }
@@ -173,7 +174,7 @@ public sealed record CreatePayoutDestinationRequest
     public string Type { get; init; } = string.Empty;
 
     [JsonPropertyName("currency")]
-    public string Currency { get; init; } = string.Empty;
+    public Currency Currency { get; init; } = Currency.USD;
 
     [JsonPropertyName("details")]
     public IDictionary<string, object?> Details { get; init; } = new Dictionary<string, object?>();

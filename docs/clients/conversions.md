@@ -28,12 +28,13 @@ Request a locked exchange rate before committing to a currency swap:
 
 ```csharp
 using Bachs.Net.Clients;
+using Bachs.Net.Models.Common;
 using Bachs.Net.Models.Conversions;
 
 var quote = await client.Conversions.CreateQuoteAsync(new CreateConversionQuoteRequest
 {
-    SourceCurrency = "USD",
-    TargetCurrency = "NGN",
+    SourceCurrency = Currency.USD, // Defaults to Currency.USD
+    TargetCurrency = Currency.NGN, // Defaults to Currency.USD
     Amount = 1000.00m // Converting $1,000 USD to NGN
 });
 
@@ -98,9 +99,9 @@ foreach (var item in history.Data)
 
 ### [`ConversionQuote`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Conversions/Conversion.cs)
 - `QuoteId` (`string`): Unique quote identifier to pass to `ExecuteAsync`.
-- `SourceCurrency` (`string`): Currency debited.
+- `SourceCurrency` (`Currency`): Currency debited.
 - `SourceAmount` (`Price`): Debit amount.
-- `TargetCurrency` (`string`): Currency credited.
+- `TargetCurrency` (`Currency`): Currency credited.
 - `TargetAmount` (`Price`): Credit amount.
 - `Rate` (`decimal`): Conversion multiplier.
 - `ExpiresAt` (`DateTimeOffset`): Expiration timestamp of the guaranteed rate.
@@ -108,9 +109,9 @@ foreach (var item in history.Data)
 ### [`Conversion`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Conversions/Conversion.cs)
 - `Id` (`string`): Starts with `conv_`.
 - `QuoteId` (`string`): Quote utilized for the conversion.
-- `SourceCurrency` (`string`): Origin currency code.
+- `SourceCurrency` (`Currency`): Origin currency code.
 - `SourceAmount` (`Price`): Debited amount.
-- `TargetCurrency` (`string`): Destination currency code.
+- `TargetCurrency` (`Currency`): Destination currency code.
 - `TargetAmount` (`Price`): Credited amount.
 - `Rate` (`decimal`): Effective rate.
 - `Status` (`string`): `completed`, `pending`, `failed`.

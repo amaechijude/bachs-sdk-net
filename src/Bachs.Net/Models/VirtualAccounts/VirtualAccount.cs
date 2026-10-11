@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Bachs.Net.Models.Common;
 
 namespace Bachs.Net.Models.VirtualAccounts;
 
@@ -20,7 +21,7 @@ public sealed record VirtualAccount
     public string? BankCode { get; init; }
 
     [JsonPropertyName("currency")]
-    public string Currency { get; init; } = "NGN";
+    public Currency Currency { get; init; } = Currency.USD;
 
     [JsonPropertyName("status")]
     public string Status { get; init; } = string.Empty;
@@ -32,5 +33,5 @@ public sealed record VirtualAccount
 public sealed record CreateVirtualAccountRequest
 {
     [JsonPropertyName("currency")]
-    public string Currency { get; init; } = "NGN";
+    public Currency Currency { get; init; } = Currency.USD;
 }

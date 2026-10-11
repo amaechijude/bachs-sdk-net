@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using Bachs.Net.Common;
+using Bachs.Net.Models.Common;
 using Bachs.Net.Serialization;
 
 namespace Bachs.Net.Models.Payments;
@@ -28,10 +29,10 @@ public sealed record Payment
     public Price Amount { get; init; }
 
     /// <summary>
-    /// Currency code (e.g., "USD", "NGN").
+    /// Currency code (e.g., Currency.USD, Currency.NGN).
     /// </summary>
     [JsonPropertyName("currency")]
-    public string Currency { get; init; } = string.Empty;
+    public Currency Currency { get; init; } = Currency.USD;
 
     /// <summary>
     /// Status of the payment (e.g., 'SUCCEEDED', 'PROCESSING', 'FAILED', 'UNDERPAID').
@@ -103,7 +104,7 @@ public sealed record PaymentFees
     public Price Amount { get; init; }
 
     [JsonPropertyName("currency")]
-    public string Currency { get; init; } = string.Empty;
+    public Currency Currency { get; init; } = Currency.USD;
 }
 
 /// <summary>

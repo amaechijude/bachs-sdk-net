@@ -30,6 +30,7 @@ The Products client allows you to manage catalog items in Bachs, defining one-ti
 
 ```csharp
 using Bachs.Net.Clients;
+using Bachs.Net.Models.Common;
 using Bachs.Net.Models.Products;
 
 var product = await client.Products.CreateAsync(new CreateProductRequest
@@ -40,7 +41,7 @@ var product = await client.Products.CreateAsync(new CreateProductRequest
     {
         PriceType = "fixed",
         Amount = 19.99m,
-        Currency = "USD"
+        Currency = Currency.USD // Defaults to Currency.USD
     }
 });
 
@@ -58,7 +59,7 @@ var subscriptionPlan = await client.Products.CreateAsync(new CreateProductReques
     {
         PriceType = "fixed",
         Amount = 49.00m,
-        Currency = "USD"
+        Currency = Currency.USD // Defaults to Currency.USD
     },
     BillingCycle = new ProductBillingCycleRequest
     {

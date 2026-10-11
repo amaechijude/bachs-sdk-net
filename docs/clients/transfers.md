@@ -28,12 +28,13 @@ Transfer funds from your platform treasury to a merchant's connected account:
 ```csharp
 using Bachs.Net.Clients;
 using Bachs.Net.Common;
+using Bachs.Net.Models.Common;
 using Bachs.Net.Models.Transfers;
 
 var transfer = await client.Transfers.CreateAsync(new CreateTransferRequest
 {
     Amount = 250.00m,
-    Currency = "USD",
+    Currency = Currency.USD, // Defaults to Currency.USD
     Destination = "acc_merchant_12345" // Target connected account ID
 }, new RequestOptions
 {
@@ -77,13 +78,13 @@ foreach (var item in page.Data)
 
 ### [`CreateTransferRequest`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Transfers/Transfer.cs)
 - `Amount` (`Price`): Monetary value to transfer.
-- `Currency` (`string`): Currency code (must match source and destination account currency capability).
+- `Currency` (`Currency`): Currency code (defaults to `Currency.USD`; must match source and destination account currency capability).
 - `Destination` (`string`): Connected account identifier starting with `acc_`.
 
 ### [`Transfer`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Transfers/Transfer.cs)
 - `Id` (`string`): Starts with `tr_`.
 - `Amount` (`Price`): Transferred amount.
-- `Currency` (`string`): Three-letter currency code.
+- `Currency` (`Currency`): Three-letter currency code (e.g. `Currency.USD`).
 - `Destination` (`string`): Recipient connected account ID.
 - `Status` (`string`): `succeeded`, `pending`, `failed`.
 - `CreatedAt` (`DateTimeOffset`): Timestamp of creation.

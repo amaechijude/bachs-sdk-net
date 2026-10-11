@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using Bachs.Net.Common;
+using Bachs.Net.Models.Common;
 using Bachs.Net.Serialization;
 
 namespace Bachs.Net.Models.Transfers;
@@ -19,7 +20,7 @@ public sealed record Transfer
     public Price Amount { get; init; }
 
     [JsonPropertyName("currency")]
-    public string Currency { get; init; } = string.Empty;
+    public Currency Currency { get; init; } = Currency.USD;
 
     [JsonPropertyName("destination")]
     public string Destination { get; init; } = string.Empty;
@@ -37,7 +38,7 @@ public sealed record CreateTransferRequest
     public Price Amount { get; init; }
 
     [JsonPropertyName("currency")]
-    public string Currency { get; init; } = string.Empty;
+    public Currency Currency { get; init; } = Currency.USD;
 
     [JsonPropertyName("destination")]
     public string Destination { get; init; } = string.Empty;

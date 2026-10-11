@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Bachs.Net.Models.Common;
 using Bachs.Net.Serialization;
 
 namespace Bachs.Net.Models.Checkout;
@@ -52,10 +53,10 @@ public sealed record GetCheckoutSessionResponse
     public Price? Amount { get; init; }
 
     /// <summary>
-    /// Base currency code (e.g., 'USD', 'NGN').
+    /// Base currency code (e.g., Currency.USD, Currency.NGN).
     /// </summary>
     [JsonPropertyName("currency")]
-    public string? Currency { get; init; }
+    public Currency? Currency { get; init; }
 
     /// <summary>
     /// The reference set when creating the session; null if none set.
@@ -109,7 +110,7 @@ public sealed record GetCheckoutSessionResponse
     /// Currency the customer selected for billing.
     /// </summary>
     [JsonPropertyName("billing_currency")]
-    public string? BillingCurrency { get; init; }
+    public Currency? BillingCurrency { get; init; }
 
     /// <summary>
     /// The platform's cut of this sale in base currency.
@@ -259,7 +260,7 @@ public sealed record ResolvedProductItem
     /// Currency code for this line item.
     /// </summary>
     [JsonPropertyName("currency")]
-    public string Currency { get; init; } = string.Empty;
+    public Currency Currency { get; init; } = Currency.USD;
 
     /// <summary>
     /// Pricing mode: 'fixed', 'free', or 'custom'.
@@ -355,7 +356,7 @@ public sealed record CheckoutPaymentResponse
     /// Payment currency code.
     /// </summary>
     [JsonPropertyName("currency")]
-    public string? Currency { get; init; }
+    public Currency? Currency { get; init; }
 
     /// <summary>
     /// Processing fee for this payment converted to USD.
@@ -487,7 +488,7 @@ public sealed record CheckoutFeeInfo
     public Price Amount { get; init; }
 
     [JsonPropertyName("currency")]
-    public string Currency { get; init; } = string.Empty;
+    public Currency Currency { get; init; } = Currency.USD;
 }
 
 /// <summary>
@@ -508,7 +509,7 @@ public sealed record CheckoutPaymentProductItem
     public Price UnitAmount { get; init; }
 
     [JsonPropertyName("currency")]
-    public string Currency { get; init; } = string.Empty;
+    public Currency Currency { get; init; } = Currency.USD;
 
     [JsonPropertyName("line_total")]
     public Price LineTotal { get; init; }

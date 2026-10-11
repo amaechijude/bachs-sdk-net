@@ -89,7 +89,7 @@ Console.WriteLine($"Updated Schedule to: {updated.PayoutSchedule}");
 - `Available` (`Price`): Liquid funds available immediately for payouts or conversions.
 - `Pending` (`Price`): In-transit settlements from recent customer charges.
 - `Locked` (`Price`): Funds held for ongoing dispute resolutions or collateral reserves.
-- `Currency` (`string`): ISO currency code.
+- `Currency` (`Currency`): ISO currency code (e.g. `Currency.USD`).
 
 ### [`BalanceSettings`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Balances/Balance.cs)
 - `PayoutSchedule` (`string?`): Automation cadence (`manual`, `daily`, `weekly`, `monthly`).

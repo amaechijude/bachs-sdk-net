@@ -93,7 +93,7 @@ Console.WriteLine($"Dispute submitted! Status: {submitted.Status}"); // 'under_r
 - `Id` (`string`): Starts with `dp_`.
 - `ChargeId` (`string`): Disputed transaction identifier (`ch_...`).
 - `Amount` (`Price`): Monetary value under dispute.
-- `Currency` (`string`): Currency code.
+- `Currency` (`Currency`): Currency code (e.g. `Currency.USD`).
 - `Status` (`string`): `needs_response`, `under_review`, `won`, `lost`.
 - `Reason` (`string?`): Dispute code (e.g., `fraudulent`, `unrecognized`, `product_not_received`).
 - `EvidenceDueDate` (`DateTimeOffset?`): Final deadline to provide defense evidence.

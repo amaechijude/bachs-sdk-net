@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Bachs.Net.Models.Common;
 
 namespace Bachs.Net.Models.Misc;
 
@@ -8,7 +9,7 @@ public sealed record PaymentMethodInfo
     public string Method { get; init; } = string.Empty;
 
     [JsonPropertyName("currencies")]
-    public IReadOnlyList<string> Currencies { get; init; } = Array.Empty<string>();
+    public IReadOnlyList<Currency> Currencies { get; init; } = Array.Empty<Currency>();
 }
 
 public sealed record BankInfo

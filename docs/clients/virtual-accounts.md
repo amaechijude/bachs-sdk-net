@@ -27,11 +27,12 @@ Generate a virtual bank account for bank transfer collections:
 ```csharp
 using Bachs.Net.Clients;
 using Bachs.Net.Common;
+using Bachs.Net.Models.Common;
 using Bachs.Net.Models.VirtualAccounts;
 
 var account = await client.VirtualAccounts.CreateAsync(new CreateVirtualAccountRequest
 {
-    Currency = "NGN"
+    Currency = Currency.NGN // Defaults to Currency.USD
 }, new RequestOptions
 {
     IdempotencyKey = "va_provision_ngn_01"
@@ -46,7 +47,7 @@ Console.WriteLine($"Status: {account.Status}"); // 'active'
 #### Provisioning for a Customer or Connected Account:
 ```csharp
 var customerAccount = await client.VirtualAccounts.CreateAsync(
-    new CreateVirtualAccountRequest { Currency = "NGN" },
+    new CreateVirtualAccountRequest { Currency = Currency.NGN },
     new RequestOptions { AccountId = "acc_merchant_123" }
 );
 ```
@@ -66,14 +67,14 @@ Console.WriteLine($"Account: {existing.AccountNumber} ({existing.BankName})");
 ## Models
 
 ### [`CreateVirtualAccountRequest`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/VirtualAccounts/VirtualAccount.cs)
-- `Currency` (`string`): Target currency code (defaults to `"NGN"`).
+- `Currency` (`Currency`): Target currency code (defaults to `Currency.USD`).
 
 ### [`VirtualAccount`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/VirtualAccounts/VirtualAccount.cs)
 - `AccountNumber` (`string`): The 10-digit NUBAN account number.
 - `AccountName` (`string`): Beneficiary name returned upon bank lookup.
 - `BankName` (`string`): Financial institution name (e.g., Wema Bank, Sterling Bank).
 - `BankCode` (`string?`): Central bank code for the institution.
-- `Currency` (`string`): Currency code (`NGN`).
+- `Currency` (`Currency`): Currency code (`Currency.NGN`, `Currency.USD`, etc.).
 - `Status` (`string`): `active`, `suspended`.
 - `CreatedAt` (`DateTimeOffset`): Provisioning timestamp.
 

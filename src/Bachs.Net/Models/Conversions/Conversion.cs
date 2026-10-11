@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using Bachs.Net.Common;
+using Bachs.Net.Models.Common;
 using Bachs.Net.Serialization;
 
 namespace Bachs.Net.Models.Conversions;
@@ -19,13 +20,13 @@ public sealed record Conversion
     public string QuoteId { get; init; } = string.Empty;
 
     [JsonPropertyName("source_currency")]
-    public string SourceCurrency { get; init; } = string.Empty;
+    public Currency SourceCurrency { get; init; } = Currency.USD;
 
     [JsonPropertyName("source_amount")]
     public Price SourceAmount { get; init; }
 
     [JsonPropertyName("target_currency")]
-    public string TargetCurrency { get; init; } = string.Empty;
+    public Currency TargetCurrency { get; init; } = Currency.USD;
 
     [JsonPropertyName("target_amount")]
     public Price TargetAmount { get; init; }
@@ -49,13 +50,13 @@ public sealed record ConversionQuote
     public string QuoteId { get; init; } = string.Empty;
 
     [JsonPropertyName("source_currency")]
-    public string SourceCurrency { get; init; } = string.Empty;
+    public Currency SourceCurrency { get; init; } = Currency.USD;
 
     [JsonPropertyName("source_amount")]
     public Price SourceAmount { get; init; }
 
     [JsonPropertyName("target_currency")]
-    public string TargetCurrency { get; init; } = string.Empty;
+    public Currency TargetCurrency { get; init; } = Currency.USD;
 
     [JsonPropertyName("target_amount")]
     public Price TargetAmount { get; init; }
@@ -70,10 +71,10 @@ public sealed record ConversionQuote
 public sealed record CreateConversionQuoteRequest
 {
     [JsonPropertyName("source_currency")]
-    public string SourceCurrency { get; init; } = string.Empty;
+    public Currency SourceCurrency { get; init; } = Currency.USD;
 
     [JsonPropertyName("target_currency")]
-    public string TargetCurrency { get; init; } = string.Empty;
+    public Currency TargetCurrency { get; init; } = Currency.USD;
 
     [JsonPropertyName("amount")]
     public Price Amount { get; init; }

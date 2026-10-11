@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Bachs.Net.Models.Common;
 using Bachs.Net.Serialization;
 
 namespace Bachs.Net.Models.Balances;
@@ -46,10 +47,10 @@ public sealed record BalanceBucket
     public Price Pending { get; init; }
 
     /// <summary>
-    /// Currency code (e.g., "USD", "NGN").
+    /// Currency code (e.g. USD, NGN).
     /// </summary>
     [JsonPropertyName("currency")]
-    public string Currency { get; init; } = string.Empty;
+    public Currency Currency { get; init; } = Currency.USD;
 }
 
 /// <summary>

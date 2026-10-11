@@ -110,7 +110,7 @@ Console.WriteLine($"Total refunds issued for charge: {refunds.Data.Count}");
 - `Id` (`string`): Starts with `ref_`.
 - `PaymentId` (`string`): Target charge identifier.
 - `Amount` (`Price`): Monetary value refunded.
-- `Currency` (`string`): Currency code matching the original payment.
+- `Currency` (`Currency`): Currency code matching the original payment (e.g. `Currency.USD`).
 - `Status` (`string`): `pending`, `succeeded`, or `failed`.
 - `Reason` (`string?`): Reason provided during initiation.
 - `CreatedAt` (`DateTimeOffset`): Timestamp of refund creation.

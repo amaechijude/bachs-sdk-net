@@ -1,4 +1,5 @@
 using Bachs.Net.Models.Checkout;
+using Bachs.Net.Models.Common;
 using Bachs.Net.Models.Payouts;
 using Bachs.Net.Models.Products;
 using Bachs.Net.Models.Refunds;
@@ -15,7 +16,7 @@ public sealed class BachsSerializationTests
         var product = new ProductPrice
         {
             Amount = 29.5m,
-            Currency = "USD",
+            Currency = Currency.USD,
             PriceType = "fixed",
         };
 
@@ -35,7 +36,7 @@ public sealed class BachsSerializationTests
 
         Assert.NotNull(price);
         Assert.Equal(75000.00m, price.Amount);
-        Assert.Equal("NGN", price.Currency);
+        Assert.Equal(Currency.NGN, price.Currency);
     }
 
     [Fact]
@@ -71,7 +72,7 @@ public sealed class BachsSerializationTests
         var transfer1 = new CreateTransferRequest
         {
             Amount = 250.00m,
-            Currency = "USD",
+            Currency = Currency.USD,
             Destination = "acct_target_123",
         };
 
@@ -104,7 +105,7 @@ public sealed class BachsSerializationTests
         var request = new CreateProductRequest
         {
             Name = "Starter Plan",
-            Price = new ProductPriceRequest { Amount = 10.00m, Currency = "USD" },
+            Price = new ProductPriceRequest { Amount = 10.00m, Currency = Currency.USD },
             Description = null, // should be omitted
         };
 
