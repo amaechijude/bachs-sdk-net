@@ -44,8 +44,5 @@ public sealed record BachsWebhookEvent
     /// </summary>
     /// <typeparam name="T">Target model type.</typeparam>
     /// <returns>Deserialized event data object.</returns>
-    public T? GetData<T>()
-    {
-        return BachsJsonSerializer.Deserialize<T>(Data.GetRawText());
-    }
+    public T? GetData<T>() => BachsJsonSerializer.Deserialize<T>(Data.GetRawText());
 }

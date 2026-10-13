@@ -14,16 +14,18 @@ public static class CreateCheckoutSessionRequestBuilder
     /// </summary>
     /// <param name="items">The cart items to include.</param>
     /// <returns>A configured <see cref="ProductCartCheckoutRequestBuilder"/>.</returns>
-    public static ProductCartCheckoutRequestBuilder WithProductCart(IList<CheckoutCartItemRequest> items) =>
-        new ProductCartCheckoutRequestBuilder().WithProductCart(items);
+    public static ProductCartCheckoutRequestBuilder WithProductCart(
+        IList<CheckoutCartItemRequest> items
+    ) => new ProductCartCheckoutRequestBuilder().WithProductCart(items);
 
     /// <summary>
     /// Starts building a checkout session using catalog products.
     /// </summary>
     /// <param name="items">The cart items to include.</param>
     /// <returns>A configured <see cref="ProductCartCheckoutRequestBuilder"/>.</returns>
-    public static ProductCartCheckoutRequestBuilder WithProductCart(params CheckoutCartItemRequest[] items) =>
-        new ProductCartCheckoutRequestBuilder().WithProductCart(items);
+    public static ProductCartCheckoutRequestBuilder WithProductCart(
+        params CheckoutCartItemRequest[] items
+    ) => new ProductCartCheckoutRequestBuilder().WithProductCart(items);
 
     /// <summary>
     /// Starts building a checkout session using catalog products from an empty cart.
@@ -45,8 +47,10 @@ public static class CreateCheckoutSessionRequestBuilder
     /// <param name="amount">The base charge amount.</param>
     /// <param name="currency">The base currency code. Defaults to <see cref="Currency.USD"/>.</param>
     /// <returns>A configured <see cref="RawPricingCheckoutRequestBuilder"/>.</returns>
-    public static RawPricingCheckoutRequestBuilder WithPricing(Price amount, Currency currency = Currency.USD) =>
-        new RawPricingCheckoutRequestBuilder().WithPricing(amount, currency);
+    public static RawPricingCheckoutRequestBuilder WithPricing(
+        Price amount,
+        Currency currency = Currency.USD
+    ) => new RawPricingCheckoutRequestBuilder().WithPricing(amount, currency);
 
     /// <summary>
     /// Starts building a checkout session using raw ad-hoc pricing without catalog products.
@@ -57,7 +61,10 @@ public static class CreateCheckoutSessionRequestBuilder
     public static RawPricingCheckoutRequestBuilder WithPricing(Price amount, string currency)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(currency);
-        return new RawPricingCheckoutRequestBuilder().WithPricing(amount, Enum.Parse<Currency>(currency, true));
+        return new RawPricingCheckoutRequestBuilder().WithPricing(
+            amount,
+            Enum.Parse<Currency>(currency, true)
+        );
     }
 
     /// <summary>
@@ -65,8 +72,9 @@ public static class CreateCheckoutSessionRequestBuilder
     /// </summary>
     /// <param name="currency">The base currency code. Defaults to <see cref="Currency.USD"/>.</param>
     /// <returns>A new <see cref="RawPricingCheckoutRequestBuilder"/>.</returns>
-    public static RawPricingCheckoutRequestBuilder ForRawPricing(Currency currency = Currency.USD) =>
-        new RawPricingCheckoutRequestBuilder().WithCurrency(currency);
+    public static RawPricingCheckoutRequestBuilder ForRawPricing(
+        Currency currency = Currency.USD
+    ) => new RawPricingCheckoutRequestBuilder().WithCurrency(currency);
 
     /// <summary>
     /// Starts building a checkout session using raw ad-hoc pricing with a specified base currency.
@@ -76,7 +84,9 @@ public static class CreateCheckoutSessionRequestBuilder
     public static RawPricingCheckoutRequestBuilder ForRawPricing(string currency)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(currency);
-        return new RawPricingCheckoutRequestBuilder().WithCurrency(Enum.Parse<Currency>(currency, true));
+        return new RawPricingCheckoutRequestBuilder().WithCurrency(
+            Enum.Parse<Currency>(currency, true)
+        );
     }
 }
 
@@ -348,9 +358,7 @@ public sealed class ProductCartCheckoutRequestBuilder
     /// <summary>
     /// Sets the cart items.
     /// </summary>
-    public ProductCartCheckoutRequestBuilder WithProductCart(
-        params CheckoutCartItemRequest[] items
-    )
+    public ProductCartCheckoutRequestBuilder WithProductCart(params CheckoutCartItemRequest[] items)
     {
         ArgumentNullException.ThrowIfNull(items);
         _productCart = items.ToList();
@@ -472,7 +480,10 @@ public sealed class RawPricingCheckoutRequestBuilder
     /// <summary>
     /// Sets the charge amount and currency.
     /// </summary>
-    public RawPricingCheckoutRequestBuilder WithPricing(Price amount, Currency currency = Currency.USD)
+    public RawPricingCheckoutRequestBuilder WithPricing(
+        Price amount,
+        Currency currency = Currency.USD
+    )
     {
         _pricing = new CheckoutPricingRequest { Amount = amount, Currency = currency };
         return this;
@@ -537,10 +548,7 @@ public sealed class RawPricingCheckoutRequestBuilder
     /// </summary>
     public RawPricingCheckoutRequestBuilder WithPresetAmount(Price presetAmount)
     {
-        _pricing = (_pricing ?? new CheckoutPricingRequest()) with
-        {
-            PresetAmount = presetAmount,
-        };
+        _pricing = (_pricing ?? new CheckoutPricingRequest()) with { PresetAmount = presetAmount };
         return this;
     }
 

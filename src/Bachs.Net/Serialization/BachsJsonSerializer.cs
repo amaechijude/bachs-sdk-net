@@ -41,8 +41,6 @@ public static class BachsJsonSerializer
         };
 
         options.Converters.Add(new JsonStringEnumConverter());
-        options.Converters.Add(new DecimalStringConverter());
-        options.Converters.Add(new NullableDecimalStringConverter());
         options.Converters.Add(new PriceJsonConverter());
 
         return options;

@@ -164,12 +164,12 @@ public interface IBachsClient
         CancellationToken cancellationToken = default
     );
 
-    /// <summary>
-    /// Executes an HTTP request with retry handling and returns the complete <see cref="BachsResponse{TResponse}"/>.
-    /// </summary>
-    Task<BachsResponse<TResponse>> SendAsync<TResponse>(
-        HttpRequestMessage request,
-        RequestOptions? requestOptions = null,
-        CancellationToken cancellationToken = default
-    );
+    // /// <summary>
+    // /// Executes an HTTP request with retry handling and returns the complete <see cref="BachsResponse{TResponse}"/>.
+    // /// </summary>
+    // Task<BachsResponse<TResponse>> SendAsync<TResponse>(
+    //     HttpRequestMessage request,
+    //     RequestOptions? requestOptions = null,
+    //     CancellationToken cancellationToken = default
+    // );
 }

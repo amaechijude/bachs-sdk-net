@@ -9,29 +9,23 @@ public sealed class PriceJsonConverter : JsonConverter<Price>
     public override Price Read(ref Utf8JsonReader reader, Type type, JsonSerializerOptions options)
     {
         if (reader.TokenType == JsonTokenType.Number)
-        {
             return new Price(reader.GetDecimal());
-        }
 
         if (reader.TokenType == JsonTokenType.String)
         {
-            var str = reader.GetString();
-            if (string.IsNullOrWhiteSpace(str))
-            {
+            var str = reader.GetString().AsSpan();
+            if (str.IsEmpty || str.IsWhiteSpace())
                 return default;
-            }
 
             if (
                 decimal.TryParse(
-                    str.AsSpan(),
+                    str,
                     NumberStyles.AllowLeadingSign | NumberStyles.AllowDecimalPoint,
                     CultureInfo.InvariantCulture,
                     out var v
                 )
             )
-            {
                 return new Price(v);
-            }
 
             throw new JsonException($"Unable to parse '{str}' as Price.");
         }
