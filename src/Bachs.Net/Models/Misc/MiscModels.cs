@@ -9,7 +9,7 @@ public sealed record PaymentMethodInfo
     public string Method { get; init; } = string.Empty;
 
     [JsonPropertyName("currencies")]
-    public IReadOnlyList<Currency> Currencies { get; init; } = Array.Empty<Currency>();
+    public IReadOnlyList<BachsCurrency> Currencies { get; init; } = Array.Empty<BachsCurrency>();
 }
 
 public sealed record BankInfo

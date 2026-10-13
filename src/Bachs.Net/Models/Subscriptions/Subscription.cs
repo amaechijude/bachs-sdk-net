@@ -8,17 +8,28 @@ namespace Bachs.Net.Models.Subscriptions;
 /// </summary>
 public sealed record Subscription
 {
+    private readonly string? _id;
+    private readonly string? _subscriptionId;
+
     /// <summary>
     /// Unique identifier for the subscription (starts with 'sub_').
     /// </summary>
     [JsonPropertyName("id")]
-    public string Id { get; init; } = string.Empty;
+    public string Id
+    {
+        get => !string.IsNullOrEmpty(_id) ? _id : _subscriptionId ?? string.Empty;
+        init => _id = value;
+    }
 
     /// <summary>
-    /// Alias for <see cref="Id"/>.
+    /// Alias for <see cref="Id"/>, mapped to 'subscription_id' in webhook events.
     /// </summary>
-    [JsonIgnore]
-    public string SubscriptionId => Id;
+    [JsonPropertyName("subscription_id")]
+    public string SubscriptionId
+    {
+        get => !string.IsNullOrEmpty(_subscriptionId) ? _subscriptionId : _id ?? string.Empty;
+        init => _subscriptionId = value;
+    }
 
     /// <summary>
     /// ID of the customer associated with this subscription.

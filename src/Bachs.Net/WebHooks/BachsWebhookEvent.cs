@@ -34,6 +34,12 @@ public sealed record BachsWebhookEvent
     public string? OrganizationId { get; init; }
 
     /// <summary>
+    /// Origin account ID when the event came from a connected account (Connect events).
+    /// </summary>
+    [JsonPropertyName("account")]
+    public string? Account { get; init; }
+
+    /// <summary>
     /// Raw JSON element payload for the event data.
     /// </summary>
     [JsonPropertyName("data")]
@@ -45,4 +51,11 @@ public sealed record BachsWebhookEvent
     /// <typeparam name="T">Target model type.</typeparam>
     /// <returns>Deserialized event data object.</returns>
     public T? GetData<T>() => BachsJsonSerializer.Deserialize<T>(Data.GetRawText());
+
+    /// <summary>
+    /// Converts this raw webhook event into a strongly-typed <see cref="BachsTypedEvent"/>
+    /// for pattern matching and type-safe data handling.
+    /// </summary>
+    /// <returns>The parsed strongly-typed event record.</returns>
+    public BachsTypedEvent ToTypedEvent() => BachsTypedEventParser.Parse(this);
 }

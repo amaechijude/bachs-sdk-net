@@ -5,11 +5,11 @@ namespace Bachs.Test;
 public sealed class BachsClientOptionsTests
 {
     [Fact]
-    public void Validate_ThrowsInvalidOperationException_WhenApiKeyIsEmpty()
+    public void Validate_ThrowsBachsInvalidOperationException_WhenApiKeyIsEmpty()
     {
         var options = new BachsClientOptions { ApiKey = "" };
 
-        Assert.Throws<InvalidOperationException>(() => options.Validate());
+        Assert.Throws<BachsInvalidOperationException>(() => options.Validate());
     }
 
     [Fact]
@@ -52,19 +52,5 @@ public sealed class BachsClientOptionsTests
         var url = options.GetEffectiveBaseUrl();
 
         Assert.Equal("https://my-custom-proxy.internal/", url.ToString());
-    }
-
-    [Fact]
-    public void GetEffectiveBaseUrl_UsesEnvironment_WhenExplicitlyConfigured()
-    {
-        var options = new BachsClientOptions
-        {
-            ApiKey = "sk_sandbox_test",
-            Environment = BachsEnvironment.Production,
-        };
-
-        var url = options.GetEffectiveBaseUrl();
-
-        Assert.Equal("https://api.bachs.io/", url.ToString());
     }
 }

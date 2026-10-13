@@ -16,7 +16,7 @@ public sealed class BachsSerializationTests
         var product = new ProductPrice
         {
             Amount = 29.5m,
-            Currency = Currency.USD,
+            Currency = BachsCurrency.USD,
             PriceType = "fixed",
         };
 
@@ -36,7 +36,7 @@ public sealed class BachsSerializationTests
 
         Assert.NotNull(price);
         Assert.Equal(75000.00m, price.Amount);
-        Assert.Equal(Currency.NGN, price.Currency);
+        Assert.Equal(BachsCurrency.NGN, price.Currency);
     }
 
     [Fact]
@@ -72,7 +72,7 @@ public sealed class BachsSerializationTests
         var transfer1 = new CreateTransferRequest
         {
             Amount = 250.00m,
-            Currency = Currency.USD,
+            Currency = BachsCurrency.USD,
             Destination = "acct_target_123",
         };
 
@@ -105,7 +105,7 @@ public sealed class BachsSerializationTests
         var request = new CreateProductRequest
         {
             Name = "Starter Plan",
-            Price = new ProductPriceRequest { Amount = 10.00m, Currency = Currency.USD },
+            Price = new ProductPriceRequest { Amount = 10.00m, Currency = BachsCurrency.USD },
             Description = null, // should be omitted
         };
 

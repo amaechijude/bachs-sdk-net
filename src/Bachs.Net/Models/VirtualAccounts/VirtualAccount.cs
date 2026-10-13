@@ -21,7 +21,7 @@ public sealed record VirtualAccount
     public string? BankCode { get; init; }
 
     [JsonPropertyName("currency")]
-    public Currency Currency { get; init; } = Currency.USD;
+    public BachsCurrency Currency { get; init; } = BachsCurrency.USD;
 
     [JsonPropertyName("status")]
     public string Status { get; init; } = string.Empty;
@@ -33,5 +33,5 @@ public sealed record VirtualAccount
 public sealed record CreateVirtualAccountRequest
 {
     [JsonPropertyName("currency")]
-    public Currency Currency { get; init; } = Currency.USD;
+    public BachsCurrency Currency { get; init; } = BachsCurrency.USD;
 }

@@ -62,7 +62,7 @@ public sealed class CheckoutSessionTests
             )
             .WithSuccessUrl("https://example.com/checkout/success")
             .WithCancelUrl("https://example.com/checkout/cancel")
-            .WithBillingCurrency("USD")
+            .WithBillingCurrency(BachsCurrency.USD)
             .WithPaymentMethodTypes("USD_CARD", "NGN_BANK_TRANSFER")
             .WithReference("order_9876")
             .WithPlatformFee(5.00m)
@@ -83,7 +83,7 @@ public sealed class CheckoutSessionTests
         Assert.Equal("Jane Doe", request.Customer.Name);
         Assert.Equal("https://example.com/checkout/success", request.SuccessUrl);
         Assert.Equal("https://example.com/checkout/cancel", request.CancelUrl);
-        Assert.Equal(Currency.USD, request.BillingCurrency);
+        Assert.Equal(BachsCurrency.USD, request.BillingCurrency);
         Assert.Equal(2, request.PaymentMethodTypes?.Count);
         Assert.Equal("order_9876", request.Reference);
         Assert.Equal(5.00m, request.PlatformFee?.Value);
@@ -103,7 +103,7 @@ public sealed class CheckoutSessionTests
             .WithPricing(
                 new CheckoutPricingRequest
                 {
-                    Currency = Currency.USD,
+                    Currency = BachsCurrency.USD,
                     Amount = 49.99m,
                     PriceType = "fixed",
                 }
@@ -118,7 +118,7 @@ public sealed class CheckoutSessionTests
             .Build();
 
         Assert.NotNull(request.Pricing);
-        Assert.Equal(Currency.USD, request.Pricing.Currency);
+        Assert.Equal(BachsCurrency.USD, request.Pricing.Currency);
         Assert.Equal(49.99m, request.Pricing.Amount?.Value);
         Assert.Equal("fixed", request.Pricing.PriceType);
         Assert.NotNull(request.Pricing.CurrencyOptions);
@@ -159,7 +159,7 @@ public sealed class CheckoutSessionTests
             .Build();
 
         Assert.NotNull(request.Pricing);
-        Assert.Equal(Currency.USD, request.Pricing.Currency);
+        Assert.Equal(BachsCurrency.USD, request.Pricing.Currency);
         Assert.Equal(99.00m, request.Pricing.Amount?.Value);
         Assert.Equal("custom", request.Pricing.PriceType);
         Assert.Equal(20.00m, request.Pricing.PresetAmount?.Value);
@@ -172,7 +172,7 @@ public sealed class CheckoutSessionTests
     public void ProductCartBuilder_ThrowsWhenCartIsEmpty()
     {
         var builder = ProductCartCheckoutRequestBuilder.Create();
-        Assert.Throws<InvalidOperationException>(() => builder.Build());
+        Assert.Throws<BachsInvalidOperationException>(() => builder.Build());
     }
 
     [Fact]
@@ -184,7 +184,7 @@ public sealed class CheckoutSessionTests
             builder.AddProduct($"prod_{i}", 1);
         }
 
-        var ex = Assert.Throws<InvalidOperationException>(() => builder.Build());
+        var ex = Assert.Throws<BachsInvalidOperationException>(() => builder.Build());
         Assert.Contains("cannot contain more than 20 items", ex.Message);
     }
 
@@ -194,7 +194,7 @@ public sealed class CheckoutSessionTests
         var builder = ProductCartCheckoutRequestBuilder.Create();
         builder.AddProduct(new CheckoutCartItemRequest { ProductId = "   ", Quantity = 1 });
 
-        var ex = Assert.Throws<InvalidOperationException>(() => builder.Build());
+        var ex = Assert.Throws<BachsInvalidOperationException>(() => builder.Build());
         Assert.Contains("must specify a valid ProductId", ex.Message);
     }
 
@@ -204,7 +204,7 @@ public sealed class CheckoutSessionTests
         var builder = ProductCartCheckoutRequestBuilder.Create();
         builder.AddProduct(new CheckoutCartItemRequest { ProductId = "prod_valid", Quantity = 0 });
 
-        var ex = Assert.Throws<InvalidOperationException>(() => builder.Build());
+        var ex = Assert.Throws<BachsInvalidOperationException>(() => builder.Build());
         Assert.Contains("quantity of at least 1", ex.Message);
     }
 
@@ -212,15 +212,8 @@ public sealed class CheckoutSessionTests
     public void RawPricingBuilder_ThrowsWhenPricingNotConfigured()
     {
         var builder = RawPricingCheckoutRequestBuilder.Create();
-        var ex = Assert.Throws<InvalidOperationException>(() => builder.Build());
+        var ex = Assert.Throws<BachsInvalidOperationException>(() => builder.Build());
         Assert.Contains("requires pricing configuration", ex.Message);
-    }
-
-    [Fact]
-    public void RawPricingBuilder_ThrowsWhenCurrencyIsBlank()
-    {
-        var builder = RawPricingCheckoutRequestBuilder.Create();
-        Assert.Throws<ArgumentException>(() => builder.WithCurrency("   "));
     }
 
     [Fact]
@@ -324,7 +317,7 @@ public sealed class CheckoutSessionTests
         Assert.Equal("succeeded", response.PaymentStatus);
         Assert.Equal("CHECKOUT_SESSION", response.SourceType);
         Assert.Equal(50.00m, response.Amount?.Value);
-        Assert.Equal(Currency.USD, response.Currency);
+        Assert.Equal(BachsCurrency.USD, response.Currency);
         Assert.Equal("order_9876", response.Reference);
         Assert.NotNull(response.Charge);
         Assert.Equal("pay_1a2b3c4d5e", response.Charge.PaymentId);
@@ -343,7 +336,7 @@ public sealed class CheckoutSessionTests
         Assert.Equal("prod_abc123", response.Products[0].ProductId);
         Assert.Equal("Premium Plan", response.Products[0].ProductName);
         Assert.Equal(50.00m, response.Products[0].UnitAmount.Value);
-        Assert.Equal(Currency.NGN, response.BillingCurrency);
+        Assert.Equal(BachsCurrency.NGN, response.BillingCurrency);
         Assert.Equal("CART", response.SessionMode);
         Assert.Equal("ORD-9876", response.Metadata?["order_id"]);
         Assert.NotNull(response.CompletedAt);

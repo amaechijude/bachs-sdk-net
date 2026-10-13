@@ -490,3 +490,4 @@ src/Bachs.Net/api-reference/permissions
 src/Bachs.Net/tasks/**
 src/Bachs.Net/resume.sh
 src/Bachs.Net/Models/Checkout/doc/**
+CODE_ANALYSIS.md

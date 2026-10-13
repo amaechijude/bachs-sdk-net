@@ -109,7 +109,7 @@ public sealed record ProductPriceRequest
     /// Primary currency code (e.g., Currency.USD). Defaults to Currency.USD.
     /// </summary>
     [JsonPropertyName("currency")]
-    public Currency Currency { get; init; } = Currency.USD;
+    public BachsCurrency Currency { get; init; } = BachsCurrency.USD;
 
     /// <summary>
     /// Suggested price shown prefilled for custom pricing.

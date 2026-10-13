@@ -50,7 +50,7 @@ public sealed record BalanceBucket
     /// Currency code (e.g. USD, NGN).
     /// </summary>
     [JsonPropertyName("currency")]
-    public Currency Currency { get; init; } = Currency.USD;
+    public BachsCurrency Currency { get; init; } = BachsCurrency.USD;
 }
 
 /// <summary>

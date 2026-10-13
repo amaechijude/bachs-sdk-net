@@ -21,12 +21,6 @@ public sealed class BachsClientOptions
     public string ApiKey { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets the target environment. If not explicitly specified,
-    /// it is inferred automatically from the <see cref="ApiKey"/> prefix.
-    /// </summary>
-    public BachsEnvironment? Environment { get; set; }
-
-    /// <summary>
     /// Gets or sets an explicit base URL to override standard sandbox or production URLs.
     /// Useful for testing, proxies, or mock servers.
     /// </summary>
@@ -84,32 +78,16 @@ public sealed class BachsClientOptions
     public Uri GetEffectiveBaseUrl()
     {
         if (!string.IsNullOrWhiteSpace(BaseUrl))
-        {
             return new Uri(BaseUrl.TrimEnd('/') + "/");
-        }
-
-        if (Environment.HasValue)
-        {
-            return Environment.Value switch
-            {
-                BachsEnvironment.Production => new Uri(DefaultProductionBaseUrl + "/"),
-                BachsEnvironment.Sandbox => new Uri(DefaultSandboxBaseUrl + "/"),
-                _ => new Uri(DefaultSandboxBaseUrl + "/"),
-            };
-        }
 
         // Infer from API Key prefix
         if (!string.IsNullOrWhiteSpace(ApiKey))
         {
             if (ApiKey.StartsWith("sk_live_", StringComparison.OrdinalIgnoreCase))
-            {
                 return new Uri(DefaultProductionBaseUrl + "/");
-            }
 
             if (ApiKey.StartsWith("sk_sandbox_", StringComparison.OrdinalIgnoreCase))
-            {
                 return new Uri(DefaultSandboxBaseUrl + "/");
-            }
         }
 
         // Default to sandbox for safety
@@ -119,19 +97,15 @@ public sealed class BachsClientOptions
     /// <summary>
     /// Validates the configuration options.
     /// </summary>
-    /// <exception cref="InvalidOperationException">Thrown if required settings are missing or invalid.</exception>
+    /// <exception cref="BachsInvalidOperationException">Thrown if required settings are missing or invalid.</exception>
     public void Validate()
     {
         if (string.IsNullOrWhiteSpace(ApiKey))
-        {
-            throw new InvalidOperationException(
+            throw new BachsInvalidOperationException(
                 "A Bachs API key is required. Provide a secret key starting with 'sk_sandbox_' or 'sk_live_'."
             );
-        }
 
         if (MaxRetries < 0)
-        {
-            throw new InvalidOperationException("MaxRetries cannot be negative.");
-        }
+            throw new BachsInvalidOperationException("MaxRetries cannot be negative.");
     }
 }

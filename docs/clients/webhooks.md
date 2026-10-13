@@ -15,8 +15,10 @@ In addition to the client, the SDK provides the static [`BachsWebhook`](https://
 
 | Method | HTTP | Path | Description |
 |---|---|---|---|
-| [`ValidateEvent`](#cryptographic-signature-verification) | - | Local | Validates signature, verifies timestamp tolerance, and parses incoming webhook event. |
-| [`TryValidateEvent`](#cryptographic-signature-verification) | - | Local | Safely validates an incoming webhook delivery without throwing exceptions. |
+| [`ValidateTypedEvent`](#cryptographic-signature-verification) | - | Local | Validates signature, verifies timestamp tolerance, and parses into a strongly-typed `BachsTypedEvent`. |
+| [`TryValidateTypedEvent`](#cryptographic-signature-verification) | - | Local | Safely validates and parses into a `BachsTypedEvent` without throwing exceptions. |
+| [`ValidateEvent`](#cryptographic-signature-verification) | - | Local | Validates signature, verifies timestamp tolerance, and parses incoming raw webhook event. |
+| [`TryValidateEvent`](#cryptographic-signature-verification) | - | Local | Safely validates an incoming raw webhook delivery without throwing exceptions. |
 | [`VerifySignature`](#cryptographic-signature-verification) | - | Local | Cryptographically verifies the webhook signature header against payload. |
 | [`CreateEndpointAsync`](#1-create-a-webhook-endpoint) | `POST` | `/v1/webhooks/endpoints` | Registers a new HTTPS destination endpoint and generates a signing secret. |
 | [`GetEndpointAsync`](#2-retrieve-an-endpoint) | `GET` | `/v1/webhooks/endpoints/{endpointId}` | Retrieves endpoint details and subscribed topics. |
@@ -148,21 +150,25 @@ app.MapPost("/webhooks/bachs", async (HttpRequest request, IWebhooksClient webho
 
     try
     {
-        // Validates HMAC SHA-256 signature, verifies timestamp tolerance (5 minutes),
-        // and returns the strongly-typed event. Uses BachsClientOptions.WebhookSecret by default.
-        var webhookEvent = webhooks.ValidateEvent(
+        // 1. Strongly-Typed Event Validation (Recommended):
+        // Automatically verifies HMAC signature and timestamp, and returns a strongly-typed event record.
+        var bachsEvent = webhooks.ValidateTypedEvent(
             rawPayload,
             signature,
             timestampHeader: timestamp
         );
 
-        if (webhookEvent.Type == "collection.succeeded")
+        // Pattern-match across events with zero magic strings and strongly-typed data payloads:
+        return bachsEvent switch
         {
-            var paymentData = webhookEvent.GetData<Dictionary<string, object>>();
-            // Fulfill purchase
-        }
-
-        return Results.Ok();
+            CollectionSucceededEvent e => HandlePayment(e.Data),           // e.Data is strongly-typed Payment
+            CheckoutCompletedEvent e   => HandleCheckout(e.Data),          // e.Data is GetCheckoutSessionResponse
+            PayoutPaidEvent e          => HandlePayout(e.Data),            // e.Data is Payout
+            SubscriptionCreatedEvent e => HandleSubscription(e.Data),      // e.Data is Subscription
+            InvoicePaidEvent e          => HandleInvoice(e.Data),           // e.Data is InvoiceEventData
+            UnknownBachsEvent e        => Results.Ok(),                    // Forward-compatible fallback
+            _                          => Results.Ok()
+        };
     }
     catch (BachsException ex)
     {
@@ -171,20 +177,33 @@ app.MapPost("/webhooks/bachs", async (HttpRequest request, IWebhooksClient webho
 });
 ```
 
-> **Tip**: You can also use `webhooks.TryValidateEvent(rawPayload, signature, out var webhookEvent)` if you prefer non-throwing control flow.
+> **Tip**: You can also use `webhooks.TryValidateTypedEvent(rawPayload, signature, out var typedEvent)` if you prefer non-throwing control flow.
 
 ### Validating via Static `BachsWebhook`
 
 ```csharp
 using Bachs.Net.WebHooks;
 
-var webhookEvent = BachsWebhook.ValidateEvent(
+// Strongly-typed event construction:
+var typedEvent = BachsWebhook.ConstructTypedEvent(
     rawPayload,
     signature,
     secret: config["Bachs:WebhookSecret"]!,
     toleranceSeconds: 300,
     timestampHeader: timestamp
 );
+
+// Or switch directly on raw event using event constants:
+var rawEvent = BachsWebhook.ConstructEvent(rawPayload, signature, config["Bachs:WebhookSecret"]!);
+switch (rawEvent.Type)
+{
+    case BachsEventTypes.CollectionSucceeded:
+        var payment = rawEvent.GetData<Payment>();
+        break;
+    case BachsEventTypes.CheckoutCompleted:
+        var checkout = rawEvent.GetData<GetCheckoutSessionResponse>();
+        break;
+}
 ```
 
 ---

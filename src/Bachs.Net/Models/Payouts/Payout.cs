@@ -11,17 +11,28 @@ namespace Bachs.Net.Models.Payouts;
 /// </summary>
 public sealed record Payout
 {
+    private readonly string? _id;
+    private readonly string? _withdrawalId;
+
     /// <summary>
     /// Unique identifier for the payout (withdrawal ID).
     /// </summary>
     [JsonPropertyName("id")]
-    public string Id { get; init; } = string.Empty;
+    public string Id
+    {
+        get => !string.IsNullOrEmpty(_id) ? _id : _withdrawalId ?? string.Empty;
+        init => _id = value;
+    }
 
     /// <summary>
-    /// Alias for <see cref="Id"/>.
+    /// Alias for <see cref="Id"/>, mapped to 'withdrawal_id' in webhook events.
     /// </summary>
-    [JsonIgnore]
-    public string WithdrawalId => Id;
+    [JsonPropertyName("withdrawal_id")]
+    public string WithdrawalId
+    {
+        get => !string.IsNullOrEmpty(_withdrawalId) ? _withdrawalId : _id ?? string.Empty;
+        init => _withdrawalId = value;
+    }
 
     /// <summary>
     /// The payout amount.
@@ -33,7 +44,7 @@ public sealed record Payout
     /// The currency of the payout.
     /// </summary>
     [JsonPropertyName("currency")]
-    public Currency Currency { get; init; } = Currency.USD;
+    public BachsCurrency Currency { get; init; } = BachsCurrency.USD;
 
     /// <summary>
     /// ID of the destination bank account, mobile money wallet, or crypto wallet.
@@ -52,6 +63,42 @@ public sealed record Payout
     /// </summary>
     [JsonPropertyName("reference")]
     public string? Reference { get; init; }
+
+    /// <summary>
+    /// Source currency for FX payouts.
+    /// </summary>
+    [JsonPropertyName("from_currency")]
+    public BachsCurrency? FromCurrency { get; init; }
+
+    /// <summary>
+    /// Destination currency for FX payouts.
+    /// </summary>
+    [JsonPropertyName("to_currency")]
+    public BachsCurrency? ToCurrency { get; init; }
+
+    /// <summary>
+    /// Applied exchange rate.
+    /// </summary>
+    [JsonPropertyName("exchange_rate")]
+    public decimal? ExchangeRate { get; init; }
+
+    /// <summary>
+    /// Converted payout amount at destination.
+    /// </summary>
+    [JsonPropertyName("to_amount")]
+    public Price? ToAmount { get; init; }
+
+    /// <summary>
+    /// Withdrawal fee deducted.
+    /// </summary>
+    [JsonPropertyName("withdrawal_fee")]
+    public Price? WithdrawalFee { get; init; }
+
+    /// <summary>
+    /// Net amount debited from source currency.
+    /// </summary>
+    [JsonPropertyName("net_from_amount")]
+    public Price? NetFromAmount { get; init; }
 
     /// <summary>
     /// When the payout was created.
@@ -78,10 +125,10 @@ public sealed record CreatePayoutRequest
     public Price Amount { get; init; }
 
     /// <summary>
-    /// The currency of the payout. Defaults to <see cref="Currency.USD"/>.
+    /// The currency of the payout. Defaults to <see cref="BachsCurrency.USD"/>.
     /// </summary>
     [JsonPropertyName("currency")]
-    public Currency Currency { get; init; } = Currency.USD;
+    public BachsCurrency Currency { get; init; } = BachsCurrency.USD;
 
     /// <summary>
     /// Unique reference for this payout.
@@ -105,13 +152,13 @@ public sealed record PayoutQuote
     public string QuoteId { get; init; } = string.Empty;
 
     [JsonPropertyName("source_currency")]
-    public Currency SourceCurrency { get; init; } = Currency.USD;
+    public BachsCurrency SourceCurrency { get; init; } = BachsCurrency.USD;
 
     [JsonPropertyName("source_amount")]
     public Price SourceAmount { get; init; }
 
     [JsonPropertyName("destination_currency")]
-    public Currency DestinationCurrency { get; init; } = Currency.USD;
+    public BachsCurrency DestinationCurrency { get; init; } = BachsCurrency.USD;
 
     [JsonPropertyName("destination_amount")]
     public Price DestinationAmount { get; init; }
@@ -135,7 +182,7 @@ public sealed record CreatePayoutQuoteRequest
     public Price Amount { get; init; }
 
     [JsonPropertyName("currency")]
-    public Currency Currency { get; init; } = Currency.USD;
+    public BachsCurrency Currency { get; init; } = BachsCurrency.USD;
 }
 
 /// <summary>
@@ -153,7 +200,7 @@ public sealed record PayoutDestination
     public string Type { get; init; } = string.Empty;
 
     [JsonPropertyName("currency")]
-    public Currency Currency { get; init; } = Currency.USD;
+    public BachsCurrency Currency { get; init; } = BachsCurrency.USD;
 
     [JsonPropertyName("is_usable")]
     public bool IsUsable { get; init; }
@@ -174,7 +221,7 @@ public sealed record CreatePayoutDestinationRequest
     public string Type { get; init; } = string.Empty;
 
     [JsonPropertyName("currency")]
-    public Currency Currency { get; init; } = Currency.USD;
+    public BachsCurrency Currency { get; init; } = BachsCurrency.USD;
 
     [JsonPropertyName("details")]
     public IDictionary<string, object?> Details { get; init; } = new Dictionary<string, object?>();

@@ -2,8 +2,11 @@ using System.Text.Json.Serialization;
 
 namespace Bachs.Net.Models.Common;
 
+/// <summary>
+/// Represents the supported currencies for billing and payments.
+/// </summary>
 [JsonConverter(typeof(JsonStringEnumConverter))]
-public enum Currency
+public enum BachsCurrency
 {
     // Fiat currencies
     /// <summary>Ghanaian cedi.</summary>

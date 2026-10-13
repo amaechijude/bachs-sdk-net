@@ -8,11 +8,22 @@ namespace Bachs.Net.Models.Accounts;
 /// </summary>
 public sealed record Account
 {
-    [JsonPropertyName("id")]
-    public string Id { get; init; } = string.Empty;
+    private readonly string? _id;
+    private readonly string? _accountId;
 
-    [JsonIgnore]
-    public string AccountId => Id;
+    [JsonPropertyName("id")]
+    public string Id
+    {
+        get => !string.IsNullOrEmpty(_id) ? _id : _accountId ?? string.Empty;
+        init => _id = value;
+    }
+
+    [JsonPropertyName("account_id")]
+    public string AccountId
+    {
+        get => !string.IsNullOrEmpty(_accountId) ? _accountId : _id ?? string.Empty;
+        init => _accountId = value;
+    }
 
     [JsonPropertyName("type")]
     public string Type { get; init; } = string.Empty;

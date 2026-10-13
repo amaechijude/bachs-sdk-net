@@ -10,17 +10,28 @@ namespace Bachs.Net.Models.Payments;
 /// </summary>
 public sealed record Payment
 {
+    private readonly string? _id;
+    private readonly string? _chargeId;
+
     /// <summary>
     /// Unique identifier for the payment (starts with 'ch_').
     /// </summary>
     [JsonPropertyName("id")]
-    public string Id { get; init; } = string.Empty;
+    public string Id
+    {
+        get => !string.IsNullOrEmpty(_id) ? _id : _chargeId ?? string.Empty;
+        init => _id = value;
+    }
 
     /// <summary>
-    /// Alias for <see cref="Id"/>.
+    /// Alias for <see cref="Id"/>, also mapped to 'charge_id' in webhook events.
     /// </summary>
-    [JsonIgnore]
-    public string ChargeId => Id;
+    [JsonPropertyName("charge_id")]
+    public string ChargeId
+    {
+        get => !string.IsNullOrEmpty(_chargeId) ? _chargeId : _id ?? string.Empty;
+        init => _chargeId = value;
+    }
 
     /// <summary>
     /// The payment amount as a Price.
@@ -32,7 +43,7 @@ public sealed record Payment
     /// Currency code (e.g., Currency.USD, Currency.NGN).
     /// </summary>
     [JsonPropertyName("currency")]
-    public Currency Currency { get; init; } = Currency.USD;
+    public BachsCurrency Currency { get; init; } = BachsCurrency.USD;
 
     /// <summary>
     /// Status of the payment (e.g., 'SUCCEEDED', 'PROCESSING', 'FAILED', 'UNDERPAID').
@@ -63,6 +74,36 @@ public sealed record Payment
     /// </summary>
     [JsonPropertyName("fees")]
     public PaymentFees? Fees { get; init; }
+
+    /// <summary>
+    /// Amount settled to the merchant.
+    /// </summary>
+    [JsonPropertyName("settlement_amount")]
+    public Price? SettlementAmount { get; init; }
+
+    /// <summary>
+    /// Settlement currency code.
+    /// </summary>
+    [JsonPropertyName("settlement_currency")]
+    public BachsCurrency? SettlementCurrency { get; init; }
+
+    /// <summary>
+    /// Processing fee charged on the payment.
+    /// </summary>
+    [JsonPropertyName("processing_fee")]
+    public Price? ProcessingFee { get; init; }
+
+    /// <summary>
+    /// Processing fee currency code.
+    /// </summary>
+    [JsonPropertyName("processing_fee_currency")]
+    public BachsCurrency? ProcessingFeeCurrency { get; init; }
+
+    /// <summary>
+    /// Who bears the processing fee ('merchant' or 'customer').
+    /// </summary>
+    [JsonPropertyName("fee_bearer")]
+    public string? FeeBearer { get; init; }
 
     /// <summary>
     /// Total amount refunded against this payment so far.
@@ -104,7 +145,7 @@ public sealed record PaymentFees
     public Price Amount { get; init; }
 
     [JsonPropertyName("currency")]
-    public Currency Currency { get; init; } = Currency.USD;
+    public BachsCurrency Currency { get; init; } = BachsCurrency.USD;
 }
 
 /// <summary>

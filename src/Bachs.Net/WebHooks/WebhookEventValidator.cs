@@ -33,16 +33,12 @@ public sealed class WebhookEventValidator : IWebhookEventValidator, IWebhookVali
     private string ResolveSecret(string? secret)
     {
         if (!string.IsNullOrWhiteSpace(secret))
-        {
             return secret;
-        }
 
         if (!string.IsNullOrWhiteSpace(_defaultSecret))
-        {
             return _defaultSecret;
-        }
 
-        throw new InvalidOperationException(
+        throw new BachsInvalidOperationException(
             "Webhook secret must be provided either via the method parameter or configured default secret."
         );
     }
@@ -190,4 +186,109 @@ public sealed class WebhookEventValidator : IWebhookEventValidator, IWebhookVali
         int toleranceSeconds = BachsWebhook.DefaultToleranceSeconds,
         string? timestampHeader = null
     ) => ValidateEvent(payloadBytes, signatureHeader, secret, toleranceSeconds, timestampHeader);
+
+    /// <inheritdoc />
+    public BachsTypedEvent ValidateTypedEvent(
+        string payload,
+        string signatureHeader,
+        string? secret = null,
+        int toleranceSeconds = BachsWebhook.DefaultToleranceSeconds,
+        string? timestampHeader = null
+    ) =>
+        ValidateEvent(payload, signatureHeader, secret, toleranceSeconds, timestampHeader)
+            .ToTypedEvent();
+
+    /// <inheritdoc />
+    public BachsTypedEvent ValidateTypedEvent(
+        byte[] payloadBytes,
+        string signatureHeader,
+        string? secret = null,
+        int toleranceSeconds = BachsWebhook.DefaultToleranceSeconds,
+        string? timestampHeader = null
+    ) =>
+        ValidateEvent(payloadBytes, signatureHeader, secret, toleranceSeconds, timestampHeader)
+            .ToTypedEvent();
+
+    /// <inheritdoc />
+    public bool TryValidateTypedEvent(
+        string payload,
+        string signatureHeader,
+        [NotNullWhen(true)] out BachsTypedEvent? typedEvent,
+        string? secret = null,
+        int toleranceSeconds = BachsWebhook.DefaultToleranceSeconds,
+        string? timestampHeader = null
+    )
+    {
+        if (
+            TryValidateEvent(
+                payload,
+                signatureHeader,
+                out var rawEvent,
+                secret,
+                toleranceSeconds,
+                timestampHeader
+            )
+        )
+        {
+            typedEvent = rawEvent.ToTypedEvent();
+            return true;
+        }
+
+        typedEvent = null;
+        return false;
+    }
+
+    /// <inheritdoc />
+    public bool TryValidateTypedEvent(
+        byte[] payloadBytes,
+        string signatureHeader,
+        [NotNullWhen(true)] out BachsTypedEvent? typedEvent,
+        string? secret = null,
+        int toleranceSeconds = BachsWebhook.DefaultToleranceSeconds,
+        string? timestampHeader = null
+    )
+    {
+        if (
+            TryValidateEvent(
+                payloadBytes,
+                signatureHeader,
+                out var rawEvent,
+                secret,
+                toleranceSeconds,
+                timestampHeader
+            )
+        )
+        {
+            typedEvent = rawEvent.ToTypedEvent();
+            return true;
+        }
+
+        typedEvent = null;
+        return false;
+    }
+
+    /// <inheritdoc />
+    public BachsTypedEvent ConstructTypedEvent(
+        string payload,
+        string signatureHeader,
+        string? secret = null,
+        int toleranceSeconds = BachsWebhook.DefaultToleranceSeconds,
+        string? timestampHeader = null
+    ) => ValidateTypedEvent(payload, signatureHeader, secret, toleranceSeconds, timestampHeader);
+
+    /// <inheritdoc />
+    public BachsTypedEvent ConstructTypedEvent(
+        byte[] payloadBytes,
+        string signatureHeader,
+        string? secret = null,
+        int toleranceSeconds = BachsWebhook.DefaultToleranceSeconds,
+        string? timestampHeader = null
+    ) =>
+        ValidateTypedEvent(
+            payloadBytes,
+            signatureHeader,
+            secret,
+            toleranceSeconds,
+            timestampHeader
+        );
 }

@@ -176,7 +176,7 @@ public static class BachsWebhook
 
         using var hmac = new HMACSHA256(secretBytes);
         var hash = hmac.ComputeHash(combinedBytes);
-        return Convert.ToHexStringLower(hash);
+        return Convert.ToHexString(hash);
     }
 
     /// <summary>
@@ -374,5 +374,138 @@ public static class BachsWebhook
             webhookEvent = null;
             return false;
         }
+    }
+
+    /// <summary>
+    /// Verifies the webhook signature and deserializes the payload into a strongly-typed <see cref="BachsTypedEvent"/>.
+    /// </summary>
+    public static BachsTypedEvent ConstructTypedEvent(
+        string payload,
+        string signatureHeader,
+        string secret,
+        int toleranceSeconds = DefaultToleranceSeconds,
+        string? timestampHeader = null
+    )
+    {
+        var rawEvent = ConstructEvent(
+            payload,
+            signatureHeader,
+            secret,
+            toleranceSeconds,
+            timestampHeader
+        );
+        return rawEvent.ToTypedEvent();
+    }
+
+    /// <summary>
+    /// Verifies the webhook signature and deserializes the payload bytes into a strongly-typed <see cref="BachsTypedEvent"/>.
+    /// </summary>
+    public static BachsTypedEvent ConstructTypedEvent(
+        byte[] payloadBytes,
+        string signatureHeader,
+        string secret,
+        int toleranceSeconds = DefaultToleranceSeconds,
+        string? timestampHeader = null
+    )
+    {
+        var rawEvent = ConstructEvent(
+            payloadBytes,
+            signatureHeader,
+            secret,
+            toleranceSeconds,
+            timestampHeader
+        );
+        return rawEvent.ToTypedEvent();
+    }
+
+    /// <summary>
+    /// Validates the webhook signature and deserializes the payload into a strongly-typed <see cref="BachsTypedEvent"/>.
+    /// </summary>
+    public static BachsTypedEvent ValidateTypedEvent(
+        string payload,
+        string signatureHeader,
+        string secret,
+        int toleranceSeconds = DefaultToleranceSeconds,
+        string? timestampHeader = null
+    ) => ConstructTypedEvent(payload, signatureHeader, secret, toleranceSeconds, timestampHeader);
+
+    /// <summary>
+    /// Validates the webhook signature and deserializes the payload bytes into a strongly-typed <see cref="BachsTypedEvent"/>.
+    /// </summary>
+    public static BachsTypedEvent ValidateTypedEvent(
+        byte[] payloadBytes,
+        string signatureHeader,
+        string secret,
+        int toleranceSeconds = DefaultToleranceSeconds,
+        string? timestampHeader = null
+    ) =>
+        ConstructTypedEvent(
+            payloadBytes,
+            signatureHeader,
+            secret,
+            toleranceSeconds,
+            timestampHeader
+        );
+
+    /// <summary>
+    /// Attempts to validate incoming webhook payload and signature into a strongly-typed <see cref="BachsTypedEvent"/> without throwing exceptions.
+    /// </summary>
+    public static bool TryValidateTypedEvent(
+        string payload,
+        string signatureHeader,
+        string secret,
+        [NotNullWhen(true)] out BachsTypedEvent? typedEvent,
+        int toleranceSeconds = DefaultToleranceSeconds,
+        string? timestampHeader = null
+    )
+    {
+        if (
+            TryValidateEvent(
+                payload,
+                signatureHeader,
+                secret,
+                out var rawEvent,
+                toleranceSeconds,
+                timestampHeader
+            )
+        )
+        {
+            typedEvent = rawEvent.ToTypedEvent();
+            return true;
+        }
+
+        typedEvent = null;
+        return false;
+    }
+
+    /// <summary>
+    /// Attempts to validate incoming webhook payload bytes and signature into a strongly-typed <see cref="BachsTypedEvent"/> without throwing exceptions.
+    /// </summary>
+    public static bool TryValidateTypedEvent(
+        byte[] payloadBytes,
+        string signatureHeader,
+        string secret,
+        [NotNullWhen(true)] out BachsTypedEvent? typedEvent,
+        int toleranceSeconds = DefaultToleranceSeconds,
+        string? timestampHeader = null
+    )
+    {
+        if (
+            TryValidateEvent(
+                payloadBytes,
+                signatureHeader,
+                secret,
+                out var rawEvent,
+                toleranceSeconds,
+                timestampHeader
+            )
+        )
+        {
+            typedEvent = rawEvent.ToTypedEvent();
+            return true;
+        }
+
+        typedEvent = null;
+        return false;
     }
 }

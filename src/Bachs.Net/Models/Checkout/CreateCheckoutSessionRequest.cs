@@ -57,7 +57,7 @@ public sealed record CreateCheckoutSessionRequest
     /// If omitted, defaults to product pricing currency.
     /// </summary>
     [JsonPropertyName("billing_currency")]
-    public Currency? BillingCurrency { get; init; }
+    public BachsCurrency? BillingCurrency { get; init; }
 
     /// <summary>
     /// Restricts checkout to specific payment methods (e.g. 'USD_CARD', 'NGN_BANK_TRANSFER', 'MOMO_GHS', 'CRYPTO').
@@ -161,7 +161,7 @@ public sealed record CheckoutItemPricingOverrideRequest
     /// Currency code (e.g., Currency.USD).
     /// </summary>
     [JsonPropertyName("currency")]
-    public Currency? Currency { get; init; }
+    public BachsCurrency? Currency { get; init; }
 
     /// <summary>
     /// Suggested price shown prefilled for custom/pay-what-you-want pricing.
@@ -191,7 +191,7 @@ public sealed record CheckoutPricingRequest
     /// The currency of the charge (e.g. Currency.USD, Currency.NGN). Defaults to Currency.USD.
     /// </summary>
     [JsonPropertyName("currency")]
-    public Currency Currency { get; init; } = Currency.USD;
+    public BachsCurrency Currency { get; init; } = BachsCurrency.USD;
 
     /// <summary>
     /// The charge amount (e.g., "42.00"). Required for fixed pricing; omit for custom/free pricing.

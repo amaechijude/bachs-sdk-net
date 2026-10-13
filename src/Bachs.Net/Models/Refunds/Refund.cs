@@ -10,17 +10,28 @@ namespace Bachs.Net.Models.Refunds;
 /// </summary>
 public sealed record Refund
 {
+    private readonly string? _id;
+    private readonly string? _refundId;
+
     /// <summary>
     /// Unique identifier for the refund (starts with 'ref_').
     /// </summary>
     [JsonPropertyName("id")]
-    public string Id { get; init; } = string.Empty;
+    public string Id
+    {
+        get => !string.IsNullOrEmpty(_id) ? _id : _refundId ?? string.Empty;
+        init => _id = value;
+    }
 
     /// <summary>
-    /// Alias for <see cref="Id"/>.
+    /// Alias for <see cref="Id"/>, mapped to 'refund_id' in webhook events.
     /// </summary>
-    [JsonIgnore]
-    public string RefundId => Id;
+    [JsonPropertyName("refund_id")]
+    public string RefundId
+    {
+        get => !string.IsNullOrEmpty(_refundId) ? _refundId : _id ?? string.Empty;
+        init => _refundId = value;
+    }
 
     /// <summary>
     /// ID of the charge/payment being refunded (starts with 'ch_').
@@ -35,10 +46,34 @@ public sealed record Refund
     public Price Amount { get; init; }
 
     /// <summary>
+    /// Requested refund amount in webhook events.
+    /// </summary>
+    [JsonPropertyName("requested_amount")]
+    public Price? RequestedAmount { get; init; }
+
+    /// <summary>
+    /// Total refunded amount.
+    /// </summary>
+    [JsonPropertyName("refunded_amount")]
+    public Price? RefundedAmount { get; init; }
+
+    /// <summary>
+    /// Refund fee amount.
+    /// </summary>
+    [JsonPropertyName("refund_fee_amount")]
+    public Price? RefundFeeAmount { get; init; }
+
+    /// <summary>
+    /// Who bears the refund fee ('merchant' or 'customer').
+    /// </summary>
+    [JsonPropertyName("fee_bearer")]
+    public string? FeeBearer { get; init; }
+
+    /// <summary>
     /// Currency code (e.g., Currency.USD).
     /// </summary>
     [JsonPropertyName("currency")]
-    public Currency Currency { get; init; } = Currency.USD;
+    public BachsCurrency Currency { get; init; } = BachsCurrency.USD;
 
     /// <summary>
     /// Status of the refund ('succeeded', 'processing', 'failed').

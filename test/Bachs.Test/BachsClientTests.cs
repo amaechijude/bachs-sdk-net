@@ -96,7 +96,11 @@ public sealed class BachsClientTests
         var result = await client.CheckoutSessions.CreateAsync(
             new CreateCheckoutSessionRequest
             {
-                Pricing = new CheckoutPricingRequest { Currency = Currency.USD, Amount = 50.00m },
+                Pricing = new CheckoutPricingRequest
+                {
+                    Currency = BachsCurrency.USD,
+                    Amount = 50.00m,
+                },
                 SuccessUrl = "https://example.com/success",
             },
             requestOptions

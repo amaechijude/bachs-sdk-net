@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using Bachs.Net.Common;
 
 namespace Bachs.Net.WebHooks;
 
@@ -18,7 +19,7 @@ public interface IWebhookEventValidator
     /// <param name="timestampHeader">Optional 'X-Bachs-Timestamp' header when using V1 signatures.</param>
     /// <returns>The verified and parsed <see cref="BachsWebhookEvent"/>.</returns>
     /// <exception cref="Common.BachsException">Thrown if signature verification fails or payload is invalid.</exception>
-    /// <exception cref="InvalidOperationException">Thrown if secret is not provided and no default secret is configured.</exception>
+    /// <exception cref="BachsInvalidOperationException">Thrown if secret is not provided and no default secret is configured.</exception>
     BachsWebhookEvent ValidateEvent(
         string payload,
         string signatureHeader,
@@ -37,7 +38,7 @@ public interface IWebhookEventValidator
     /// <param name="timestampHeader">Optional 'X-Bachs-Timestamp' header when using V1 signatures.</param>
     /// <returns>The verified and parsed <see cref="BachsWebhookEvent"/>.</returns>
     /// <exception cref="Common.BachsException">Thrown if signature verification fails or payload is invalid.</exception>
-    /// <exception cref="InvalidOperationException">Thrown if secret is not provided and no default secret is configured.</exception>
+    /// <exception cref="BachsInvalidOperationException">Thrown if secret is not provided and no default secret is configured.</exception>
     BachsWebhookEvent ValidateEvent(
         byte[] payloadBytes,
         string signatureHeader,
@@ -133,6 +134,74 @@ public interface IWebhookEventValidator
     /// Verifies the webhook signature and deserializes the payload bytes into a <see cref="BachsWebhookEvent"/>.
     /// </summary>
     BachsWebhookEvent ConstructEvent(
+        byte[] payloadBytes,
+        string signatureHeader,
+        string? secret = null,
+        int toleranceSeconds = BachsWebhook.DefaultToleranceSeconds,
+        string? timestampHeader = null
+    );
+
+    /// <summary>
+    /// Validates an incoming webhook event payload and signature, returning the parsed strongly-typed <see cref="BachsTypedEvent"/>.
+    /// </summary>
+    BachsTypedEvent ValidateTypedEvent(
+        string payload,
+        string signatureHeader,
+        string? secret = null,
+        int toleranceSeconds = BachsWebhook.DefaultToleranceSeconds,
+        string? timestampHeader = null
+    );
+
+    /// <summary>
+    /// Validates an incoming webhook event payload bytes and signature, returning the parsed strongly-typed <see cref="BachsTypedEvent"/>.
+    /// </summary>
+    BachsTypedEvent ValidateTypedEvent(
+        byte[] payloadBytes,
+        string signatureHeader,
+        string? secret = null,
+        int toleranceSeconds = BachsWebhook.DefaultToleranceSeconds,
+        string? timestampHeader = null
+    );
+
+    /// <summary>
+    /// Attempts to validate incoming webhook payload and signature into a strongly-typed <see cref="BachsTypedEvent"/> without throwing exceptions.
+    /// </summary>
+    bool TryValidateTypedEvent(
+        string payload,
+        string signatureHeader,
+        [NotNullWhen(true)] out BachsTypedEvent? typedEvent,
+        string? secret = null,
+        int toleranceSeconds = BachsWebhook.DefaultToleranceSeconds,
+        string? timestampHeader = null
+    );
+
+    /// <summary>
+    /// Attempts to validate incoming webhook payload bytes and signature into a strongly-typed <see cref="BachsTypedEvent"/> without throwing exceptions.
+    /// </summary>
+    bool TryValidateTypedEvent(
+        byte[] payloadBytes,
+        string signatureHeader,
+        [NotNullWhen(true)] out BachsTypedEvent? typedEvent,
+        string? secret = null,
+        int toleranceSeconds = BachsWebhook.DefaultToleranceSeconds,
+        string? timestampHeader = null
+    );
+
+    /// <summary>
+    /// Verifies the webhook signature and deserializes the payload into a strongly-typed <see cref="BachsTypedEvent"/>.
+    /// </summary>
+    BachsTypedEvent ConstructTypedEvent(
+        string payload,
+        string signatureHeader,
+        string? secret = null,
+        int toleranceSeconds = BachsWebhook.DefaultToleranceSeconds,
+        string? timestampHeader = null
+    );
+
+    /// <summary>
+    /// Verifies the webhook signature and deserializes the payload bytes into a strongly-typed <see cref="BachsTypedEvent"/>.
+    /// </summary>
+    BachsTypedEvent ConstructTypedEvent(
         byte[] payloadBytes,
         string signatureHeader,
         string? secret = null,

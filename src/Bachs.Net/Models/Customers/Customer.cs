@@ -9,17 +9,28 @@ namespace Bachs.Net.Models.Customers;
 /// </summary>
 public sealed record Customer
 {
+    private readonly string? _id;
+    private readonly string? _customerId;
+
     /// <summary>
     /// Unique identifier for the customer (starts with 'cust_').
     /// </summary>
     [JsonPropertyName("id")]
-    public string Id { get; init; } = string.Empty;
+    public string Id
+    {
+        get => !string.IsNullOrEmpty(_id) ? _id : _customerId ?? string.Empty;
+        init => _id = value;
+    }
 
     /// <summary>
-    /// Alias for <see cref="Id"/>.
+    /// Alias for <see cref="Id"/>, mapped to 'customer_id' in webhook events.
     /// </summary>
-    [JsonIgnore]
-    public string CustomerId => Id;
+    [JsonPropertyName("customer_id")]
+    public string CustomerId
+    {
+        get => !string.IsNullOrEmpty(_customerId) ? _customerId : _id ?? string.Empty;
+        init => _customerId = value;
+    }
 
     /// <summary>
     /// Customer's email address.

@@ -20,7 +20,7 @@ public sealed record Transfer
     public Price Amount { get; init; }
 
     [JsonPropertyName("currency")]
-    public Currency Currency { get; init; } = Currency.USD;
+    public BachsCurrency Currency { get; init; } = BachsCurrency.USD;
 
     [JsonPropertyName("destination")]
     public string Destination { get; init; } = string.Empty;
@@ -38,7 +38,7 @@ public sealed record CreateTransferRequest
     public Price Amount { get; init; }
 
     [JsonPropertyName("currency")]
-    public Currency Currency { get; init; } = Currency.USD;
+    public BachsCurrency Currency { get; init; } = BachsCurrency.USD;
 
     [JsonPropertyName("destination")]
     public string Destination { get; init; } = string.Empty;

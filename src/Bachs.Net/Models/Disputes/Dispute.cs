@@ -10,11 +10,22 @@ namespace Bachs.Net.Models.Disputes;
 /// </summary>
 public sealed record Dispute
 {
-    [JsonPropertyName("id")]
-    public string Id { get; init; } = string.Empty;
+    private readonly string? _id;
+    private readonly string? _disputeId;
 
-    [JsonIgnore]
-    public string DisputeId => Id;
+    [JsonPropertyName("id")]
+    public string Id
+    {
+        get => !string.IsNullOrEmpty(_id) ? _id : _disputeId ?? string.Empty;
+        init => _id = value;
+    }
+
+    [JsonPropertyName("dispute_id")]
+    public string DisputeId
+    {
+        get => !string.IsNullOrEmpty(_disputeId) ? _disputeId : _id ?? string.Empty;
+        init => _disputeId = value;
+    }
 
     [JsonPropertyName("charge_id")]
     public string ChargeId { get; init; } = string.Empty;
@@ -23,7 +34,7 @@ public sealed record Dispute
     public Price Amount { get; init; }
 
     [JsonPropertyName("currency")]
-    public Currency Currency { get; init; } = Currency.USD;
+    public BachsCurrency Currency { get; init; } = BachsCurrency.USD;
 
     [JsonPropertyName("status")]
     public string Status { get; init; } = string.Empty;

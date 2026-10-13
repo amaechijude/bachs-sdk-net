@@ -1,3 +1,4 @@
+using Bachs.Net.Common;
 using Bachs.Net.Models.Common;
 using Bachs.Net.Serialization;
 
@@ -45,11 +46,11 @@ public static class CreateCheckoutSessionRequestBuilder
     /// Starts building a checkout session using raw ad-hoc pricing without catalog products.
     /// </summary>
     /// <param name="amount">The base charge amount.</param>
-    /// <param name="currency">The base currency code. Defaults to <see cref="Currency.USD"/>.</param>
+    /// <param name="currency">The base currency code. Defaults to <see cref="BachsCurrency.USD"/>.</param>
     /// <returns>A configured <see cref="RawPricingCheckoutRequestBuilder"/>.</returns>
     public static RawPricingCheckoutRequestBuilder WithPricing(
         Price amount,
-        Currency currency = Currency.USD
+        BachsCurrency currency = BachsCurrency.USD
     ) => new RawPricingCheckoutRequestBuilder().WithPricing(amount, currency);
 
     /// <summary>
@@ -63,17 +64,17 @@ public static class CreateCheckoutSessionRequestBuilder
         ArgumentException.ThrowIfNullOrWhiteSpace(currency);
         return new RawPricingCheckoutRequestBuilder().WithPricing(
             amount,
-            Enum.Parse<Currency>(currency, true)
+            Enum.Parse<BachsCurrency>(currency, true)
         );
     }
 
     /// <summary>
     /// Starts building a checkout session using raw ad-hoc pricing with a specified base currency.
     /// </summary>
-    /// <param name="currency">The base currency code. Defaults to <see cref="Currency.USD"/>.</param>
+    /// <param name="currency">The base currency code. Defaults to <see cref="BachsCurrency.USD"/>.</param>
     /// <returns>A new <see cref="RawPricingCheckoutRequestBuilder"/>.</returns>
     public static RawPricingCheckoutRequestBuilder ForRawPricing(
-        Currency currency = Currency.USD
+        BachsCurrency currency = BachsCurrency.USD
     ) => new RawPricingCheckoutRequestBuilder().WithCurrency(currency);
 
     /// <summary>
@@ -85,7 +86,7 @@ public static class CreateCheckoutSessionRequestBuilder
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(currency);
         return new RawPricingCheckoutRequestBuilder().WithCurrency(
-            Enum.Parse<Currency>(currency, true)
+            Enum.Parse<BachsCurrency>(currency, true)
         );
     }
 }
@@ -101,7 +102,7 @@ public abstract class CheckoutSessionRequestBuilder<TBuilder>
     protected string? SuccessUrlString;
     protected string? CancelUrlString;
     protected string? ReturnUrlString;
-    protected Currency? BillingCurrencyValue;
+    protected BachsCurrency? BillingCurrencyValue;
     protected IList<string>? PaymentMethodTypesList;
     protected string? ReferenceString;
     protected Price? PlatformFeeAmount;
@@ -173,23 +174,23 @@ public abstract class CheckoutSessionRequestBuilder<TBuilder>
     }
 
     /// <summary>
-    /// Sets the checkout billing currency (e.g. <see cref="Currency.USD"/>, <see cref="Currency.NGN"/>).
+    /// Sets the checkout billing currency (e.g. <see cref="BachsCurrency.USD"/>, <see cref="BachsCurrency.NGN"/>).
     /// </summary>
-    public TBuilder WithBillingCurrency(Currency billingCurrency)
+    public TBuilder WithBillingCurrency(BachsCurrency billingCurrency)
     {
         BillingCurrencyValue = billingCurrency;
         return Self;
     }
 
-    /// <summary>
-    /// Sets the checkout billing currency string (e.g. "USD", "NGN").
-    /// </summary>
-    public TBuilder WithBillingCurrency(string billingCurrency)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(billingCurrency);
-        BillingCurrencyValue = Enum.Parse<Currency>(billingCurrency, true);
-        return Self;
-    }
+    // /// <summary>
+    // /// Sets the checkout billing currency string (e.g. "USD", "NGN").
+    // /// </summary>
+    // public TBuilder WithBillingCurrency(string billingCurrency)
+    // {
+    //     ArgumentException.ThrowIfNullOrWhiteSpace(billingCurrency);
+    //     BillingCurrencyValue = Enum.Parse<Currency>(billingCurrency, true);
+    //     return Self;
+    // }
 
     /// <summary>
     /// Restricts checkout to specific payment methods (e.g. 'USD_CARD', 'NGN_BANK_TRANSFER', 'MOMO_GHS', 'CRYPTO').
@@ -405,14 +406,14 @@ public sealed class ProductCartCheckoutRequestBuilder
     {
         if (_productCart == null || _productCart.Count == 0)
         {
-            throw new InvalidOperationException(
+            throw new BachsInvalidOperationException(
                 "A product cart checkout session requires at least one product cart item."
             );
         }
 
         if (_productCart.Count > 20)
         {
-            throw new InvalidOperationException(
+            throw new BachsInvalidOperationException(
                 "A product cart checkout session cannot contain more than 20 items."
             );
         }
@@ -421,13 +422,13 @@ public sealed class ProductCartCheckoutRequestBuilder
         {
             if (string.IsNullOrWhiteSpace(item.ProductId))
             {
-                throw new InvalidOperationException(
+                throw new BachsInvalidOperationException(
                     "Each cart item must specify a valid ProductId."
                 );
             }
             if (item.Quantity < 1)
             {
-                throw new InvalidOperationException(
+                throw new BachsInvalidOperationException(
                     $"Cart item '{item.ProductId}' must have a quantity of at least 1."
                 );
             }
@@ -472,7 +473,6 @@ public sealed class RawPricingCheckoutRequestBuilder
     /// </summary>
     public RawPricingCheckoutRequestBuilder WithPricing(CheckoutPricingRequest pricing)
     {
-        ArgumentNullException.ThrowIfNull(pricing);
         _pricing = pricing;
         return this;
     }
@@ -482,24 +482,10 @@ public sealed class RawPricingCheckoutRequestBuilder
     /// </summary>
     public RawPricingCheckoutRequestBuilder WithPricing(
         Price amount,
-        Currency currency = Currency.USD
+        BachsCurrency currency = BachsCurrency.USD
     )
     {
         _pricing = new CheckoutPricingRequest { Amount = amount, Currency = currency };
-        return this;
-    }
-
-    /// <summary>
-    /// Sets the charge amount and currency string.
-    /// </summary>
-    public RawPricingCheckoutRequestBuilder WithPricing(Price amount, string currency)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(currency);
-        _pricing = new CheckoutPricingRequest
-        {
-            Amount = amount,
-            Currency = Enum.Parse<Currency>(currency, true),
-        };
         return this;
     }
 
@@ -513,24 +499,11 @@ public sealed class RawPricingCheckoutRequestBuilder
     }
 
     /// <summary>
-    /// Sets the base currency code (e.g. <see cref="Currency.USD"/>).
+    /// Sets the base currency code (e.g. <see cref="BachsCurrency.USD"/>).
     /// </summary>
-    public RawPricingCheckoutRequestBuilder WithCurrency(Currency currency)
+    public RawPricingCheckoutRequestBuilder WithCurrency(BachsCurrency currency)
     {
         _pricing = (_pricing ?? new CheckoutPricingRequest()) with { Currency = currency };
-        return this;
-    }
-
-    /// <summary>
-    /// Sets the base currency code from string (e.g. "USD", "NGN").
-    /// </summary>
-    public RawPricingCheckoutRequestBuilder WithCurrency(string currency)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(currency);
-        _pricing = (_pricing ?? new CheckoutPricingRequest()) with
-        {
-            Currency = Enum.Parse<Currency>(currency, true),
-        };
         return this;
     }
 
@@ -595,8 +568,10 @@ public sealed class RawPricingCheckoutRequestBuilder
     /// <summary>
     /// Adds or updates a currency-specific pricing override.
     /// </summary>
-    public RawPricingCheckoutRequestBuilder WithCurrencyOption(Currency currency, Price amount) =>
-        WithCurrencyOption(currency.ToString(), amount);
+    public RawPricingCheckoutRequestBuilder WithCurrencyOption(
+        BachsCurrency currency,
+        Price amount
+    ) => WithCurrencyOption(currency.ToString(), amount);
 
     /// <summary>
     /// Adds or updates a currency-specific pricing override.
@@ -606,7 +581,7 @@ public sealed class RawPricingCheckoutRequestBuilder
         var options =
             _pricing?.CurrencyOptions != null
                 ? new Dictionary<string, Price>(_pricing.CurrencyOptions)
-                : new Dictionary<string, Price>();
+                : [];
         options[currency] = amount;
         _pricing = (_pricing ?? new CheckoutPricingRequest()) with { CurrencyOptions = options };
         return this;
@@ -632,11 +607,9 @@ public sealed class RawPricingCheckoutRequestBuilder
     public override CreateCheckoutSessionRequest Build()
     {
         if (_pricing == null)
-        {
-            throw new InvalidOperationException(
+            throw new BachsInvalidOperationException(
                 "A raw pricing checkout session requires pricing configuration."
             );
-        }
 
         return new CreateCheckoutSessionRequest
         {
