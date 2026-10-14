@@ -14,7 +14,7 @@ public sealed class BachsWebhookTests
         var secretBytes = Encoding.UTF8.GetBytes(secret);
         var messageBytes = Encoding.UTF8.GetBytes($"{timestamp}.{payload}");
         using var hmac = new HMACSHA256(secretBytes);
-        return Convert.ToHexString(hmac.ComputeHash(messageBytes));
+        return Convert.ToHexString(hmac.ComputeHash(messageBytes)).ToLowerInvariant();
     }
 
     [Fact]

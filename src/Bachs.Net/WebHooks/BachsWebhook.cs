@@ -153,9 +153,7 @@ public static class BachsWebhook
     {
         var now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
         if (Math.Abs(now - timestamp) > toleranceSeconds)
-        {
             return false;
-        }
 
         var expectedHex = ComputeHmac(payloadBytes, timestamp, secret);
         var expectedBytes = Encoding.UTF8.GetBytes(expectedHex);
@@ -176,7 +174,7 @@ public static class BachsWebhook
 
         using var hmac = new HMACSHA256(secretBytes);
         var hash = hmac.ComputeHash(combinedBytes);
-        return Convert.ToHexString(hash);
+        return Convert.ToHexString(hash).ToLowerInvariant();
     }
 
     /// <summary>
@@ -250,14 +248,11 @@ public static class BachsWebhook
         }
 
         var payload = Encoding.UTF8.GetString(payloadBytes);
-        var evt = BachsJsonSerializer.Deserialize<BachsWebhookEvent>(payload);
-        if (evt == null)
-        {
-            throw new BachsException(
+        var evt =
+            BachsJsonSerializer.Deserialize<BachsWebhookEvent>(payload)
+            ?? throw new BachsException(
                 "Unable to deserialize webhook payload into a BachsWebhookEvent."
             );
-        }
-
         return evt;
     }
 
