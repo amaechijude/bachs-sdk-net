@@ -13,7 +13,7 @@ public sealed record CreateProductRequest
     /// The name of the product shown to customers at checkout.
     /// </summary>
     [JsonPropertyName("name")]
-    public string Name { get; init; } = string.Empty;
+    public required string Name { get; init; }
 
     /// <summary>
     /// Description of the product.
@@ -25,7 +25,7 @@ public sealed record CreateProductRequest
     /// Pricing configuration for this product.
     /// </summary>
     [JsonPropertyName("price")]
-    public ProductPriceRequest Price { get; init; } = new();
+    public required ProductPriceRequest Price { get; init; }
 
     /// <summary>
     /// Cadence to make this product recurring. Omit for a one-time product.
@@ -145,13 +145,13 @@ public sealed record ProductBillingCycleRequest
     /// Interval: 'day', 'week', 'month', or 'year'.
     /// </summary>
     [JsonPropertyName("interval")]
-    public string Interval { get; init; } = "month";
+    public required string Interval { get; init; } = "month";
 
     /// <summary>
     /// Number of intervals per cycle (e.g. 1).
     /// </summary>
     [JsonPropertyName("frequency")]
-    public int Frequency { get; init; } = 1;
+    public required int Frequency { get; init; } = 1;
 }
 
 /// <summary>
@@ -163,11 +163,11 @@ public sealed record ProductTrialPeriodRequest
     /// Interval: 'day', 'week', 'month', or 'year'.
     /// </summary>
     [JsonPropertyName("interval")]
-    public string Interval { get; init; } = "day";
+    public required string Interval { get; init; } = "day";
 
     /// <summary>
     /// Number of intervals in trial (e.g. 14).
     /// </summary>
     [JsonPropertyName("frequency")]
-    public int Frequency { get; init; } = 14;
+    public required int Frequency { get; init; } = 14;
 }

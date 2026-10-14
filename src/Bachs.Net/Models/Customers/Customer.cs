@@ -84,7 +84,7 @@ public sealed record CreateCustomerRequest
     /// Customer's email address (required).
     /// </summary>
     [JsonPropertyName("email")]
-    public string Email { get; init; } = string.Empty;
+    public required string Email { get; init; }
 
     /// <summary>
     /// Customer's full name.

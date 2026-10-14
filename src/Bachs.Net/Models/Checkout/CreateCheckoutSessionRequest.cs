@@ -119,7 +119,7 @@ public sealed record CheckoutCartItemRequest
     /// The ID of the catalog product (starts with 'prod_').
     /// </summary>
     [JsonPropertyName("product_id")]
-    public string ProductId { get; init; } = string.Empty;
+    public required string ProductId { get; init; }
 
     /// <summary>
     /// The quantity of this item being purchased (minimum 1). Defaults to 1.
@@ -239,7 +239,7 @@ public sealed record CheckoutTransferDataRequest
     /// The connected account ID to transfer the sale proceeds to (starts with 'acct_').
     /// </summary>
     [JsonPropertyName("destination")]
-    public string Destination { get; init; } = string.Empty;
+    public required string Destination { get; init; }
 
     /// <summary>
     /// What the destination account receives in base currency.
