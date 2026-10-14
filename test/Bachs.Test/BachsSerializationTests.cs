@@ -1,6 +1,4 @@
-using Bachs.Net.Models.Checkout;
 using Bachs.Net.Models.Common;
-using Bachs.Net.Models.Payouts;
 using Bachs.Net.Models.Products;
 using Bachs.Net.Models.Refunds;
 using Bachs.Net.Models.Transfers;
@@ -47,7 +45,7 @@ public sealed class BachsSerializationTests
         var price = BachsJsonSerializer.Deserialize<ProductPrice>(json);
 
         Assert.NotNull(price);
-        Assert.Equal(new Price(49.99m), price.Amount);
+        Assert.Equal(new BachsPrice(49.99m), price.Amount);
         Assert.Equal(49.99m, (decimal)price.Amount!.Value);
     }
 
@@ -55,7 +53,7 @@ public sealed class BachsSerializationTests
     public void Price_ImplicitConversions_WorkBidirectionally()
     {
         // decimal -> Price
-        Price price = 100.50m;
+        BachsPrice price = 100.50m;
         Assert.Equal(100.50m, price.Value);
 
         // Price -> decimal

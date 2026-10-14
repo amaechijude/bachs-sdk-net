@@ -1,6 +1,5 @@
 using System.Text.Json.Serialization;
 using Bachs.Net.Models.Common;
-using Bachs.Net.Serialization;
 
 namespace Bachs.Net.Models.Checkout;
 
@@ -50,7 +49,7 @@ public sealed record GetCheckoutSessionResponse
     /// Total amount in <see cref="Currency"/>.
     /// </summary>
     [JsonPropertyName("amount")]
-    public Price? Amount { get; init; }
+    public BachsPrice? Amount { get; init; }
 
     /// <summary>
     /// Base currency code (e.g., Currency.USD, Currency.NGN).
@@ -116,13 +115,13 @@ public sealed record GetCheckoutSessionResponse
     /// The platform's cut of this sale in base currency.
     /// </summary>
     [JsonPropertyName("platform_fee")]
-    public Price? PlatformFee { get; init; }
+    public BachsPrice? PlatformFee { get; init; }
 
     /// <summary>
     /// The seller's contracted share of this sale in base currency.
     /// </summary>
     [JsonPropertyName("destination_amount")]
-    public Price? DestinationAmount { get; init; }
+    public BachsPrice? DestinationAmount { get; init; }
 
     /// <summary>
     /// How products are presented ('CART' or 'SELECTION').
@@ -254,7 +253,7 @@ public sealed record ResolvedProductItem
     /// Price per unit in <see cref="Currency"/>.
     /// </summary>
     [JsonPropertyName("unit_amount")]
-    public Price UnitAmount { get; init; }
+    public BachsPrice UnitAmount { get; init; }
 
     /// <summary>
     /// Currency code for this line item.
@@ -272,19 +271,19 @@ public sealed record ResolvedProductItem
     /// Minimum allowed amount when price_type is custom.
     /// </summary>
     [JsonPropertyName("minimum_amount")]
-    public Price? MinimumAmount { get; init; }
+    public BachsPrice? MinimumAmount { get; init; }
 
     /// <summary>
     /// Maximum allowed amount when price_type is custom.
     /// </summary>
     [JsonPropertyName("maximum_amount")]
-    public Price? MaximumAmount { get; init; }
+    public BachsPrice? MaximumAmount { get; init; }
 
     /// <summary>
     /// Total for this line item (unit_amount × quantity).
     /// </summary>
     [JsonPropertyName("line_total")]
-    public Price LineTotal { get; init; }
+    public BachsPrice LineTotal { get; init; }
 }
 
 /// <summary>
@@ -338,19 +337,19 @@ public sealed record CheckoutPaymentResponse
     /// Requested amount in <see cref="Currency"/>.
     /// </summary>
     [JsonPropertyName("amount")]
-    public Price? Amount { get; init; }
+    public BachsPrice? Amount { get; init; }
 
     /// <summary>
     /// Amount received so far.
     /// </summary>
     [JsonPropertyName("amount_paid")]
-    public Price? AmountPaid { get; init; }
+    public BachsPrice? AmountPaid { get; init; }
 
     /// <summary>
     /// Remaining amount still expected.
     /// </summary>
     [JsonPropertyName("amount_remaining")]
-    public Price? AmountRemaining { get; init; }
+    public BachsPrice? AmountRemaining { get; init; }
 
     /// <summary>
     /// Payment currency code.
@@ -362,7 +361,7 @@ public sealed record CheckoutPaymentResponse
     /// Processing fee for this payment converted to USD.
     /// </summary>
     [JsonPropertyName("fee_usd")]
-    public Price? FeeUsd { get; init; }
+    public BachsPrice? FeeUsd { get; init; }
 
     /// <summary>
     /// Processing fee in original collection currency.
@@ -380,13 +379,13 @@ public sealed record CheckoutPaymentResponse
     /// Platform fee cut in base currency.
     /// </summary>
     [JsonPropertyName("platform_fee")]
-    public Price? PlatformFee { get; init; }
+    public BachsPrice? PlatformFee { get; init; }
 
     /// <summary>
     /// Destination account share in base currency.
     /// </summary>
     [JsonPropertyName("destination_amount")]
-    public Price? DestinationAmount { get; init; }
+    public BachsPrice? DestinationAmount { get; init; }
 
     /// <summary>
     /// Who Bachs processing fee came from ('merchant' or 'platform').
@@ -485,7 +484,7 @@ public sealed record CheckoutPaymentResponse
 public sealed record CheckoutFeeInfo
 {
     [JsonPropertyName("amount")]
-    public Price Amount { get; init; }
+    public BachsPrice Amount { get; init; }
 
     [JsonPropertyName("currency")]
     public BachsCurrency Currency { get; init; } = BachsCurrency.USD;
@@ -506,13 +505,13 @@ public sealed record CheckoutPaymentProductItem
     public int Quantity { get; init; }
 
     [JsonPropertyName("unit_amount")]
-    public Price UnitAmount { get; init; }
+    public BachsPrice UnitAmount { get; init; }
 
     [JsonPropertyName("currency")]
     public BachsCurrency Currency { get; init; } = BachsCurrency.USD;
 
     [JsonPropertyName("line_total")]
-    public Price LineTotal { get; init; }
+    public BachsPrice LineTotal { get; init; }
 }
 
 /// <summary>

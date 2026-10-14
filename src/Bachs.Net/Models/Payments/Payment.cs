@@ -1,7 +1,6 @@
 using System.Text.Json.Serialization;
 using Bachs.Net.Common;
 using Bachs.Net.Models.Common;
-using Bachs.Net.Serialization;
 
 namespace Bachs.Net.Models.Payments;
 
@@ -37,7 +36,7 @@ public sealed record Payment
     /// The payment amount as a Price.
     /// </summary>
     [JsonPropertyName("amount")]
-    public Price Amount { get; init; }
+    public BachsPrice Amount { get; init; }
 
     /// <summary>
     /// Currency code (e.g., Currency.USD, Currency.NGN).
@@ -79,7 +78,7 @@ public sealed record Payment
     /// Amount settled to the merchant.
     /// </summary>
     [JsonPropertyName("settlement_amount")]
-    public Price? SettlementAmount { get; init; }
+    public BachsPrice? SettlementAmount { get; init; }
 
     /// <summary>
     /// Settlement currency code.
@@ -91,7 +90,7 @@ public sealed record Payment
     /// Processing fee charged on the payment.
     /// </summary>
     [JsonPropertyName("processing_fee")]
-    public Price? ProcessingFee { get; init; }
+    public BachsPrice? ProcessingFee { get; init; }
 
     /// <summary>
     /// Processing fee currency code.
@@ -109,7 +108,7 @@ public sealed record Payment
     /// Total amount refunded against this payment so far.
     /// </summary>
     [JsonPropertyName("refunded_amount")]
-    public Price? RefundedAmount { get; init; }
+    public BachsPrice? RefundedAmount { get; init; }
 
     /// <summary>
     /// Whether this payment is eligible for a refund.
@@ -142,7 +141,7 @@ public sealed record Payment
 public sealed record PaymentFees
 {
     [JsonPropertyName("amount")]
-    public Price Amount { get; init; }
+    public BachsPrice Amount { get; init; }
 
     [JsonPropertyName("currency")]
     public BachsCurrency Currency { get; init; } = BachsCurrency.USD;

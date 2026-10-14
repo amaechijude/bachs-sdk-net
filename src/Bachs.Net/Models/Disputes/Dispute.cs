@@ -1,7 +1,6 @@
 using System.Text.Json.Serialization;
 using Bachs.Net.Common;
 using Bachs.Net.Models.Common;
-using Bachs.Net.Serialization;
 
 namespace Bachs.Net.Models.Disputes;
 
@@ -31,7 +30,7 @@ public sealed record Dispute
     public string ChargeId { get; init; } = string.Empty;
 
     [JsonPropertyName("amount")]
-    public Price Amount { get; init; }
+    public BachsPrice Amount { get; init; }
 
     [JsonPropertyName("currency")]
     public BachsCurrency Currency { get; init; } = BachsCurrency.USD;

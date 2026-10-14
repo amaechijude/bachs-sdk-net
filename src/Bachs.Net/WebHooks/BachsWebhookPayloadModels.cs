@@ -1,7 +1,5 @@
-using System.Text.Json;
 using System.Text.Json.Serialization;
 using Bachs.Net.Models.Common;
-using Bachs.Net.Serialization;
 
 namespace Bachs.Net.WebHooks;
 
@@ -32,16 +30,16 @@ public sealed record InvoiceEventData
     public BachsCurrency Currency { get; init; } = BachsCurrency.USD;
 
     [JsonPropertyName("subtotal")]
-    public Price? Subtotal { get; init; }
+    public BachsPrice? Subtotal { get; init; }
 
     [JsonPropertyName("total")]
-    public Price? Total { get; init; }
+    public BachsPrice? Total { get; init; }
 
     [JsonPropertyName("amount_paid")]
-    public Price? AmountPaid { get; init; }
+    public BachsPrice? AmountPaid { get; init; }
 
     [JsonPropertyName("amount_remaining")]
-    public Price? AmountRemaining { get; init; }
+    public BachsPrice? AmountRemaining { get; init; }
 
     [JsonPropertyName("period_start")]
     public DateTimeOffset? PeriodStart { get; init; }
@@ -151,7 +149,7 @@ public sealed record TransferEventData
     public string Destination { get; init; } = string.Empty;
 
     [JsonPropertyName("amount")]
-    public Price Amount { get; init; }
+    public BachsPrice Amount { get; init; }
 
     [JsonPropertyName("currency")]
     public BachsCurrency Currency { get; init; } = BachsCurrency.USD;

@@ -16,7 +16,6 @@ public sealed class AccountsClient(IBachsClient bachsClient)
         CancellationToken cancellationToken = default
     )
     {
-        ArgumentNullException.ThrowIfNull(request);
         return BachsClient.PostAsync<CreateAccountRequest, Account>(
             "v1/accounts",
             request,
@@ -61,7 +60,7 @@ public sealed class AccountsClient(IBachsClient bachsClient)
     )
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(accountId);
-        ArgumentNullException.ThrowIfNull(request);
+
         return BachsClient.PostAsync<UpdateAccountRequest, Account>(
             $"v1/accounts/{Uri.EscapeDataString(accountId)}",
             request,
@@ -78,7 +77,7 @@ public sealed class AccountsClient(IBachsClient bachsClient)
     )
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(accountId);
-        ArgumentNullException.ThrowIfNull(request);
+
         return BachsClient.PostAsync<CreateAccountLinkRequest, AccountLink>(
             $"v1/accounts/{Uri.EscapeDataString(accountId)}/account-links",
             request,

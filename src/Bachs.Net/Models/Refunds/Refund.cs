@@ -1,7 +1,6 @@
 using System.Text.Json.Serialization;
 using Bachs.Net.Common;
 using Bachs.Net.Models.Common;
-using Bachs.Net.Serialization;
 
 namespace Bachs.Net.Models.Refunds;
 
@@ -43,25 +42,25 @@ public sealed record Refund
     /// The refunded amount as a price.
     /// </summary>
     [JsonPropertyName("amount")]
-    public Price Amount { get; init; }
+    public BachsPrice Amount { get; init; }
 
     /// <summary>
     /// Requested refund amount in webhook events.
     /// </summary>
     [JsonPropertyName("requested_amount")]
-    public Price? RequestedAmount { get; init; }
+    public BachsPrice? RequestedAmount { get; init; }
 
     /// <summary>
     /// Total refunded amount.
     /// </summary>
     [JsonPropertyName("refunded_amount")]
-    public Price? RefundedAmount { get; init; }
+    public BachsPrice? RefundedAmount { get; init; }
 
     /// <summary>
     /// Refund fee amount.
     /// </summary>
     [JsonPropertyName("refund_fee_amount")]
-    public Price? RefundFeeAmount { get; init; }
+    public BachsPrice? RefundFeeAmount { get; init; }
 
     /// <summary>
     /// Who bears the refund fee ('merchant' or 'customer').
@@ -121,7 +120,7 @@ public sealed record CreateRefundRequest
     /// Amount to refund. Omit for a full refund, or supply a price for a partial refund.
     /// </summary>
     [JsonPropertyName("amount")]
-    public Price? Amount { get; init; }
+    public BachsPrice? Amount { get; init; }
 
     /// <summary>
     /// Reason for the refund.

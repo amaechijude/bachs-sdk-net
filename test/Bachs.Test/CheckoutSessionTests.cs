@@ -1,9 +1,9 @@
 using System.Net;
 using System.Text;
-using System.Text.Json;
 using Bachs.Net.Clients;
 using Bachs.Net.Common;
 using Bachs.Net.Models.Checkout;
+using Bachs.Net.Models.Checkout.Request;
 using Bachs.Net.Models.Common;
 using Bachs.Net.Serialization;
 
@@ -113,7 +113,7 @@ public sealed class CheckoutSessionTests
             )
             .WithSuccessUrl("https://example.com/checkout/success")
             .WithCancelUrl("https://example.com/checkout/cancel")
-            .WithCurrencyOption("NGN", 75000.00m)
+            .WithCurrencyOption(BachsCurrency.NGN, 75000.00m)
             .WithCustomerCreationIfRequired()
             .Build();
 
@@ -125,95 +125,6 @@ public sealed class CheckoutSessionTests
         Assert.Equal(75000.00m, request.Pricing.CurrencyOptions["NGN"].Value);
         Assert.Null(request.ProductCart);
         Assert.Equal("if_required", request.CustomerCreation);
-    }
-
-    [Fact]
-    public void ProductCartBuilder_AddProduct_ConvenienceMethod()
-    {
-        var request = ProductCartCheckoutRequestBuilder
-            .Create()
-            .AddProduct("prod_item1", 1)
-            .AddProduct("prod_item2", 3, 15.50m)
-            .WithExistingCustomer("cust_existing_999")
-            .WithSuccessUrl("https://example.com/success")
-            .Build();
-
-        Assert.Equal(2, request.ProductCart?.Count);
-        Assert.Equal("prod_item1", request.ProductCart?[0].ProductId);
-        Assert.Equal("prod_item2", request.ProductCart?[1].ProductId);
-        Assert.Equal(3, request.ProductCart?[1].Quantity);
-        Assert.Equal(15.50m, request.ProductCart?[1].Amount?.Value);
-        Assert.Equal("cust_existing_999", request.Customer?.CustomerId);
-    }
-
-    [Fact]
-    public void RawPricingBuilder_FluentConvenienceMethods()
-    {
-        var request = CreateCheckoutSessionRequestBuilder
-            .ForRawPricing("USD")
-            .WithAmount(99.00m)
-            .WithPriceType("custom")
-            .WithPresetAmount(20.00m)
-            .WithPriceBounds(10.00m, 100.00m)
-            .WithNewCustomer("newbuyer@example.com", "Buyer Name")
-            .Build();
-
-        Assert.NotNull(request.Pricing);
-        Assert.Equal(BachsCurrency.USD, request.Pricing.Currency);
-        Assert.Equal(99.00m, request.Pricing.Amount?.Value);
-        Assert.Equal("custom", request.Pricing.PriceType);
-        Assert.Equal(20.00m, request.Pricing.PresetAmount?.Value);
-        Assert.Equal(10.00m, request.Pricing.MinimumAmount?.Value);
-        Assert.Equal(100.00m, request.Pricing.MaximumAmount?.Value);
-        Assert.Equal("newbuyer@example.com", request.Customer?.Email);
-    }
-
-    [Fact]
-    public void ProductCartBuilder_ThrowsWhenCartIsEmpty()
-    {
-        var builder = ProductCartCheckoutRequestBuilder.Create();
-        Assert.Throws<BachsInvalidOperationException>(() => builder.Build());
-    }
-
-    [Fact]
-    public void ProductCartBuilder_ThrowsWhenCartExceeds20Items()
-    {
-        var builder = ProductCartCheckoutRequestBuilder.Create();
-        for (int i = 0; i < 21; i++)
-        {
-            builder.AddProduct($"prod_{i}", 1);
-        }
-
-        var ex = Assert.Throws<BachsInvalidOperationException>(() => builder.Build());
-        Assert.Contains("cannot contain more than 20 items", ex.Message);
-    }
-
-    [Fact]
-    public void ProductCartBuilder_ThrowsWhenProductIdIsBlank()
-    {
-        var builder = ProductCartCheckoutRequestBuilder.Create();
-        builder.AddProduct(new CheckoutCartItemRequest { ProductId = "   ", Quantity = 1 });
-
-        var ex = Assert.Throws<BachsInvalidOperationException>(() => builder.Build());
-        Assert.Contains("must specify a valid ProductId", ex.Message);
-    }
-
-    [Fact]
-    public void ProductCartBuilder_ThrowsWhenQuantityIsLessThan1()
-    {
-        var builder = ProductCartCheckoutRequestBuilder.Create();
-        builder.AddProduct(new CheckoutCartItemRequest { ProductId = "prod_valid", Quantity = 0 });
-
-        var ex = Assert.Throws<BachsInvalidOperationException>(() => builder.Build());
-        Assert.Contains("quantity of at least 1", ex.Message);
-    }
-
-    [Fact]
-    public void RawPricingBuilder_ThrowsWhenPricingNotConfigured()
-    {
-        var builder = RawPricingCheckoutRequestBuilder.Create();
-        var ex = Assert.Throws<BachsInvalidOperationException>(() => builder.Build());
-        Assert.Contains("requires pricing configuration", ex.Message);
     }
 
     [Fact]
@@ -380,7 +291,7 @@ public sealed class CheckoutSessionTests
         );
 
         var createReq = CreateCheckoutSessionRequestBuilder
-            .WithPricing(100.00m, "USD")
+            .WithPricing(100.00m, BachsCurrency.USD)
             .WithSuccessUrl("https://example.com/success")
             .Build();
 

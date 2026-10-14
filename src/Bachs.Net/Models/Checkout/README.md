@@ -40,7 +40,7 @@ var request = CreateCheckoutSessionRequestBuilder
     })
     .WithSuccessUrl("https://example.com/checkout/success")
     .WithCancelUrl("https://example.com/checkout/cancel")
-    .WithBillingCurrency(Currency.USD)
+    .WithBillingCurrency(BachsCurrency.USD)
     .WithPaymentMethodTypes("USD_CARD", "NGN_BANK_TRANSFER")
     .WithPlatformFee(5.00m)
     .WithTransferData("acct_dest_123", 44.00m)
@@ -77,20 +77,20 @@ using Bachs.Net.Models.Common;
 var request = CreateCheckoutSessionRequestBuilder
     .WithPricing(new CheckoutPricingRequest
     {
-        Currency = Currency.USD, // Defaults to Currency.USD
+        Currency = BachsCurrency.USD, // Defaults to BachsCurrency.USD
         Amount = 49.99m,
         PriceType = "fixed"
     })
     .WithNewCustomer("buyer@example.com", "Jane Doe")
     .WithSuccessUrl("https://example.com/checkout/success")
     .WithCancelUrl("https://example.com/checkout/cancel")
-    .WithCurrencyOption(Currency.NGN, 75000.00m)
+    .WithCurrencyOption(BachsCurrency.NGN, 75000.00m)
     .WithCustomerCreationAlways()
     .Build();
 
-// Or fluent convenience methods (currency defaults to Currency.USD):
+// Or fluent convenience methods (currency defaults to BachsCurrency.USD):
 var request = CreateCheckoutSessionRequestBuilder
-    .ForRawPricing(Currency.USD)
+    .ForRawPricing(BachsCurrency.USD)
     .WithAmount(25.00m)
     .WithCustomer(new CheckoutCustomerRequest { Email = "buyer@example.com" })
     .WithSuccessUrl("https://example.com/checkout/success")
@@ -98,7 +98,7 @@ var request = CreateCheckoutSessionRequestBuilder
 ```
 
 ### Constraints enforced by `RawPricingCheckoutRequestBuilder`:
-- `Pricing` must be supplied with a valid `Currency` (defaults to `Currency.USD`).
+- `Pricing` must be supplied with a valid `Currency` (defaults to `BachsCurrency.USD`).
 - Root `ProductCart` is guaranteed to be `null` (enforcing mutual exclusivity).
 
 ---

@@ -1,4 +1,5 @@
 using Bachs.Net.Common;
+using Bachs.Net.Models.Common;
 using Bachs.Net.Models.VirtualAccounts;
 
 namespace Bachs.Net.Clients;
@@ -21,7 +22,7 @@ public interface IVirtualAccountsClient
     /// Retrieves the fixed virtual bank account for your account or connected account.
     /// </summary>
     Task<VirtualAccount> GetAsync(
-        string currency = "NGN",
+        BachsCurrency currency = BachsCurrency.NGN,
         RequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );

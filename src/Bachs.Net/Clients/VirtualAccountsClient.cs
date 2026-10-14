@@ -1,4 +1,5 @@
 using Bachs.Net.Common;
+using Bachs.Net.Models.Common;
 using Bachs.Net.Models.VirtualAccounts;
 
 namespace Bachs.Net.Clients;
@@ -26,14 +27,14 @@ public sealed class VirtualAccountsClient(IBachsClient bachsClient)
     }
 
     public Task<VirtualAccount> GetAsync(
-        string currency = "NGN",
+        BachsCurrency currency = BachsCurrency.NGN,
         RequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {
         var path = QueryBuilder.BuildUrl(
             "v1/virtual-accounts",
-            new Dictionary<string, string> { ["currency"] = currency }
+            new Dictionary<string, string> { ["currency"] = currency.ToString() }
         );
 
         return BachsClient.GetAsync<VirtualAccount>(path, requestOptions, cancellationToken);

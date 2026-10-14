@@ -1,7 +1,6 @@
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Text;
 using Bachs.Net.Common;
 using Bachs.Net.Serialization;
 using Microsoft.Extensions.Options;

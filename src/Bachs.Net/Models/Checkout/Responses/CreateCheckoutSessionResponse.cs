@@ -1,5 +1,5 @@
 using System.Text.Json.Serialization;
-using Bachs.Net.Serialization;
+using Bachs.Net.Models.Common;
 
 namespace Bachs.Net.Models.Checkout;
 
@@ -55,12 +55,12 @@ public sealed record CreateCheckoutSessionResponse
     /// Null on a checkout that carries no platform fee.
     /// </summary>
     [JsonPropertyName("platform_fee")]
-    public Price? PlatformFee { get; init; }
+    public BachsPrice? PlatformFee { get; init; }
 
     /// <summary>
     /// The seller's contracted share of this sale in base currency, echoed back from transfer_data.amount.
     /// Null on a checkout that carries no split or that used platform_fee instead.
     /// </summary>
     [JsonPropertyName("destination_amount")]
-    public Price? DestinationAmount { get; init; }
+    public BachsPrice? DestinationAmount { get; init; }
 }

@@ -28,21 +28,16 @@ public static class BachsJsonSerializer
         JsonSerializer.Deserialize<T>(message, DefaultSerializerOptions);
 
     /// <summary>
-    /// Creates a new instance of <see cref="JsonSerializerOptions"/> configured with Bachs conventions.
+    /// Gets the shared default <see cref="JsonSerializerOptions"/> configured for the Bachs API.
     /// </summary>
-    public static JsonSerializerOptions CreateDefaultOptions()
-    {
-        var options = new JsonSerializerOptions
+    /// <returns>The default <see cref="JsonSerializerOptions"/>.</returns>
+    public static JsonSerializerOptions CreateDefaultOptions() =>
+        new()
         {
             PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
             PropertyNameCaseInsensitive = true,
             NumberHandling = JsonNumberHandling.AllowReadingFromString,
+            Converters = { new JsonStringEnumConverter(), new BachsPriceJsonConverter() },
         };
-
-        options.Converters.Add(new JsonStringEnumConverter());
-        options.Converters.Add(new PriceJsonConverter());
-
-        return options;
-    }
 }

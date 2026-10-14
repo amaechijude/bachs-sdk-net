@@ -2,7 +2,7 @@ using System.Net;
 using System.Text;
 using Bachs.Net.Clients;
 using Bachs.Net.Common;
-using Bachs.Net.Models.Checkout;
+using Bachs.Net.Models.Checkout.Request;
 using Bachs.Net.Models.Common;
 using Bachs.Net.Models.Products;
 
@@ -151,7 +151,13 @@ public sealed class BachsClientTests
         );
 
         var ex = await Assert.ThrowsAsync<BachsValidationException>(() =>
-            client.Products.CreateAsync(new CreateProductRequest())
+            client.Products.CreateAsync(
+                new CreateProductRequest
+                {
+                    Price = new ProductPriceRequest { Amount = 0 },
+                    Name = "product1",
+                }
+            )
         );
 
         Assert.Equal(HttpStatusCode.UnprocessableEntity, ex.StatusCode);

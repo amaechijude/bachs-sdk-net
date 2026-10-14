@@ -1,8 +1,7 @@
 using System.Text.Json.Serialization;
 using Bachs.Net.Models.Common;
-using Bachs.Net.Serialization;
 
-namespace Bachs.Net.Models.Checkout;
+namespace Bachs.Net.Models.Checkout.Request;
 
 /// <summary>
 /// Request parameters to create a new checkout session.
@@ -76,7 +75,7 @@ public sealed record CreateCheckoutSessionRequest
     /// Mutually exclusive with <see cref="CheckoutTransferDataRequest.Amount"/>.
     /// </summary>
     [JsonPropertyName("platform_fee")]
-    public Price? PlatformFee { get; init; }
+    public BachsPrice? PlatformFee { get; init; }
 
     /// <summary>
     /// Names the connected account this checkout pays out to for destination charges.
@@ -131,7 +130,7 @@ public sealed record CheckoutCartItemRequest
     /// Chosen amount for a pay-what-you-want catalog product or custom ad-hoc price.
     /// </summary>
     [JsonPropertyName("amount")]
-    public Price? Amount { get; init; }
+    public BachsPrice? Amount { get; init; }
 
     /// <summary>
     /// Optional price override for this checkout item.
@@ -155,7 +154,7 @@ public sealed record CheckoutItemPricingOverrideRequest
     /// Fixed amount in the product's primary currency (e.g., "19.00").
     /// </summary>
     [JsonPropertyName("amount")]
-    public Price? Amount { get; init; }
+    public BachsPrice? Amount { get; init; }
 
     /// <summary>
     /// Currency code (e.g., Currency.USD).
@@ -167,19 +166,19 @@ public sealed record CheckoutItemPricingOverrideRequest
     /// Suggested price shown prefilled for custom/pay-what-you-want pricing.
     /// </summary>
     [JsonPropertyName("preset_amount")]
-    public Price? PresetAmount { get; init; }
+    public BachsPrice? PresetAmount { get; init; }
 
     /// <summary>
     /// Lower bound for custom pricing.
     /// </summary>
     [JsonPropertyName("minimum_amount")]
-    public Price? MinimumAmount { get; init; }
+    public BachsPrice? MinimumAmount { get; init; }
 
     /// <summary>
     /// Upper bound for custom pricing.
     /// </summary>
     [JsonPropertyName("maximum_amount")]
-    public Price? MaximumAmount { get; init; }
+    public BachsPrice? MaximumAmount { get; init; }
 }
 
 /// <summary>
@@ -191,13 +190,13 @@ public sealed record CheckoutPricingRequest
     /// The currency of the charge (e.g. Currency.USD, Currency.NGN). Defaults to Currency.USD.
     /// </summary>
     [JsonPropertyName("currency")]
-    public BachsCurrency Currency { get; init; } = BachsCurrency.USD;
+    public required BachsCurrency Currency { get; init; } = BachsCurrency.USD;
 
     /// <summary>
     /// The charge amount (e.g., "42.00"). Required for fixed pricing; omit for custom/free pricing.
     /// </summary>
     [JsonPropertyName("amount")]
-    public Price? Amount { get; init; }
+    public BachsPrice? Amount { get; init; }
 
     /// <summary>
     /// Pricing mode: 'fixed' (default when amount is set), 'custom', or 'free'.
@@ -209,25 +208,25 @@ public sealed record CheckoutPricingRequest
     /// Suggested starting amount for a custom price.
     /// </summary>
     [JsonPropertyName("preset_amount")]
-    public Price? PresetAmount { get; init; }
+    public BachsPrice? PresetAmount { get; init; }
 
     /// <summary>
     /// Lower bound for a custom price.
     /// </summary>
     [JsonPropertyName("minimum_amount")]
-    public Price? MinimumAmount { get; init; }
+    public BachsPrice? MinimumAmount { get; init; }
 
     /// <summary>
     /// Upper bound for a custom price.
     /// </summary>
     [JsonPropertyName("maximum_amount")]
-    public Price? MaximumAmount { get; init; }
+    public BachsPrice? MaximumAmount { get; init; }
 
     /// <summary>
     /// Explicit price overrides per local fiat currency code.
     /// </summary>
     [JsonPropertyName("currency_options")]
-    public IDictionary<string, Price>? CurrencyOptions { get; init; }
+    public IDictionary<string, BachsPrice>? CurrencyOptions { get; init; }
 }
 
 /// <summary>
@@ -246,7 +245,7 @@ public sealed record CheckoutTransferDataRequest
     /// Mutually exclusive with <see cref="CreateCheckoutSessionRequest.PlatformFee"/>.
     /// </summary>
     [JsonPropertyName("amount")]
-    public Price? Amount { get; init; }
+    public BachsPrice? Amount { get; init; }
 }
 
 /// <summary>

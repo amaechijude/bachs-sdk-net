@@ -1,7 +1,6 @@
 using System.Text.Json.Serialization;
 using Bachs.Net.Common;
 using Bachs.Net.Models.Common;
-using Bachs.Net.Serialization;
 
 namespace Bachs.Net.Models.Conversions;
 
@@ -34,13 +33,13 @@ public sealed record Conversion
     public BachsCurrency SourceCurrency { get; init; } = BachsCurrency.USD;
 
     [JsonPropertyName("source_amount")]
-    public Price SourceAmount { get; init; }
+    public BachsPrice SourceAmount { get; init; }
 
     [JsonPropertyName("target_currency")]
     public BachsCurrency TargetCurrency { get; init; } = BachsCurrency.USD;
 
     [JsonPropertyName("target_amount")]
-    public Price TargetAmount { get; init; }
+    public BachsPrice TargetAmount { get; init; }
 
     [JsonPropertyName("rate")]
     public decimal Rate { get; init; }
@@ -64,13 +63,13 @@ public sealed record ConversionQuote
     public BachsCurrency SourceCurrency { get; init; } = BachsCurrency.USD;
 
     [JsonPropertyName("source_amount")]
-    public Price SourceAmount { get; init; }
+    public BachsPrice SourceAmount { get; init; }
 
     [JsonPropertyName("target_currency")]
     public BachsCurrency TargetCurrency { get; init; } = BachsCurrency.USD;
 
     [JsonPropertyName("target_amount")]
-    public Price TargetAmount { get; init; }
+    public BachsPrice TargetAmount { get; init; }
 
     [JsonPropertyName("rate")]
     public decimal Rate { get; init; }
@@ -88,7 +87,7 @@ public sealed record CreateConversionQuoteRequest
     public BachsCurrency TargetCurrency { get; init; } = BachsCurrency.USD;
 
     [JsonPropertyName("amount")]
-    public Price Amount { get; init; }
+    public BachsPrice Amount { get; init; }
 }
 
 public sealed record ExecuteConversionRequest
