@@ -4,53 +4,86 @@ This module provides strongly-typed models, builders, and differentiated respons
 
 ---
 
+## Directory Layout
+
+```
+Models/Checkout/
+├── Request/
+│   └── CreateCheckoutSessionRequest.cs      // Request, cart item, pricing, customer & transfer records
+├── RequestBuilders/
+│   ├── CreateCheckoutSessionRequestBuilder.cs   // Static entry point
+│   ├── CheckoutSessionRequestBuilder.cs         // Shared fluent options (abstract base)
+│   ├── ProductCartCheckoutRequestBuilder.cs     // Catalog product cart builder
+│   └── RawPricingCheckoutRequestBuilder.cs      // Raw ad-hoc pricing builder
+├── Responses/
+│   ├── CreateCheckoutSessionResponse.cs         // Returned by POST /v1/checkout-sessions
+│   └── GetCheckoutSessionResponse.cs            // Returned by GET  /v1/checkout-sessions/{id}
+└── doc/                                          // Bachs API reference dumps
+```
+
+All request and response models are **`sealed record`** types with **`init` setters** for thread safety, immutability, and value semantics. Monetary fields use [`BachsPrice`](../Common/BachsPrice.cs) (implicitly convertible from/to `decimal`) and currency fields use the [`BachsCurrency`](../Common/BachsCurrency.cs) enum.
+
+---
+
 ## Two Ways to Build a Checkout Request
 
 According to the Bachs API specification, a checkout session can be constructed in one of two mutually exclusive ways:
 1. **Catalog Product Cart**: Purchase one or more pre-defined catalog products with quantities, optional ad-hoc pricing overrides, and customer information.
 2. **Raw Pricing**: Dynamic ad-hoc pricing with an amount and currency directly on the checkout, without referencing catalog products.
 
-All request and response models are implemented as **`sealed record`** types with **`init` setters** for thread safety, immutability, and value semantics.
+The static `CreateCheckoutSessionRequestBuilder` is the entry point. It always hands back one of the two concrete builders, so you cannot accidentally emit both `product_cart` and `pricing` on the same request:
+
+| Entry point | Returns | `Build()` guarantees |
+|---|---|---|
+| `CreateCheckoutSessionRequestBuilder.WithProductCart(...)` | `ProductCartCheckoutRequestBuilder` | `Pricing == null`, 1–20 valid cart items |
+| `CreateCheckoutSessionRequestBuilder.WithPricing(...)` | `RawPricingCheckoutRequestBuilder` | `ProductCart == null`, pricing configured |
 
 ---
 
 ## 1. Product Cart Builder
 
-Use `CreateCheckoutSessionRequestBuilder.WithProductCart(...)` or `ProductCartCheckoutRequestBuilder.Create()`:
+Use `CreateCheckoutSessionRequestBuilder.WithProductCart(...)` (an `IList<CheckoutCartItemRequest>` or `params CheckoutCartItemRequest[]` overload), or instantiate `new ProductCartCheckoutRequestBuilder()` directly to start from an empty cart:
 
 ```csharp
 using Bachs.Net.Models.Checkout;
+using Bachs.Net.Models.Checkout.Request;
 using Bachs.Net.Models.Common;
 
 // Using the static entry point:
 var request = CreateCheckoutSessionRequestBuilder
-    .WithProductCart(new List<CheckoutCartItemRequest>
-    {
-        new()
+    .WithProductCart(
+        new List<CheckoutCartItemRequest>
         {
-            ProductId = "prod_premium_plan",
-            Quantity = 2,
-            Amount = 49.00m // Optional pay-what-you-want amount
+            new()
+            {
+                ProductId = "prod_premium_plan",
+                Quantity = 2,
+                Amount = 49.00m, // Optional pay-what-you-want amount (BachsPrice)
+            },
         }
-    })
-    .WithCustomer(new CheckoutCustomerRequest
-    {
-        Email = "buyer@example.com",
-        Name = "Jane Doe"
-    })
+    )
+    .WithCustomer(
+        new CheckoutCustomerRequest
+        {
+            Email = "buyer@example.com",
+            Name = "Jane Doe",
+        }
+    )
     .WithSuccessUrl("https://example.com/checkout/success")
     .WithCancelUrl("https://example.com/checkout/cancel")
     .WithBillingCurrency(BachsCurrency.USD)
     .WithPaymentMethodTypes("USD_CARD", "NGN_BANK_TRANSFER")
+    .WithReference("order_1002")
     .WithPlatformFee(5.00m)
     .WithTransferData("acct_dest_123", 44.00m)
+    .WithCustomerCreationAlways()
     .WithExpiresInMinutes(60)
+    .WithSavePaymentMethod(true)
     .WithMetadata("order_id", "order_1002")
     .Build();
 
 // Or fluent chaining from an empty cart:
-var request = ProductCartCheckoutRequestBuilder
-    .Create()
+var request = new ProductCartCheckoutRequestBuilder()
     .AddProduct("prod_item1", quantity: 1)
     .AddProduct("prod_item2", quantity: 3, amount: 15.00m)
     .WithNewCustomer("buyer@example.com", "Jane Doe")
@@ -58,29 +91,42 @@ var request = ProductCartCheckoutRequestBuilder
     .Build();
 ```
 
-### Constraints enforced by `ProductCartCheckoutRequestBuilder`:
-- Must have between 1 and 20 cart items (`minItems: 1`, `maxItems: 20`).
-- Each cart item must specify a valid `ProductId` and `Quantity >= 1`.
+Cart-specific methods on `ProductCartCheckoutRequestBuilder`:
+
+| Method | Description |
+|---|---|
+| `WithProductCart(IList<...> / IEnumerable<...> / params ...[])` | Replaces the whole cart. |
+| `AddProduct(CheckoutCartItemRequest item)` | Appends one cart item. |
+| `AddProduct(productId, quantity = 1, amount = null, pricing = null)` | Builds and appends a cart item; `productId` is checked with `ArgumentException.ThrowIfNullOrWhiteSpace`. |
+
+### Validation enforced by `ProductCartCheckoutRequestBuilder.Build()`
+- At least 1 cart item and at most 20 (`minItems: 1`, `maxItems: 20`).
+- Every cart item must specify a non-empty `ProductId`.
+- Every cart item must have `Quantity >= 1`.
 - Root `Pricing` is guaranteed to be `null` (enforcing mutual exclusivity).
+- Violations throw [`BachsInvalidOperationException`](../../Common/BachsInvalidOperationException.cs) before any HTTP call is made.
 
 ---
 
 ## 2. Raw Pricing Builder
 
-Use `CreateCheckoutSessionRequestBuilder.WithPricing(...)` or `RawPricingCheckoutRequestBuilder.Create()`:
+Use `CreateCheckoutSessionRequestBuilder.WithPricing(...)` (a `CheckoutPricingRequest` overload, or a `BachsPrice amount` + optional `BachsCurrency currency` overload defaulting to `BachsCurrency.USD`), or instantiate `new RawPricingCheckoutRequestBuilder()` directly:
 
 ```csharp
 using Bachs.Net.Models.Checkout;
+using Bachs.Net.Models.Checkout.Request;
 using Bachs.Net.Models.Common;
 
-// Using the static entry point:
+// Using the static entry point with a full pricing record:
 var request = CreateCheckoutSessionRequestBuilder
-    .WithPricing(new CheckoutPricingRequest
-    {
-        Currency = BachsCurrency.USD, // Defaults to BachsCurrency.USD
-        Amount = 49.99m,
-        PriceType = "fixed"
-    })
+    .WithPricing(
+        new CheckoutPricingRequest
+        {
+            Currency = BachsCurrency.USD, // Required member with a BachsCurrency.USD default
+            Amount = 49.99m,
+            PriceType = "fixed",
+        }
+    )
     .WithNewCustomer("buyer@example.com", "Jane Doe")
     .WithSuccessUrl("https://example.com/checkout/success")
     .WithCancelUrl("https://example.com/checkout/cancel")
@@ -88,18 +134,65 @@ var request = CreateCheckoutSessionRequestBuilder
     .WithCustomerCreationAlways()
     .Build();
 
-// Or fluent convenience methods (currency defaults to BachsCurrency.USD):
+// Or the amount + currency shorthand (currency defaults to BachsCurrency.USD):
 var request = CreateCheckoutSessionRequestBuilder
-    .ForRawPricing(BachsCurrency.USD)
-    .WithAmount(25.00m)
+    .WithPricing(25.00m)
     .WithCustomer(new CheckoutCustomerRequest { Email = "buyer@example.com" })
+    .WithSuccessUrl("https://example.com/checkout/success")
+    .Build();
+
+// Or build the pricing progressively from an empty builder:
+var request = new RawPricingCheckoutRequestBuilder()
+    .WithPricing(100.00m, BachsCurrency.USD)
+    .WithPriceType("custom")
+    .WithPresetAmount(10.00m)
+    .WithPriceBounds(minimumAmount: 5.00m, maximumAmount: 250.00m)
+    .WithCurrencyOption(BachsCurrency.NGN, 75000.00m)
     .WithSuccessUrl("https://example.com/checkout/success")
     .Build();
 ```
 
-### Constraints enforced by `RawPricingCheckoutRequestBuilder`:
-- `Pricing` must be supplied with a valid `Currency` (defaults to `BachsCurrency.USD`).
+Pricing-specific methods on `RawPricingCheckoutRequestBuilder`:
+
+| Method | Description |
+|---|---|
+| `WithPricing(CheckoutPricingRequest)` / `WithPricing(BachsPrice, BachsCurrency)` | Seeds the pricing record. Must be called first. |
+| `WithPriceType(string)` | `'fixed'`, `'custom'`, or `'free'`. |
+| `WithPresetAmount(BachsPrice)` | Suggested starting amount for a custom price. |
+| `WithPriceBounds(BachsPrice? minimum, BachsPrice? maximum)` | Lower/upper bounds for a custom price. |
+| `WithCurrencyOption(BachsCurrency, BachsPrice)` | Adds or overwrites one currency-specific override. |
+| `WithCurrencyOptions(IDictionary<string, BachsPrice>)` | Replaces all currency-specific overrides. |
+
+> **Ordering**: `WithPriceType`, `WithPresetAmount`, `WithPriceBounds`, `WithCurrencyOption(s)` all mutate the seeded pricing record, so they throw `ArgumentNullException` when called before `WithPricing(...)`.
+
+### Validation enforced by `RawPricingCheckoutRequestBuilder.Build()`
+- `Pricing` must be configured; otherwise `Build()` throws [`BachsInvalidOperationException`](../../Common/BachsInvalidOperationException.cs).
 - Root `ProductCart` is guaranteed to be `null` (enforcing mutual exclusivity).
+
+---
+
+## Shared Options (`CheckoutSessionRequestBuilder<TBuilder>`)
+
+Both builders inherit the same fluent options from `CheckoutSessionRequestBuilder<TBuilder>`:
+
+| Method | Maps to |
+|---|---|
+| `WithCustomer(CheckoutCustomerRequest)` | `Customer` |
+| `WithExistingCustomer(string customerId)` | `Customer` with `CustomerId` (starts with `cust_`) |
+| `WithNewCustomer(email, name?, phoneNumber?)` | `Customer` with contact details |
+| `WithSuccessUrl(string)` | `SuccessUrl` (Bachs appends `?checkout_id=<id>`) |
+| `WithCancelUrl(string)` | `CancelUrl` |
+| `WithReturnUrl(string)` | `ReturnUrl` (deprecated alias for `success_url`) |
+| `WithBillingCurrency(BachsCurrency)` | `BillingCurrency` |
+| `WithPaymentMethodTypes(IList<string> / params string[])` | `PaymentMethodTypes` (e.g. `USD_CARD`, `NGN_BANK_TRANSFER`, `MOMO_GHS`, `CRYPTO`) |
+| `WithReference(string)` | `Reference` (max 128 characters) |
+| `WithPlatformFee(BachsPrice)` | `PlatformFee` (mutually exclusive with `TransferData.Amount`) |
+| `WithTransferData(CheckoutTransferDataRequest)` / `WithTransferData(destination, amount?)` | `TransferData` |
+| `WithCustomerCreation(string)` / `WithCustomerCreationAlways()` / `WithCustomerCreationIfRequired()` | `CustomerCreation` (`always` or `if_required`) |
+| `WithExpiresInMinutes(int)` | `ExpiresInMinutes` (1–1440, default 60) |
+| `WithSavePaymentMethod(bool)` | `SavePaymentMethod` |
+| `WithMetadata(IDictionary<string, string>)` / `WithMetadata(key, value)` | `Metadata` (up to 20 keys, max 10 KB) |
+| `Build()` | Abstract; validates and produces the `CreateCheckoutSessionRequest` |
 
 ---
 
@@ -109,8 +202,8 @@ The Bachs API returns distinct response schemas when creating versus retrieving 
 
 | Operation | Response Type | Key Properties |
 |---|---|---|
-| **Create** (`POST /v1/checkout-sessions`) | [`CreateCheckoutSessionResponse`](CreateCheckoutSessionResponse.cs) | `CheckoutId`, `CheckoutUrl`, `Status`, `ExpiresAt`, `CreatedAt`, `Reference`, `PlatformFee`, `DestinationAmount` |
-| **Get** (`GET /v1/checkout-sessions/{id}`) | [`GetCheckoutSessionResponse`](GetCheckoutSessionResponse.cs) | `CheckoutId`, `Status`, `Recurring`, `PaymentStatus`, `SourceType`, `Amount`, `Currency`, `Charge`, `Customer`, `CustomerDetails`, `Products`, `SessionMode`, `CompletedAt`, `UpdatedAt` |
+| **Create** (`POST /v1/checkout-sessions`) | [`CreateCheckoutSessionResponse`](Responses/CreateCheckoutSessionResponse.cs) | `CheckoutId`, `CheckoutUrl`, `Status`, `ExpiresAt`, `CreatedAt`, `Reference`, `PlatformFee`, `DestinationAmount` |
+| **Get** (`GET /v1/checkout-sessions/{id}`) | [`GetCheckoutSessionResponse`](Responses/GetCheckoutSessionResponse.cs) | `CheckoutId`, `Status`, `Recurring`, `PaymentStatus`, `SourceType`, `Amount`, `Currency`, `Charge`, `Customer`, `CustomerDetails`, `Products`, `SessionMode`, `CompletedAt`, `UpdatedAt` |
 
 ### `CreateCheckoutSessionResponse` (Creation)
 Returned immediately upon session creation. Focuses on the checkout URL to redirect the buyer:

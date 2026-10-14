@@ -37,7 +37,7 @@ deserialization, error mapping). If you understand that one method, you understa
 | 3 | `src/Bachs.Net/Clients/BachsClient.cs` | Request pipeline: URI building, headers, retry loop, streaming deserialization, error mapping |
 | 4 | `src/Bachs.Net/Clients/BaseClient.cs` + one domain client (e.g. `CheckoutSessionsClient.cs`) | How sub-clients delegate to the root client |
 | 5 | `src/Bachs.Net/Common/BachsClientOptions.cs` | Configuration + environment (sandbox/live) inference |
-| 6 | `src/Bachs.Net/Serialization/BachsJsonSerializer.cs` + `PriceJsonConverter.cs` | Wire format conventions (snake_case, `Price` as string) |
+| 6 | `src/Bachs.Net/Serialization/BachsJsonSerializer.cs` + `BachsPriceJsonConverter.cs` | Wire format conventions (snake_case, `BachsPrice` as string) |
 | 7 | `src/Bachs.Net/WebHooks/BachsWebhook.cs` | Signature verification (V1/V2), anti-replay |
 | 8 | `src/Bachs.Net/Extensions/BachsServiceExtensions.cs` | DI registration story |
 | 9 | `test/Bachs.Test/BachsClientTests.cs` | How tests intercept HTTP without a network |
@@ -66,7 +66,7 @@ src/Bachs.Net/
 ├── Clients/        Facade (BachsClient) + 16 thin domain clients + interfaces
 ├── Common/         Options, exceptions, response/pagination wrappers, query builder
 ├── Models/         sealed record DTOs per domain (request/response/event payloads)
-├── Serialization/  Shared JsonSerializerOptions + PriceJsonConverter
+├── Serialization/  Shared JsonSerializerOptions + BachsPriceJsonConverter
 ├── WebHooks/       Signature verification, raw events, typed event hierarchy + parser
 └── Extensions/     ASP.NET Core DI registration (AddBachsClient)
 ```
@@ -184,9 +184,9 @@ BachsException
 
 **Where:** `Common/BachsApiException.cs` and sibling exception files.
 
-### 3.7 Custom `JsonConverter` — `Price`
+### 3.7 Custom `JsonConverter` — `BachsPrice`
 
-The Bachs API sends monetary values as 2-decimal strings (`"29.00"`). `Price` is a
+The Bachs API sends monetary values as 2-decimal strings (`"29.00"`). `BachsPrice` is a
 `readonly record struct` that:
 
 - writes as `"29.00"` (`ToApiString()`),
@@ -197,7 +197,7 @@ The Bachs API sends monetary values as 2-decimal strings (`"29.00"`). `Price` is
 **Why:** one type makes the wire convention invisible to consumers and eliminates
 float/decimal precision bugs at the boundary.
 
-**Where:** `Serialization/PriceJsonConverter.cs`, registered globally in
+**Where:** `Serialization/BachsPriceJsonConverter.cs`, registered globally in
 `Serialization/BachsJsonSerializer.cs` (alongside snake_case naming,
 `WhenWritingNull`, case-insensitive matching, and `JsonStringEnumConverter`).
 
@@ -305,7 +305,7 @@ makes DTOs safe to share across async boundaries; value equality simplifies test
 ### 4.1 Add a new API endpoint
 
 1. **Models** — add request/response `sealed record`s under
-   `Models/<Domain>/` (follow snake_case property naming; use `Price` for money).
+   `Models/<Domain>/` (follow snake_case property naming; use `BachsPrice` for money).
 2. **Interface** — add the method signature to `Clients/I<Domain>Client.cs`.
 3. **Client** — implement it in `Clients/<Domain>Client.cs`, one delegation line
    to `BachsClient.{Get,Post,Patch,Put,Delete}Async`, with `Uri.EscapeDataString`
@@ -342,7 +342,7 @@ with the relevant status code(s).
 
 - **JSON:** snake_case via `BachsJsonSerializer.Options` (and explicit
   `[JsonPropertyName("snake_case")]` attributes on model properties);
-  `null` properties omitted; enums as strings; money as `Price`.
+  `null` properties omitted; enums as strings; money as `BachsPrice`.
 - **Async:** every I/O method is `*Async` and takes a `CancellationToken`
   (defaulted) — always `ConfigureAwait(false)` inside the library.
 - **Validation:** `ArgumentNullException.ThrowIfNull` / `ArgumentException.ThrowIfNullOrWhiteSpace`
@@ -365,7 +365,7 @@ with the relevant status code(s).
 | change headers / auth | `BachsClient.ApplyRequestHeaders` |
 | change retry behavior | `BachsClient.SendAsync` + `Common/BachsClientOptions.MaxRetries` |
 | change error mapping | `Common/BachsApiException.Create` |
-| change JSON conventions | `Serialization/BachsJsonSerializer.cs`, `Serialization/PriceJsonConverter.cs` |
+| change JSON conventions | `Serialization/BachsJsonSerializer.cs`, `Serialization/BachsPriceJsonConverter.cs` |
 | work on webhooks | `WebHooks/BachsWebhook.cs`, `WebHooks/BachsTypedEvent.cs` |
 | change DI registration | `Extensions/BachsServiceExtensions.cs` |
 | write a test | `test/Bachs.Test/BachsClientTests.cs` (mock handler pattern) |

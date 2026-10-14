@@ -33,8 +33,8 @@ using Bachs.Net.Models.Conversions;
 
 var quote = await client.Conversions.CreateQuoteAsync(new CreateConversionQuoteRequest
 {
-    SourceCurrency = Currency.USD, // Defaults to Currency.USD
-    TargetCurrency = Currency.NGN, // Defaults to Currency.USD
+    SourceCurrency = BachsCurrency.USD, // Defaults to BachsCurrency.USD
+    TargetCurrency = BachsCurrency.NGN, // Defaults to BachsCurrency.USD
     Amount = 1000.00m // Converting $1,000 USD to NGN
 });
 
@@ -99,20 +99,20 @@ foreach (var item in history.Data)
 
 ### [`ConversionQuote`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Conversions/Conversion.cs)
 - `QuoteId` (`string`): Unique quote identifier to pass to `ExecuteAsync`.
-- `SourceCurrency` (`Currency`): Currency debited.
-- `SourceAmount` (`Price`): Debit amount.
-- `TargetCurrency` (`Currency`): Currency credited.
-- `TargetAmount` (`Price`): Credit amount.
+- `SourceCurrency` (`BachsCurrency`): Currency debited.
+- `SourceAmount` (`BachsPrice`): Debit amount.
+- `TargetCurrency` (`BachsCurrency`): Currency credited.
+- `TargetAmount` (`BachsPrice`): Credit amount.
 - `Rate` (`decimal`): Conversion multiplier.
 - `ExpiresAt` (`DateTimeOffset`): Expiration timestamp of the guaranteed rate.
 
 ### [`Conversion`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Conversions/Conversion.cs)
 - `Id` (`string`): Starts with `conv_`.
 - `QuoteId` (`string`): Quote utilized for the conversion.
-- `SourceCurrency` (`Currency`): Origin currency code.
-- `SourceAmount` (`Price`): Debited amount.
-- `TargetCurrency` (`Currency`): Destination currency code.
-- `TargetAmount` (`Price`): Credited amount.
+- `SourceCurrency` (`BachsCurrency`): Origin currency code.
+- `SourceAmount` (`BachsPrice`): Debited amount.
+- `TargetCurrency` (`BachsCurrency`): Destination currency code.
+- `TargetAmount` (`BachsPrice`): Credited amount.
 - `Rate` (`decimal`): Effective rate.
 - `Status` (`string`): `completed`, `pending`, `failed`.
 - `CreatedAt` (`DateTimeOffset`): Timestamp of execution.

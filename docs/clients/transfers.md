@@ -34,7 +34,7 @@ using Bachs.Net.Models.Transfers;
 var transfer = await client.Transfers.CreateAsync(new CreateTransferRequest
 {
     Amount = 250.00m,
-    Currency = Currency.USD, // Defaults to Currency.USD
+    Currency = BachsCurrency.USD, // Defaults to BachsCurrency.USD
     Destination = "acc_merchant_12345" // Target connected account ID
 }, new RequestOptions
 {
@@ -77,14 +77,14 @@ foreach (var item in page.Data)
 ## Models
 
 ### [`CreateTransferRequest`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Transfers/Transfer.cs)
-- `Amount` (`Price`): Monetary value to transfer.
-- `Currency` (`Currency`): Currency code (defaults to `Currency.USD`; must match source and destination account currency capability).
+- `Amount` (`BachsPrice`): Monetary value to transfer.
+- `Currency` (`BachsCurrency`): Currency code (defaults to `BachsCurrency.USD`; must match source and destination account currency capability).
 - `Destination` (`string`): Connected account identifier starting with `acc_`.
 
 ### [`Transfer`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Transfers/Transfer.cs)
 - `Id` (`string`): Starts with `tr_`.
-- `Amount` (`Price`): Transferred amount.
-- `Currency` (`Currency`): Three-letter currency code (e.g. `Currency.USD`).
+- `Amount` (`BachsPrice`): Transferred amount.
+- `Currency` (`BachsCurrency`): Three-letter currency code (e.g. `BachsCurrency.USD`).
 - `Destination` (`string`): Recipient connected account ID.
 - `Status` (`string`): `succeeded`, `pending`, `failed`.
 - `CreatedAt` (`DateTimeOffset`): Timestamp of creation.

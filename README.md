@@ -77,13 +77,18 @@ var app = builder.Build();
 You can now inject either the root `IBachsClient` or specific sub-clients into your endpoints and services:
 
 ```csharp
+using Bachs.Net.Clients;
+using Bachs.Net.Models.Checkout;
+using Bachs.Net.Models.Checkout.Request;
+using Bachs.Net.Models.Common;
+
 app.MapPost("/create-checkout", async (ICheckoutSessionsClient checkoutClient) =>
 {
     var session = await checkoutClient.CreateAsync(new CreateCheckoutSessionRequest
     {
         Pricing = new CheckoutPricingRequest
         {
-            Currency = Currency.USD,
+            Currency = BachsCurrency.USD,
             Amount = 49.99m
         },
         Customer = new CheckoutCustomerRequest
@@ -189,6 +194,7 @@ builder.Services.AddBachsClient(
 using Bachs.Net.Clients;
 using Bachs.Net.Common;
 using Bachs.Net.Models.Checkout;
+using Bachs.Net.Models.Checkout.Request;
 
 // Create a checkout session with product catalog items using the builder
 var request = CreateCheckoutSessionRequestBuilder
@@ -217,6 +223,7 @@ Console.WriteLine($"Redirect customer to: {session.CheckoutUrl}");
 ### Products and Recurring Pricing
 
 ```csharp
+using Bachs.Net.Models.Common;
 using Bachs.Net.Models.Products;
 
 // Create a recurring subscription product (Pro Plan, $29/month, 14-day trial)
@@ -228,7 +235,7 @@ var product = await client.Products.CreateAsync(new CreateProductRequest
     {
         PriceType = "fixed",
         Amount = 29.00m,
-        Currency = Currency.USD
+        Currency = BachsCurrency.USD
     },
     BillingCycle = new ProductBillingCycleRequest
     {
@@ -298,6 +305,8 @@ app.MapPost("/api/webhooks/bachs", async (HttpRequest request, IWebhooksClient w
     }
 });
 ```
+
+Prefer the strongly-typed surface when handling events: `webhooks.ValidateTypedEvent(rawBody, signature, timestampHeader: timestamp)` returns a `BachsTypedEvent` you can pattern-match on (`CollectionSucceededEvent`, `CheckoutCompletedEvent`, …, with `UnknownBachsEvent` as the forward-compatible fallback). Signature validation without an API client is available through the standalone `WebhookEventValidator` or the static `BachsWebhook` class. See [Webhooks documentation](docs/clients/webhooks.md#cryptographic-signature-verification) for secret resolution, tolerance windows, and both signature header formats.
 
 ### Error Handling
 

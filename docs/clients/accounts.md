@@ -85,9 +85,14 @@ Console.WriteLine($"Country: {details.Country}");
 Once onboarded, execute operations (such as creating checkout sessions or requesting payouts) on their behalf using `RequestOptions.AccountId`:
 
 ```csharp
+using Bachs.Net.Common;
+using Bachs.Net.Models.Checkout;
+using Bachs.Net.Models.Checkout.Request;
+using Bachs.Net.Models.Common;
+
 var merchantSession = await client.CheckoutSessions.CreateAsync(new CreateCheckoutSessionRequest
 {
-    Pricing = new CheckoutPricingRequest { Currency = Currency.USD, Amount = 100.00m }, // Currency defaults to Currency.USD
+    Pricing = new CheckoutPricingRequest { Currency = BachsCurrency.USD, Amount = 100.00m }, // Currency defaults to BachsCurrency.USD
     SuccessUrl = "https://shop.com/success",
     CancelUrl = "https://shop.com/cancel"
 }, new RequestOptions

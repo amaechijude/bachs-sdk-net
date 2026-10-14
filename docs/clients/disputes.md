@@ -92,8 +92,8 @@ Console.WriteLine($"Dispute submitted! Status: {submitted.Status}"); // 'under_r
 ### [`Dispute`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Disputes/Dispute.cs)
 - `Id` (`string`): Starts with `dp_`.
 - `ChargeId` (`string`): Disputed transaction identifier (`ch_...`).
-- `Amount` (`Price`): Monetary value under dispute.
-- `Currency` (`Currency`): Currency code (e.g. `Currency.USD`).
+- `Amount` (`BachsPrice`): Monetary value under dispute.
+- `Currency` (`BachsCurrency`): Currency code (e.g. `BachsCurrency.USD`).
 - `Status` (`string`): `needs_response`, `under_review`, `won`, `lost`.
 - `Reason` (`string?`): Dispute code (e.g., `fraudulent`, `unrecognized`, `product_not_received`).
 - `EvidenceDueDate` (`DateTimeOffset?`): Final deadline to provide defense evidence.

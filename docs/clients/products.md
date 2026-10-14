@@ -41,7 +41,7 @@ var product = await client.Products.CreateAsync(new CreateProductRequest
     {
         PriceType = "fixed",
         Amount = 19.99m,
-        Currency = Currency.USD // Defaults to Currency.USD
+        Currency = BachsCurrency.USD // Defaults to BachsCurrency.USD
     }
 });
 
@@ -59,7 +59,7 @@ var subscriptionPlan = await client.Products.CreateAsync(new CreateProductReques
     {
         PriceType = "fixed",
         Amount = 49.00m,
-        Currency = Currency.USD // Defaults to Currency.USD
+        Currency = BachsCurrency.USD // Defaults to BachsCurrency.USD
     },
     BillingCycle = new ProductBillingCycleRequest
     {

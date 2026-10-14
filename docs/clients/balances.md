@@ -83,13 +83,13 @@ Console.WriteLine($"Updated Schedule to: {updated.PayoutSchedule}");
 
 ### [`Balance`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Balances/Balance.cs)
 - `Currencies` (`IReadOnlyDictionary<string, BalanceBucket>`): Dictionary mapping currency codes (e.g. `USD`, `NGN`, `EUR`) to their balance breakdown.
-- `TotalUsd` (`Price?`): Consolidated portfolio balance converted to USD.
+- `TotalUsd` (`BachsPrice?`): Consolidated portfolio balance converted to USD.
 
 ### [`BalanceBucket`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Balances/Balance.cs)
-- `Available` (`Price`): Liquid funds available immediately for payouts or conversions.
-- `Pending` (`Price`): In-transit settlements from recent customer charges.
-- `Locked` (`Price`): Funds held for ongoing dispute resolutions or collateral reserves.
-- `Currency` (`Currency`): ISO currency code (e.g. `Currency.USD`).
+- `Available` (`BachsPrice`): Liquid funds available immediately for payouts or conversions.
+- `Pending` (`BachsPrice`): In-transit settlements from recent customer charges.
+- `Locked` (`BachsPrice`): Funds held for ongoing dispute resolutions or collateral reserves.
+- `Currency` (`BachsCurrency`): ISO currency code (e.g. `BachsCurrency.USD`).
 
 ### [`BalanceSettings`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Balances/Balance.cs)
 - `PayoutSchedule` (`string?`): Automation cadence (`manual`, `daily`, `weekly`, `monthly`).

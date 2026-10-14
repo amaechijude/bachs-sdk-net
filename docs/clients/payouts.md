@@ -36,7 +36,7 @@ using Bachs.Net.Models.Payouts;
 var payout = await client.Payouts.CreateAsync(new CreatePayoutRequest
 {
     Amount = 500.00m,
-    Currency = Currency.USD, // Defaults to Currency.USD
+    Currency = BachsCurrency.USD, // Defaults to BachsCurrency.USD
     DestinationId = "dest_bank_998877",
     Narration = "October 2026 Merchant Settlement"
 }, new RequestOptions
@@ -54,7 +54,7 @@ Console.WriteLine($"Status: {payout.Status}"); // 'pending', 'processing', 'comp
 var quote = await client.Payouts.CreateQuoteAsync(new CreatePayoutQuoteRequest
 {
     DestinationId = "dest_bank_998877",
-    Currency = Currency.USD, // Defaults to Currency.USD
+    Currency = BachsCurrency.USD, // Defaults to BachsCurrency.USD
     Amount = 500.00m
 });
 
@@ -112,7 +112,7 @@ foreach (var item in page.Data)
 var destination = await client.PayoutDestinations.CreateAsync(new CreatePayoutDestinationRequest
 {
     Type = "bank_account",
-    Currency = Currency.NGN, // Defaults to Currency.USD
+    Currency = BachsCurrency.NGN, // Defaults to BachsCurrency.USD
     Details = new Dictionary<string, object?>
     {
         ["account_number"] = "0123456789",
@@ -137,8 +137,8 @@ Console.WriteLine("Payout destination removed.");
 
 ### [`Payout`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Payouts/Payout.cs)
 - `Id` (`string`): Starts with `wd_`.
-- `Amount` (`Price`): Monetary withdrawal value.
-- `Currency` (`Currency`): Currency code (defaults to `Currency.USD` on creation).
+- `Amount` (`BachsPrice`): Monetary withdrawal value.
+- `Currency` (`BachsCurrency`): Currency code (defaults to `BachsCurrency.USD` on creation).
 - `Status` (`string`): `pending`, `processing`, `completed`, `failed`.
 - `DestinationId` (`string`): Target payout destination identifier.
 - `Narration` (`string?`): Transfer description shown on bank statements.
@@ -147,7 +147,7 @@ Console.WriteLine("Payout destination removed.");
 ### [`PayoutDestination`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Payouts/Payout.cs)
 - `Id` (`string`): Starts with `dest_`.
 - `Type` (`string`): Destination category (`bank_account`, `mobile_money`, `crypto`).
-- `Currency` (`Currency`): Settlement currency code.
+- `Currency` (`BachsCurrency`): Settlement currency code.
 - `Details` (`JsonElement?`): Provider-specific destination attributes.
 - `CreatedAt` (`DateTimeOffset`): Creation timestamp.
 
