@@ -31,12 +31,18 @@ using Bachs.Net.Clients;
 using Bachs.Net.Models.Common;
 using Bachs.Net.Models.Conversions;
 
-var quote = await client.Conversions.CreateQuoteAsync(new CreateConversionQuoteRequest
+var response = await client.Conversions.CreateQuoteAsync(new CreateConversionQuoteRequest
 {
     SourceCurrency = BachsCurrency.USD, // Defaults to BachsCurrency.USD
     TargetCurrency = BachsCurrency.NGN, // Defaults to BachsCurrency.USD
     Amount = 1000.00m // Converting $1,000 USD to NGN
 });
+if (!response.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Conversion quote request failed: {response.Error?.Detail ?? "Unknown error"}");
+}
+
+var quote = response.Data;
 
 Console.WriteLine($"Quote ID: {quote.QuoteId}");
 Console.WriteLine($"Rate: 1 {quote.SourceCurrency} = {quote.Rate} {quote.TargetCurrency}");
@@ -53,13 +59,19 @@ Submit the `QuoteId` before the quote expires to execute the ledger balance swap
 ```csharp
 using Bachs.Net.Common;
 
-var conversion = await client.Conversions.ExecuteAsync(new ExecuteConversionRequest
+var response = await client.Conversions.ExecuteAsync(new ExecuteConversionRequest
 {
     QuoteId = quote.QuoteId
 }, new RequestOptions
 {
     IdempotencyKey = $"conv_exec_{quote.QuoteId}"
 });
+if (!response.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Conversion execution failed: {response.Error?.Detail ?? "Unknown error"}");
+}
+
+var conversion = response.Data;
 
 Console.WriteLine($"Conversion ID: {conversion.Id}");
 Console.WriteLine($"Status: {conversion.Status}"); // 'completed', 'pending'
@@ -71,7 +83,13 @@ Console.WriteLine($"Converted: {conversion.SourceAmount} {conversion.SourceCurre
 ### 3. Retrieve a Conversion
 
 ```csharp
-var record = await client.Conversions.GetAsync("conv_100200300");
+var response = await client.Conversions.GetAsync("conv_100200300");
+if (!response.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Conversion lookup failed: {response.Error?.Detail ?? "Unknown error"}");
+}
+
+var record = response.Data;
 
 Console.WriteLine($"Conversion {record.Id} status: {record.Status} at {record.CreatedAt}");
 ```
@@ -81,11 +99,17 @@ Console.WriteLine($"Conversion {record.Id} status: {record.Status} at {record.Cr
 ### 4. List Conversions
 
 ```csharp
-var history = await client.Conversions.ListAsync(new ListConversionsOptions
+var response = await client.Conversions.ListAsync(new ListConversionsOptions
 {
     Status = "completed",
     Limit = 20
 });
+if (!response.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Conversion history request failed: {response.Error?.Detail ?? "Unknown error"}");
+}
+
+var history = response.Data;
 
 foreach (var item in history.Data)
 {

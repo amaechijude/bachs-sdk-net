@@ -15,7 +15,7 @@ public interface ICheckoutSessionsClient
     /// <param name="requestOptions">Optional per-request options (e.g. idempotency key).</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The created checkout session response containing the hosted checkout URL.</returns>
-    Task<CreateCheckoutSessionResponse> CreateAsync(
+    Task<BachsResponse<CreateCheckoutSessionResponse>> CreateAsync(
         CreateCheckoutSessionRequest request,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -28,7 +28,7 @@ public interface ICheckoutSessionsClient
     /// <param name="requestOptions">Optional per-request options.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The detailed checkout session details including resolved line items and charges.</returns>
-    Task<GetCheckoutSessionResponse> GetAsync(
+    Task<BachsResponse<GetCheckoutSessionResponse>> GetAsync(
         string checkoutId,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default

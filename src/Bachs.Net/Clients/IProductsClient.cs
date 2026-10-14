@@ -11,7 +11,7 @@ public interface IProductsClient
     /// <summary>
     /// Creates a new product in your catalog.
     /// </summary>
-    Task<Product> CreateAsync(
+    Task<BachsResponse<Product>> CreateAsync(
         CreateProductRequest request,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -20,7 +20,7 @@ public interface IProductsClient
     /// <summary>
     /// Retrieves a single product by its ID.
     /// </summary>
-    Task<Product> GetAsync(
+    Task<BachsResponse<Product>> GetAsync(
         string productId,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -29,7 +29,7 @@ public interface IProductsClient
     /// <summary>
     /// Lists products in your catalog with pagination.
     /// </summary>
-    Task<BachsList<Product>> ListAsync(
+    Task<BachsResponse<BachsList<Product>>> ListAsync(
         ListProductsOptions? options = null,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -38,7 +38,7 @@ public interface IProductsClient
     /// <summary>
     /// Updates an existing product.
     /// </summary>
-    Task<Product> UpdateAsync(
+    Task<BachsResponse<Product>> UpdateAsync(
         string productId,
         UpdateProductRequest request,
         BachsRequestOptions? requestOptions = null,
@@ -48,7 +48,7 @@ public interface IProductsClient
     /// <summary>
     /// Archives a product so it can no longer be used for new purchases.
     /// </summary>
-    Task<Product> ArchiveAsync(
+    Task<BachsResponse<Product>> ArchiveAsync(
         string productId,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -57,7 +57,7 @@ public interface IProductsClient
     /// <summary>
     /// Unarchives an archived product to active status.
     /// </summary>
-    Task<Product> UnarchiveAsync(
+    Task<BachsResponse<Product>> UnarchiveAsync(
         string productId,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default

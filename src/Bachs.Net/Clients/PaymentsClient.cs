@@ -10,7 +10,7 @@ public sealed class PaymentsClient(IBachsClient bachsClient)
     : BaseClient(bachsClient),
         IPaymentsClient
 {
-    public Task<Payment> GetAsync(
+    public Task<BachsResponse<Payment>> GetAsync(
         string paymentId,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -24,7 +24,7 @@ public sealed class PaymentsClient(IBachsClient bachsClient)
         );
     }
 
-    public Task<BachsList<Payment>> ListAsync(
+    public Task<BachsResponse<BachsList<Payment>>> ListAsync(
         ListPaymentsOptions? options = null,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default

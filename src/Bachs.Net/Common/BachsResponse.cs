@@ -15,6 +15,11 @@ public sealed record BachsResponse<T>
     public T Data { get; init; } = default!;
 
     /// <summary>
+    /// Gets the parsed API error when the response represents an unsuccessful request.
+    /// </summary>
+    public BachsError? Error { get; init; }
+
+    /// <summary>
     /// Gets the HTTP status code returned by the API.
     /// </summary>
     public HttpStatusCode StatusCode { get; init; }

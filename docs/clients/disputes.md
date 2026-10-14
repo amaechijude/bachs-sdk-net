@@ -27,7 +27,13 @@ The Disputes client allows you to manage payment disputes, query chargebacks, su
 ```csharp
 using Bachs.Net.Clients;
 
-var dispute = await client.Disputes.GetAsync("dp_100200300");
+var response = await client.Disputes.GetAsync("dp_100200300");
+if (!response.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Dispute lookup failed: {response.Error?.Detail ?? "Unknown error"}");
+}
+
+var dispute = response.Data;
 
 Console.WriteLine($"Dispute ID: {dispute.Id}");
 Console.WriteLine($"Charge ID: {dispute.ChargeId}");
@@ -43,11 +49,17 @@ Console.WriteLine($"Evidence Due: {dispute.EvidenceDueDate:yyyy-MM-dd}");
 ```csharp
 using Bachs.Net.Models.Disputes;
 
-var page = await client.Disputes.ListAsync(new ListDisputesOptions
+var response = await client.Disputes.ListAsync(new ListDisputesOptions
 {
     Status = "needs_response",
     Limit = 15
 });
+if (!response.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Dispute list request failed: {response.Error?.Detail ?? "Unknown error"}");
+}
+
+var page = response.Data;
 
 foreach (var d in page.Data)
 {
@@ -62,13 +74,19 @@ foreach (var d in page.Data)
 Save customer communication logs, order fulfillment proof, and explanation before submitting:
 
 ```csharp
-var updated = await client.Disputes.UpdateEvidenceAsync("dp_100200300", new UpdateDisputeEvidenceRequest
+var response = await client.Disputes.UpdateEvidenceAsync("dp_100200300", new UpdateDisputeEvidenceRequest
 {
     CustomerName = "John Doe",
     CustomerEmail = "john.doe@example.com",
     Explanation = "Order was successfully delivered via FedEx with tracking number 99882233.",
     DocumentIds = new List<string> { "doc_proof_of_delivery_1" }
 });
+if (!response.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Dispute evidence update failed: {response.Error?.Detail ?? "Unknown error"}");
+}
+
+var updated = response.Data;
 
 Console.WriteLine($"Evidence saved for dispute: {updated.Id}");
 ```
@@ -80,7 +98,13 @@ Console.WriteLine($"Evidence saved for dispute: {updated.Id}");
 Once evidence is attached, submit the claim to the issuing bank:
 
 ```csharp
-var submitted = await client.Disputes.SubmitAsync("dp_100200300");
+var response = await client.Disputes.SubmitAsync("dp_100200300");
+if (!response.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Dispute submission failed: {response.Error?.Detail ?? "Unknown error"}");
+}
+
+var submitted = response.Data;
 
 Console.WriteLine($"Dispute submitted! Status: {submitted.Status}"); // 'under_review'
 ```

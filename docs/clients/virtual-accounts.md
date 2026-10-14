@@ -30,13 +30,19 @@ using Bachs.Net.Common;
 using Bachs.Net.Models.Common;
 using Bachs.Net.Models.VirtualAccounts;
 
-var account = await client.VirtualAccounts.CreateAsync(new CreateVirtualAccountRequest
+var response = await client.VirtualAccounts.CreateAsync(new CreateVirtualAccountRequest
 {
     Currency = BachsCurrency.NGN // Defaults to BachsCurrency.USD
 }, new RequestOptions
 {
     IdempotencyKey = "va_provision_ngn_01"
 });
+if (!response.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Virtual account creation failed: {response.Error?.Detail ?? "Unknown error"}");
+}
+
+var account = response.Data;
 
 Console.WriteLine($"Bank Name: {account.BankName}");
 Console.WriteLine($"Account Number: {account.AccountNumber}");
@@ -46,10 +52,16 @@ Console.WriteLine($"Status: {account.Status}"); // 'active'
 
 #### Provisioning for a Customer or Connected Account:
 ```csharp
-var customerAccount = await client.VirtualAccounts.CreateAsync(
+var accountResponse = await client.VirtualAccounts.CreateAsync(
     new CreateVirtualAccountRequest { Currency = BachsCurrency.NGN },
     new RequestOptions { AccountId = "acc_merchant_123" }
 );
+if (!accountResponse.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Customer virtual account creation failed: {accountResponse.Error?.Detail ?? "Unknown error"}");
+}
+
+var customerAccount = accountResponse.Data;
 ```
 
 ---
@@ -57,7 +69,13 @@ var customerAccount = await client.VirtualAccounts.CreateAsync(
 ### 2. Retrieve Virtual Account Details
 
 ```csharp
-var existing = await client.VirtualAccounts.GetAsync(currency: BachsCurrency.NGN);
+var response = await client.VirtualAccounts.GetAsync(currency: BachsCurrency.NGN);
+if (!response.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Virtual account lookup failed: {response.Error?.Detail ?? "Unknown error"}");
+}
+
+var existing = response.Data;
 
 Console.WriteLine($"Account: {existing.AccountNumber} ({existing.BankName})");
 ```

@@ -10,7 +10,7 @@ public sealed class PayoutsClient(IBachsClient bachsClient)
     : BaseClient(bachsClient),
         IPayoutsClient
 {
-    public Task<Payout> CreateAsync(
+    public Task<BachsResponse<Payout>> CreateAsync(
         CreatePayoutRequest request,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -25,7 +25,7 @@ public sealed class PayoutsClient(IBachsClient bachsClient)
         );
     }
 
-    public Task<PayoutQuote> CreateQuoteAsync(
+    public Task<BachsResponse<PayoutQuote>> CreateQuoteAsync(
         CreatePayoutQuoteRequest request,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -40,7 +40,7 @@ public sealed class PayoutsClient(IBachsClient bachsClient)
         );
     }
 
-    public Task<Payout> GetAsync(
+    public Task<BachsResponse<Payout>> GetAsync(
         string withdrawalId,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -54,7 +54,7 @@ public sealed class PayoutsClient(IBachsClient bachsClient)
         );
     }
 
-    public Task<BachsList<Payout>> ListAsync(
+    public Task<BachsResponse<BachsList<Payout>>> ListAsync(
         ListPayoutsOptions? options = null,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -76,7 +76,7 @@ public sealed class PayoutDestinationsClient(IBachsClient bachsClient)
     : BaseClient(bachsClient),
         IPayoutDestinationsClient
 {
-    public Task<PayoutDestination> CreateAsync(
+    public Task<BachsResponse<PayoutDestination>> CreateAsync(
         CreatePayoutDestinationRequest request,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -91,7 +91,7 @@ public sealed class PayoutDestinationsClient(IBachsClient bachsClient)
         );
     }
 
-    public Task<PayoutDestination> GetAsync(
+    public Task<BachsResponse<PayoutDestination>> GetAsync(
         string destinationId,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -105,7 +105,7 @@ public sealed class PayoutDestinationsClient(IBachsClient bachsClient)
         );
     }
 
-    public Task<BachsList<PayoutDestination>> ListAsync(
+    public Task<BachsResponse<BachsList<PayoutDestination>>> ListAsync(
         BachsListRequestOptions? options = null,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -122,7 +122,7 @@ public sealed class PayoutDestinationsClient(IBachsClient bachsClient)
         );
     }
 
-    public Task<PayoutDestination> UpdateAsync(
+    public Task<BachsResponse<PayoutDestination>> UpdateAsync(
         string destinationId,
         UpdatePayoutDestinationRequest request,
         BachsRequestOptions? requestOptions = null,
@@ -139,7 +139,7 @@ public sealed class PayoutDestinationsClient(IBachsClient bachsClient)
         );
     }
 
-    public Task DeleteAsync(
+    public Task<BachsResponse<object?>> DeleteAsync(
         string destinationId,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default

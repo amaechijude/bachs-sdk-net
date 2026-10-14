@@ -10,7 +10,7 @@ public sealed class ProductsClient(IBachsClient bachsClient)
     : BaseClient(bachsClient),
         IProductsClient
 {
-    public Task<Product> CreateAsync(
+    public Task<BachsResponse<Product>> CreateAsync(
         CreateProductRequest request,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -25,7 +25,7 @@ public sealed class ProductsClient(IBachsClient bachsClient)
         );
     }
 
-    public Task<Product> GetAsync(
+    public Task<BachsResponse<Product>> GetAsync(
         string productId,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -39,7 +39,7 @@ public sealed class ProductsClient(IBachsClient bachsClient)
         );
     }
 
-    public Task<BachsList<Product>> ListAsync(
+    public Task<BachsResponse<BachsList<Product>>> ListAsync(
         ListProductsOptions? options = null,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -53,7 +53,7 @@ public sealed class ProductsClient(IBachsClient bachsClient)
         );
     }
 
-    public Task<Product> UpdateAsync(
+    public Task<BachsResponse<Product>> UpdateAsync(
         string productId,
         UpdateProductRequest request,
         BachsRequestOptions? requestOptions = null,
@@ -70,7 +70,7 @@ public sealed class ProductsClient(IBachsClient bachsClient)
         );
     }
 
-    public Task<Product> ArchiveAsync(
+    public Task<BachsResponse<Product>> ArchiveAsync(
         string productId,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -84,7 +84,7 @@ public sealed class ProductsClient(IBachsClient bachsClient)
         );
     }
 
-    public Task<Product> UnarchiveAsync(
+    public Task<BachsResponse<Product>> UnarchiveAsync(
         string productId,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default

@@ -10,7 +10,7 @@ public sealed class AccountsClient(IBachsClient bachsClient)
     : BaseClient(bachsClient),
         IAccountsClient
 {
-    public Task<Account> CreateAsync(
+    public Task<BachsResponse<Account>> CreateAsync(
         CreateAccountRequest request,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -24,7 +24,7 @@ public sealed class AccountsClient(IBachsClient bachsClient)
         );
     }
 
-    public Task<Account> GetAsync(
+    public Task<BachsResponse<Account>> GetAsync(
         string accountId,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -38,7 +38,7 @@ public sealed class AccountsClient(IBachsClient bachsClient)
         );
     }
 
-    public Task<BachsList<Account>> ListAsync(
+    public Task<BachsResponse<BachsList<Account>>> ListAsync(
         ListAccountsOptions? options = null,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -52,7 +52,7 @@ public sealed class AccountsClient(IBachsClient bachsClient)
         );
     }
 
-    public Task<Account> UpdateAsync(
+    public Task<BachsResponse<Account>> UpdateAsync(
         string accountId,
         UpdateAccountRequest request,
         BachsRequestOptions? requestOptions = null,
@@ -69,7 +69,7 @@ public sealed class AccountsClient(IBachsClient bachsClient)
         );
     }
 
-    public Task<AccountLink> CreateAccountLinkAsync(
+    public Task<BachsResponse<AccountLink>> CreateAccountLinkAsync(
         string accountId,
         CreateAccountLinkRequest request,
         BachsRequestOptions? requestOptions = null,
@@ -86,7 +86,7 @@ public sealed class AccountsClient(IBachsClient bachsClient)
         );
     }
 
-    public Task<Account> GetMeAsync(
+    public Task<BachsResponse<Account>> GetMeAsync(
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )

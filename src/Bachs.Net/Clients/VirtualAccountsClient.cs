@@ -11,7 +11,7 @@ public sealed class VirtualAccountsClient(IBachsClient bachsClient)
     : BaseClient(bachsClient),
         IVirtualAccountsClient
 {
-    public Task<VirtualAccount> CreateAsync(
+    public Task<BachsResponse<VirtualAccount>> CreateAsync(
         CreateVirtualAccountRequest request,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -26,7 +26,7 @@ public sealed class VirtualAccountsClient(IBachsClient bachsClient)
         );
     }
 
-    public Task<VirtualAccount> GetAsync(
+    public Task<BachsResponse<VirtualAccount>> GetAsync(
         BachsCurrency currency = BachsCurrency.NGN,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default

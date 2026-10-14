@@ -26,7 +26,13 @@ The Misc client provides reference and lookup utilities, such as listing support
 ```csharp
 using Bachs.Net.Clients;
 
-var currencies = await client.Misc.GetSupportedCurrenciesAsync();
+var response = await client.Misc.GetSupportedCurrenciesAsync();
+if (!response.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Currency lookup failed: {response.Error?.Detail ?? "Unknown error"}");
+}
+
+var currencies = response.Data;
 
 Console.WriteLine("Supported Currencies:");
 foreach (var cur in currencies)
@@ -42,7 +48,13 @@ foreach (var cur in currencies)
 Look up bank routing codes (default country is `"NG"`):
 
 ```csharp
-var banks = await client.Misc.GetBanksAsync("NG");
+var response = await client.Misc.GetBanksAsync("NG");
+if (!response.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Bank lookup failed: {response.Error?.Detail ?? "Unknown error"}");
+}
+
+var banks = response.Data;
 
 foreach (var bank in banks)
 {
@@ -59,11 +71,17 @@ Validate that an account number belongs to the expected recipient before initiat
 ```csharp
 using Bachs.Net.Models.Misc;
 
-var resolution = await client.Misc.ResolveBankAccountAsync(new ResolveBankAccountRequest
+var response = await client.Misc.ResolveBankAccountAsync(new ResolveBankAccountRequest
 {
     AccountNumber = "0123456789",
     BankCode = "058" // GTBank
 });
+if (!response.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Bank account resolution failed: {response.Error?.Detail ?? "Unknown error"}");
+}
+
+var resolution = response.Data;
 
 Console.WriteLine($"Account Number: {resolution.AccountNumber}");
 Console.WriteLine($"Account Holder: {resolution.AccountName}");

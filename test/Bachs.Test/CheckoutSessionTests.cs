@@ -294,22 +294,20 @@ public sealed class CheckoutSessionTests
             .WithSuccessUrl("https://example.com/success")
             .Build();
 
-        CreateCheckoutSessionResponse createRes = await client.CheckoutSessions.CreateAsync(
-            createReq
-        );
-        Assert.NotNull(createRes);
-        Assert.Equal("chk_created_1", createRes.CheckoutId);
-        Assert.Equal("https://checkout.bachs.io/c/test", createRes.CheckoutUrl);
+        var createRes = await client.CheckoutSessions.CreateAsync(createReq);
+        Assert.NotNull(createRes.Data);
+        Assert.Equal("chk_created_1", createRes.Data.CheckoutId);
+        Assert.Equal("https://checkout.bachs.io/c/test", createRes.Data.CheckoutUrl);
 
         handler.ResponseToReturn = new HttpResponseMessage(HttpStatusCode.OK)
         {
             Content = new StringContent(getJson, Encoding.UTF8, "application/json"),
         };
 
-        GetCheckoutSessionResponse getRes = await client.CheckoutSessions.GetAsync("chk_created_1");
-        Assert.NotNull(getRes);
-        Assert.Equal("chk_created_1", getRes.CheckoutId);
-        Assert.Equal("completed", getRes.Status);
-        Assert.Equal(100.00m, getRes.Amount?.Value);
+        var getRes = await client.CheckoutSessions.GetAsync("chk_created_1");
+        Assert.NotNull(getRes.Data);
+        Assert.Equal("chk_created_1", getRes.Data.CheckoutId);
+        Assert.Equal("completed", getRes.Data.Status);
+        Assert.Equal(100.00m, getRes.Data.Amount?.Value);
     }
 }

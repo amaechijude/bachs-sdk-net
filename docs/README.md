@@ -12,7 +12,14 @@ This guide details all 16 specialized sub-clients available through [`IBachsClie
 1. **Directly via the root client instance**:
    ```csharp
    var client = new BachsClient("sk_test_...");
-   var session = await client.CheckoutSessions.CreateAsync(request);
+   var response = await client.CheckoutSessions.CreateAsync(request);
+
+   if (!response.IsSuccessStatusCode)
+   {
+       throw new InvalidOperationException($"Checkout session creation failed: {response.Error?.Detail ?? "Unknown error"}");
+   }
+
+   var session = response.Data;
    ```
 2. **Via Granular ASP.NET Core Dependency Injection**:
    ```csharp
@@ -64,6 +71,12 @@ var options = new RequestOptions
 };
 
 var response = await client.Payments.GetAsync("ch_123", options);
+if (!response.IsSuccessStatusCode)
+{
+    return;
+}
+
+var payment = response.Data;
 ```
 
 ### 2. Pagination Options ([`ListRequestOptions`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Common/ListRequestOptions.cs))
@@ -76,7 +89,13 @@ var listOptions = new ListPaymentsOptions
     Offset = 0               // Offset-based pagination
 };
 
-var page = await client.Payments.ListAsync(listOptions);
+var pageResponse = await client.Payments.ListAsync(listOptions);
+if (!pageResponse.IsSuccessStatusCode)
+{
+    return;
+}
+
+var page = pageResponse.Data;
 Console.WriteLine($"Retrieved {page.Data.Count} items. HasMore: {page.Pagination?.HasMore}");
 ```
 

@@ -10,7 +10,7 @@ public sealed class SubscriptionsClient(IBachsClient bachsClient)
     : BaseClient(bachsClient),
         ISubscriptionsClient
 {
-    public Task<Subscription> GetAsync(
+    public Task<BachsResponse<Subscription>> GetAsync(
         string subscriptionId,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -24,7 +24,7 @@ public sealed class SubscriptionsClient(IBachsClient bachsClient)
         );
     }
 
-    public Task<BachsList<Subscription>> ListAsync(
+    public Task<BachsResponse<BachsList<Subscription>>> ListAsync(
         ListSubscriptionsOptions? options = null,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -38,7 +38,7 @@ public sealed class SubscriptionsClient(IBachsClient bachsClient)
         );
     }
 
-    public Task<Subscription> UpdateAsync(
+    public Task<BachsResponse<Subscription>> UpdateAsync(
         string subscriptionId,
         UpdateSubscriptionRequest request,
         BachsRequestOptions? requestOptions = null,
@@ -55,7 +55,7 @@ public sealed class SubscriptionsClient(IBachsClient bachsClient)
         );
     }
 
-    public Task<Subscription> CancelAsync(
+    public Task<BachsResponse<Subscription>> CancelAsync(
         string subscriptionId,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default

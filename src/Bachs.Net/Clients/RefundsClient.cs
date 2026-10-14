@@ -10,7 +10,7 @@ public sealed class RefundsClient(IBachsClient bachsClient)
     : BaseClient(bachsClient),
         IRefundsClient
 {
-    public Task<Refund> CreateAsync(
+    public Task<BachsResponse<Refund>> CreateAsync(
         CreateRefundRequest request,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -25,7 +25,7 @@ public sealed class RefundsClient(IBachsClient bachsClient)
         );
     }
 
-    public Task<Refund> GetAsync(
+    public Task<BachsResponse<Refund>> GetAsync(
         string refundId,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -39,7 +39,7 @@ public sealed class RefundsClient(IBachsClient bachsClient)
         );
     }
 
-    public Task<BachsList<Refund>> ListAsync(
+    public Task<BachsResponse<BachsList<Refund>>> ListAsync(
         ListRefundsOptions? options = null,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -53,7 +53,7 @@ public sealed class RefundsClient(IBachsClient bachsClient)
         );
     }
 
-    public Task<BachsList<Refund>> GetByPaymentIdAsync(
+    public Task<BachsResponse<BachsList<Refund>>> GetByPaymentIdAsync(
         string paymentId,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default

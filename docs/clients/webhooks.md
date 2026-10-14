@@ -44,7 +44,7 @@ Register your server's endpoint to listen for specific notifications:
 using Bachs.Net.Clients;
 using Bachs.Net.Models.Webhooks;
 
-var endpoint = await client.Webhooks.CreateEndpointAsync(new CreateWebhookEndpointRequest
+var response = await client.Webhooks.CreateEndpointAsync(new CreateWebhookEndpointRequest
 {
     Url = "https://api.myplatform.com/webhooks/bachs",
     Events = new List<string>
@@ -56,6 +56,12 @@ var endpoint = await client.Webhooks.CreateEndpointAsync(new CreateWebhookEndpoi
         "refund.succeeded"
     }
 });
+if (!response.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Webhook endpoint creation failed: {response.Error?.Detail ?? "Unknown error"}");
+}
+
+var endpoint = response.Data;
 
 Console.WriteLine($"Endpoint ID: {endpoint.Id}");
 Console.WriteLine($"Webhook Secret (save securely): {endpoint.Secret}");
@@ -67,15 +73,27 @@ Console.WriteLine($"Webhook Secret (save securely): {endpoint.Secret}");
 
 ```csharp
 // Retrieve
-var ep = await client.Webhooks.GetEndpointAsync("we_100200300");
+var getResponse = await client.Webhooks.GetEndpointAsync("we_100200300");
+if (!getResponse.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Webhook endpoint lookup failed: {getResponse.Error?.Detail ?? "Unknown error"}");
+}
+
+var ep = getResponse.Data;
 Console.WriteLine($"URL: {ep.Url} ({string.Join(", ", ep.Events)})");
 
 // Update URL or events
-var updated = await client.Webhooks.UpdateEndpointAsync("we_100200300", new UpdateWebhookEndpointRequest
+var updateResponse = await client.Webhooks.UpdateEndpointAsync("we_100200300", new UpdateWebhookEndpointRequest
 {
     Url = "https://api.myplatform.com/v2/webhooks/bachs",
     Events = new List<string> { "collection.succeeded", "checkout.completed" }
 });
+if (!updateResponse.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Webhook endpoint update failed: {updateResponse.Error?.Detail ?? "Unknown error"}");
+}
+
+var updated = updateResponse.Data;
 ```
 
 ---
@@ -85,7 +103,13 @@ var updated = await client.Webhooks.UpdateEndpointAsync("we_100200300", new Upda
 Generate a new secret while keeping the previous secret valid temporarily during the grace window:
 
 ```csharp
-var rotation = await client.Webhooks.RotateSecretAsync("we_100200300");
+var response = await client.Webhooks.RotateSecretAsync("we_100200300");
+if (!response.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Webhook secret rotation failed: {response.Error?.Detail ?? "Unknown error"}");
+}
+
+var rotation = response.Data;
 
 Console.WriteLine($"New Signing Secret: {rotation.Secret}");
 // Deploy the new secret to your application configuration
@@ -96,7 +120,12 @@ Console.WriteLine($"New Signing Secret: {rotation.Secret}");
 ### 4. Delete an Endpoint
 
 ```csharp
-await client.Webhooks.DeleteEndpointAsync("we_100200300");
+var response = await client.Webhooks.DeleteEndpointAsync("we_100200300");
+if (!response.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Webhook endpoint deletion failed: {response.Error?.Detail ?? "Unknown error"}");
+}
+
 Console.WriteLine("Webhook endpoint unregistered.");
 ```
 
@@ -105,7 +134,13 @@ Console.WriteLine("Webhook endpoint unregistered.");
 ### 5. Inspect Event History
 
 ```csharp
-var events = await client.Webhooks.ListEventsAsync();
+var response = await client.Webhooks.ListEventsAsync();
+if (!response.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Webhook event list request failed: {response.Error?.Detail ?? "Unknown error"}");
+}
+
+var events = response.Data;
 
 foreach (var evt in events.Data)
 {

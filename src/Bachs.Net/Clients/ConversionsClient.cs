@@ -10,7 +10,7 @@ public sealed class ConversionsClient(IBachsClient bachsClient)
     : BaseClient(bachsClient),
         IConversionsClient
 {
-    public Task<ConversionQuote> CreateQuoteAsync(
+    public Task<BachsResponse<ConversionQuote>> CreateQuoteAsync(
         CreateConversionQuoteRequest request,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -25,7 +25,7 @@ public sealed class ConversionsClient(IBachsClient bachsClient)
         );
     }
 
-    public Task<Conversion> ExecuteAsync(
+    public Task<BachsResponse<Conversion>> ExecuteAsync(
         ExecuteConversionRequest request,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -40,7 +40,7 @@ public sealed class ConversionsClient(IBachsClient bachsClient)
         );
     }
 
-    public Task<Conversion> GetAsync(
+    public Task<BachsResponse<Conversion>> GetAsync(
         string conversionId,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -54,7 +54,7 @@ public sealed class ConversionsClient(IBachsClient bachsClient)
         );
     }
 
-    public Task<BachsList<Conversion>> ListAsync(
+    public Task<BachsResponse<BachsList<Conversion>>> ListAsync(
         ListConversionsOptions? options = null,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default

@@ -11,7 +11,7 @@ public interface ISubscriptionsClient
     /// <summary>
     /// Retrieves a subscription by its ID.
     /// </summary>
-    Task<Subscription> GetAsync(
+    Task<BachsResponse<Subscription>> GetAsync(
         string subscriptionId,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -20,7 +20,7 @@ public interface ISubscriptionsClient
     /// <summary>
     /// Lists subscriptions with pagination and filtering.
     /// </summary>
-    Task<BachsList<Subscription>> ListAsync(
+    Task<BachsResponse<BachsList<Subscription>>> ListAsync(
         ListSubscriptionsOptions? options = null,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -29,7 +29,7 @@ public interface ISubscriptionsClient
     /// <summary>
     /// Updates a subscription (e.g. change plan or toggle cancel_at_period_end).
     /// </summary>
-    Task<Subscription> UpdateAsync(
+    Task<BachsResponse<Subscription>> UpdateAsync(
         string subscriptionId,
         UpdateSubscriptionRequest request,
         BachsRequestOptions? requestOptions = null,
@@ -39,7 +39,7 @@ public interface ISubscriptionsClient
     /// <summary>
     /// Cancels a subscription immediately.
     /// </summary>
-    Task<Subscription> CancelAsync(
+    Task<BachsResponse<Subscription>> CancelAsync(
         string subscriptionId,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default

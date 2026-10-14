@@ -99,18 +99,18 @@ public interface IBachsClient
     IMiscClient Misc { get; }
 
     /// <summary>
-    /// Sends a GET request and deserializes the JSON response body.
+    /// Sends a GET request and returns the parsed body and HTTP response metadata.
     /// </summary>
-    Task<TResponse> GetAsync<TResponse>(
+    Task<BachsResponse<TResponse>> GetAsync<TResponse>(
         string path,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 
     /// <summary>
-    /// Sends a POST request with a JSON body and deserializes the JSON response body.
+    /// Sends a POST request with a JSON body and returns the parsed body and HTTP response metadata.
     /// </summary>
-    Task<TResponse> PostAsync<TRequest, TResponse>(
+    Task<BachsResponse<TResponse>> PostAsync<TRequest, TResponse>(
         string path,
         TRequest body,
         BachsRequestOptions? requestOptions = null,
@@ -118,18 +118,18 @@ public interface IBachsClient
     );
 
     /// <summary>
-    /// Sends an empty POST request and deserializes the JSON response body.
+    /// Sends an empty POST request and returns the parsed body and HTTP response metadata.
     /// </summary>
-    Task<TResponse> PostAsync<TResponse>(
+    Task<BachsResponse<TResponse>> PostAsync<TResponse>(
         string path,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 
     /// <summary>
-    /// Sends a PATCH request with a JSON body and deserializes the JSON response body.
+    /// Sends a PATCH request with a JSON body and returns the parsed body and HTTP response metadata.
     /// </summary>
-    Task<TResponse> PatchAsync<TRequest, TResponse>(
+    Task<BachsResponse<TResponse>> PatchAsync<TRequest, TResponse>(
         string path,
         TRequest body,
         BachsRequestOptions? requestOptions = null,
@@ -137,9 +137,9 @@ public interface IBachsClient
     );
 
     /// <summary>
-    /// Sends a PUT request with a JSON body and deserializes the JSON response body.
+    /// Sends a PUT request with a JSON body and returns the parsed body and HTTP response metadata.
     /// </summary>
-    Task<TResponse> PutAsync<TRequest, TResponse>(
+    Task<BachsResponse<TResponse>> PutAsync<TRequest, TResponse>(
         string path,
         TRequest body,
         BachsRequestOptions? requestOptions = null,
@@ -147,29 +147,21 @@ public interface IBachsClient
     );
 
     /// <summary>
-    /// Sends a DELETE request and deserializes the JSON response body.
+    /// Sends a DELETE request and returns the parsed body and HTTP response metadata.
     /// </summary>
-    Task<TResponse> DeleteAsync<TResponse>(
+    Task<BachsResponse<TResponse>> DeleteAsync<TResponse>(
         string path,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 
     /// <summary>
-    /// Sends a DELETE request without expecting a response body.
+    /// Sends a DELETE request without expecting a response body and returns HTTP response metadata.
     /// </summary>
-    Task DeleteAsync(
+    Task<BachsResponse<object?>> DeleteAsync(
         string path,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 
-    // /// <summary>
-    // /// Executes an HTTP request with retry handling and returns the complete <see cref="BachsResponse{TResponse}"/>.
-    // /// </summary>
-    // Task<BachsResponse<TResponse>> SendAsync<TResponse>(
-    //     HttpRequestMessage request,
-    //     RequestOptions? requestOptions = null,
-    //     CancellationToken cancellationToken = default
-    // );
 }

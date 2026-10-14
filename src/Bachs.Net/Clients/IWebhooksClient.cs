@@ -13,7 +13,7 @@ public interface IWebhooksClient : IWebhookEventValidator, IWebhookValidator
     /// <summary>
     /// Creates a new webhook destination endpoint.
     /// </summary>
-    Task<WebhookEndpoint> CreateEndpointAsync(
+    Task<BachsResponse<WebhookEndpoint>> CreateEndpointAsync(
         CreateWebhookEndpointRequest request,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -22,7 +22,7 @@ public interface IWebhooksClient : IWebhookEventValidator, IWebhookValidator
     /// <summary>
     /// Retrieves a webhook endpoint by its ID.
     /// </summary>
-    Task<WebhookEndpoint> GetEndpointAsync(
+    Task<BachsResponse<WebhookEndpoint>> GetEndpointAsync(
         string endpointId,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -31,7 +31,7 @@ public interface IWebhooksClient : IWebhookEventValidator, IWebhookValidator
     /// <summary>
     /// Lists configured webhook endpoints.
     /// </summary>
-    Task<BachsList<WebhookEndpoint>> ListEndpointsAsync(
+    Task<BachsResponse<BachsList<WebhookEndpoint>>> ListEndpointsAsync(
         ListWebhookEndpointsOptions? options = null,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -40,7 +40,7 @@ public interface IWebhooksClient : IWebhookEventValidator, IWebhookValidator
     /// <summary>
     /// Updates a webhook endpoint's URL or subscribed events.
     /// </summary>
-    Task<WebhookEndpoint> UpdateEndpointAsync(
+    Task<BachsResponse<WebhookEndpoint>> UpdateEndpointAsync(
         string endpointId,
         UpdateWebhookEndpointRequest request,
         BachsRequestOptions? requestOptions = null,
@@ -50,7 +50,7 @@ public interface IWebhooksClient : IWebhookEventValidator, IWebhookValidator
     /// <summary>
     /// Deletes a webhook endpoint.
     /// </summary>
-    Task DeleteEndpointAsync(
+    Task<BachsResponse<object?>> DeleteEndpointAsync(
         string endpointId,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -59,7 +59,7 @@ public interface IWebhooksClient : IWebhookEventValidator, IWebhookValidator
     /// <summary>
     /// Rotates the signing secret for an endpoint with an optional 24-hour overlap window.
     /// </summary>
-    Task<SecretRotationResult> RotateSecretAsync(
+    Task<BachsResponse<SecretRotationResult>> RotateSecretAsync(
         string endpointId,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -68,7 +68,7 @@ public interface IWebhooksClient : IWebhookEventValidator, IWebhookValidator
     /// <summary>
     /// Lists webhook events recorded for your organization.
     /// </summary>
-    Task<BachsList<WebhookEventRecord>> ListEventsAsync(
+    Task<BachsResponse<BachsList<WebhookEventRecord>>> ListEventsAsync(
         BachsListRequestOptions? options = null,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -77,7 +77,7 @@ public interface IWebhooksClient : IWebhookEventValidator, IWebhookValidator
     /// <summary>
     /// Retrieves a specific webhook event by its ID.
     /// </summary>
-    Task<WebhookEventRecord> GetEventAsync(
+    Task<BachsResponse<WebhookEventRecord>> GetEventAsync(
         string eventId,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default

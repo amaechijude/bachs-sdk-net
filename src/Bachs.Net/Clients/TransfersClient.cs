@@ -10,7 +10,7 @@ public sealed class TransfersClient(IBachsClient bachsClient)
     : BaseClient(bachsClient),
         ITransfersClient
 {
-    public Task<Transfer> CreateAsync(
+    public Task<BachsResponse<Transfer>> CreateAsync(
         CreateTransferRequest request,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -25,7 +25,7 @@ public sealed class TransfersClient(IBachsClient bachsClient)
         );
     }
 
-    public Task<Transfer> GetAsync(
+    public Task<BachsResponse<Transfer>> GetAsync(
         string transferId,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -39,7 +39,7 @@ public sealed class TransfersClient(IBachsClient bachsClient)
         );
     }
 
-    public Task<BachsList<Transfer>> ListAsync(
+    public Task<BachsResponse<BachsList<Transfer>>> ListAsync(
         ListTransfersOptions? options = null,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default

@@ -31,7 +31,7 @@ using Bachs.Net.Clients;
 using Bachs.Net.Common;
 using Bachs.Net.Models.Refunds;
 
-var refund = await client.Refunds.CreateAsync(new CreateRefundRequest
+var response = await client.Refunds.CreateAsync(new CreateRefundRequest
 {
     PaymentId = "ch_100200300",
     Reason = "Customer requested cancellation before delivery"
@@ -39,6 +39,12 @@ var refund = await client.Refunds.CreateAsync(new CreateRefundRequest
 {
     IdempotencyKey = "ref_order_100200300"
 });
+if (!response.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Refund creation failed: {response.Error?.Detail ?? "Unknown error"}");
+}
+
+var refund = response.Data;
 
 Console.WriteLine($"Refund ID: {refund.Id}");
 Console.WriteLine($"Status: {refund.Status}"); // 'pending', 'succeeded', 'failed'
@@ -47,12 +53,18 @@ Console.WriteLine($"Status: {refund.Status}"); // 'pending', 'succeeded', 'faile
 #### Example B: Partial Refund with Explicit Amount
 
 ```csharp
-var partialRefund = await client.Refunds.CreateAsync(new CreateRefundRequest
+var response = await client.Refunds.CreateAsync(new CreateRefundRequest
 {
     PaymentId = "ch_100200300",
     Amount = 15.00m, // Partial amount in same currency as charge
     Reason = "Partial courtesy discount"
 });
+if (!response.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Partial refund creation failed: {response.Error?.Detail ?? "Unknown error"}");
+}
+
+var partialRefund = response.Data;
 ```
 
 ---
@@ -60,7 +72,13 @@ var partialRefund = await client.Refunds.CreateAsync(new CreateRefundRequest
 ### 2. Retrieve a Refund
 
 ```csharp
-var refund = await client.Refunds.GetAsync("ref_555666777");
+var response = await client.Refunds.GetAsync("ref_555666777");
+if (!response.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Refund lookup failed: {response.Error?.Detail ?? "Unknown error"}");
+}
+
+var refund = response.Data;
 
 Console.WriteLine($"Refund Amount: {refund.Amount} {refund.Currency}");
 Console.WriteLine($"Charge ID: {refund.PaymentId}");
@@ -72,11 +90,17 @@ Console.WriteLine($"Status: {refund.Status}");
 ### 3. List Refunds
 
 ```csharp
-var page = await client.Refunds.ListAsync(new ListRefundsOptions
+var response = await client.Refunds.ListAsync(new ListRefundsOptions
 {
     PaymentId = "ch_100200300",
     Limit = 10
 });
+if (!response.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Refund list request failed: {response.Error?.Detail ?? "Unknown error"}");
+}
+
+var page = response.Data;
 
 foreach (var refItem in page.Data)
 {
@@ -91,7 +115,13 @@ foreach (var refItem in page.Data)
 A dedicated helper to retrieve all refunds attached to a charge:
 
 ```csharp
-var refunds = await client.Refunds.GetByPaymentIdAsync("ch_100200300");
+var response = await client.Refunds.GetByPaymentIdAsync("ch_100200300");
+if (!response.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Refund query failed: {response.Error?.Detail ?? "Unknown error"}");
+}
+
+var refunds = response.Data;
 
 Console.WriteLine($"Total refunds issued for charge: {refunds.Data.Count}");
 ```

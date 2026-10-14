@@ -30,7 +30,7 @@ using Bachs.Net.Clients;
 using Bachs.Net.Models.Common;
 using Bachs.Net.Models.Customers;
 
-var customer = await client.Customers.CreateAsync(new CreateCustomerRequest
+var response = await client.Customers.CreateAsync(new CreateCustomerRequest
 {
     Email = "alex.rivera@example.com",
     Name = "Alex Rivera",
@@ -48,6 +48,12 @@ var customer = await client.Customers.CreateAsync(new CreateCustomerRequest
         ["user_id"] = "usr_55481"
     }
 });
+if (!response.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Customer creation failed: {response.Error?.Detail ?? "Unknown error"}");
+}
+
+var customer = response.Data;
 
 Console.WriteLine($"Customer ID: {customer.Id}");
 ```
@@ -57,7 +63,13 @@ Console.WriteLine($"Customer ID: {customer.Id}");
 ### 2. Retrieve a Customer
 
 ```csharp
-var customer = await client.Customers.GetAsync("cus_123456789");
+var response = await client.Customers.GetAsync("cus_123456789");
+if (!response.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Customer lookup failed: {response.Error?.Detail ?? "Unknown error"}");
+}
+
+var customer = response.Data;
 
 Console.WriteLine($"Name: {customer.Name}");
 Console.WriteLine($"Email: {customer.Email}");
@@ -70,11 +82,17 @@ Console.WriteLine($"Registered: {customer.CreatedAt:yyyy-MM-dd}");
 ### 3. List Customers
 
 ```csharp
-var results = await client.Customers.ListAsync(new ListCustomersOptions
+var response = await client.Customers.ListAsync(new ListCustomersOptions
 {
     Email = "alex.rivera@example.com",
     Limit = 10
 });
+if (!response.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Customer list request failed: {response.Error?.Detail ?? "Unknown error"}");
+}
+
+var results = response.Data;
 
 foreach (var c in results.Data)
 {
@@ -87,7 +105,7 @@ foreach (var c in results.Data)
 ### 4. Update a Customer
 
 ```csharp
-var updated = await client.Customers.UpdateAsync("cus_123456789", new UpdateCustomerRequest
+var response = await client.Customers.UpdateAsync("cus_123456789", new UpdateCustomerRequest
 {
     Name = "Alex Rivera-Smith",
     Phone = "+15559876543",
@@ -100,6 +118,12 @@ var updated = await client.Customers.UpdateAsync("cus_123456789", new UpdateCust
         Country = "US"
     }
 });
+if (!response.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Customer update failed: {response.Error?.Detail ?? "Unknown error"}");
+}
+
+var updated = response.Data;
 ```
 
 ---
@@ -109,7 +133,13 @@ var updated = await client.Customers.UpdateAsync("cus_123456789", new UpdateCust
 The Customer Portal allows users to update payment methods, view invoices, and manage subscriptions without you building a custom billing UI:
 
 ```csharp
-var portal = await client.Customers.CreatePortalSessionAsync("cus_123456789");
+var response = await client.Customers.CreatePortalSessionAsync("cus_123456789");
+if (!response.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Customer portal session creation failed: {response.Error?.Detail ?? "Unknown error"}");
+}
+
+var portal = response.Data;
 
 Console.WriteLine($"Direct user to Portal URL: {portal.Url}");
 Console.WriteLine($"Session expires at: {portal.ExpiresAt}");

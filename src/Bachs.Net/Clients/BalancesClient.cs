@@ -10,7 +10,7 @@ public sealed class BalancesClient(IBachsClient bachsClient)
     : BaseClient(bachsClient),
         IBalancesClient
 {
-    public Task<Balance> GetBalancesAsync(
+    public Task<BachsResponse<Balance>> GetBalancesAsync(
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
@@ -18,7 +18,7 @@ public sealed class BalancesClient(IBachsClient bachsClient)
         return BachsClient.GetAsync<Balance>("v1/balances", requestOptions, cancellationToken);
     }
 
-    public Task<BalanceSettings> GetSettingsAsync(
+    public Task<BachsResponse<BalanceSettings>> GetSettingsAsync(
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
@@ -30,7 +30,7 @@ public sealed class BalancesClient(IBachsClient bachsClient)
         );
     }
 
-    public Task<BalanceSettings> UpdateSettingsAsync(
+    public Task<BachsResponse<BalanceSettings>> UpdateSettingsAsync(
         BalanceSettings settings,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default

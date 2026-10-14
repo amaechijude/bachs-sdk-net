@@ -10,7 +10,7 @@ public sealed class DisputesClient(IBachsClient bachsClient)
     : BaseClient(bachsClient),
         IDisputesClient
 {
-    public Task<Dispute> GetAsync(
+    public Task<BachsResponse<Dispute>> GetAsync(
         string disputeId,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -24,7 +24,7 @@ public sealed class DisputesClient(IBachsClient bachsClient)
         );
     }
 
-    public Task<BachsList<Dispute>> ListAsync(
+    public Task<BachsResponse<BachsList<Dispute>>> ListAsync(
         ListDisputesOptions? options = null,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -38,7 +38,7 @@ public sealed class DisputesClient(IBachsClient bachsClient)
         );
     }
 
-    public Task<Dispute> UpdateEvidenceAsync(
+    public Task<BachsResponse<Dispute>> UpdateEvidenceAsync(
         string disputeId,
         UpdateDisputeEvidenceRequest request,
         BachsRequestOptions? requestOptions = null,
@@ -55,7 +55,7 @@ public sealed class DisputesClient(IBachsClient bachsClient)
         );
     }
 
-    public Task<Dispute> SubmitAsync(
+    public Task<BachsResponse<Dispute>> SubmitAsync(
         string disputeId,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default

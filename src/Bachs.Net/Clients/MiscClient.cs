@@ -8,7 +8,7 @@ namespace Bachs.Net.Clients;
 /// </summary>
 public sealed class MiscClient(IBachsClient bachsClient) : BaseClient(bachsClient), IMiscClient
 {
-    public Task<IReadOnlyList<string>> GetSupportedCurrenciesAsync(
+    public Task<BachsResponse<IReadOnlyList<string>>> GetSupportedCurrenciesAsync(
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
@@ -20,7 +20,7 @@ public sealed class MiscClient(IBachsClient bachsClient) : BaseClient(bachsClien
         );
     }
 
-    public Task<IReadOnlyList<BankInfo>> GetBanksAsync(
+    public Task<BachsResponse<IReadOnlyList<BankInfo>>> GetBanksAsync(
         string country = "NG",
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -38,7 +38,7 @@ public sealed class MiscClient(IBachsClient bachsClient) : BaseClient(bachsClien
         );
     }
 
-    public Task<ResolveBankAccountResponse> ResolveBankAccountAsync(
+    public Task<BachsResponse<ResolveBankAccountResponse>> ResolveBankAccountAsync(
         ResolveBankAccountRequest request,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default

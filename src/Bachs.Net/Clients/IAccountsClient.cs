@@ -11,7 +11,7 @@ public interface IAccountsClient
     /// <summary>
     /// Creates a connected account under your platform.
     /// </summary>
-    Task<Account> CreateAsync(
+    Task<BachsResponse<Account>> CreateAsync(
         CreateAccountRequest request,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -20,7 +20,7 @@ public interface IAccountsClient
     /// <summary>
     /// Retrieves a connected account by its ID.
     /// </summary>
-    Task<Account> GetAsync(
+    Task<BachsResponse<Account>> GetAsync(
         string accountId,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -29,7 +29,7 @@ public interface IAccountsClient
     /// <summary>
     /// Lists connected accounts under your platform.
     /// </summary>
-    Task<BachsList<Account>> ListAsync(
+    Task<BachsResponse<BachsList<Account>>> ListAsync(
         ListAccountsOptions? options = null,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -38,7 +38,7 @@ public interface IAccountsClient
     /// <summary>
     /// Updates a connected account.
     /// </summary>
-    Task<Account> UpdateAsync(
+    Task<BachsResponse<Account>> UpdateAsync(
         string accountId,
         UpdateAccountRequest request,
         BachsRequestOptions? requestOptions = null,
@@ -48,7 +48,7 @@ public interface IAccountsClient
     /// <summary>
     /// Creates a hosted onboarding link for an account to satisfy requirements.
     /// </summary>
-    Task<AccountLink> CreateAccountLinkAsync(
+    Task<BachsResponse<AccountLink>> CreateAccountLinkAsync(
         string accountId,
         CreateAccountLinkRequest request,
         BachsRequestOptions? requestOptions = null,
@@ -58,7 +58,7 @@ public interface IAccountsClient
     /// <summary>
     /// Retrieves the current platform account profile.
     /// </summary>
-    Task<Account> GetMeAsync(
+    Task<BachsResponse<Account>> GetMeAsync(
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );

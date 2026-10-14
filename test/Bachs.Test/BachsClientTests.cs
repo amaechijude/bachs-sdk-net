@@ -106,8 +106,8 @@ public sealed class BachsClientTests
             requestOptions
         );
 
-        Assert.NotNull(result);
-        Assert.Equal("chk_123", result.CheckoutId);
+        Assert.NotNull(result.Data);
+        Assert.Equal("chk_123", result.Data.CheckoutId);
         Assert.NotNull(handler.LastRequest);
         Assert.True(handler.LastRequest.Headers.Contains("Idempotency-Key"));
         Assert.Equal(
@@ -147,7 +147,12 @@ public sealed class BachsClientTests
         var httpClient = new HttpClient(handler);
         var client = new BachsClient(
             httpClient,
-            new BachsClientOptions { ApiKey = "sk_sandbox_testkey123", MaxRetries = 0 }
+            new BachsClientOptions
+            {
+                ApiKey = "sk_sandbox_testkey123",
+                MaxRetries = 0,
+                ThrowOnApiErrors = true,
+            }
         );
 
         var ex = await Assert.ThrowsAsync<BachsValidationException>(() =>
@@ -193,7 +198,8 @@ public sealed class BachsClientTests
             new BachsClientOptions
             {
                 ApiKey = "sk_sandbox_testkey123",
-                MaxRetries = 0, // Disable retry to assert exception
+                MaxRetries = 0,
+                ThrowOnApiErrors = true,
             }
         );
 

@@ -11,7 +11,7 @@ public interface IConversionsClient
     /// <summary>
     /// Locks an exchange rate quote for a conversion attempt.
     /// </summary>
-    Task<ConversionQuote> CreateQuoteAsync(
+    Task<BachsResponse<ConversionQuote>> CreateQuoteAsync(
         CreateConversionQuoteRequest request,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -20,7 +20,7 @@ public interface IConversionsClient
     /// <summary>
     /// Executes a currency conversion using a previously created quote ID.
     /// </summary>
-    Task<Conversion> ExecuteAsync(
+    Task<BachsResponse<Conversion>> ExecuteAsync(
         ExecuteConversionRequest request,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -29,7 +29,7 @@ public interface IConversionsClient
     /// <summary>
     /// Retrieves a conversion record by its ID.
     /// </summary>
-    Task<Conversion> GetAsync(
+    Task<BachsResponse<Conversion>> GetAsync(
         string conversionId,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -38,7 +38,7 @@ public interface IConversionsClient
     /// <summary>
     /// Lists past conversion records with pagination and filtering.
     /// </summary>
-    Task<BachsList<Conversion>> ListAsync(
+    Task<BachsResponse<BachsList<Conversion>>> ListAsync(
         ListConversionsOptions? options = null,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default

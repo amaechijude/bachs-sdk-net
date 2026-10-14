@@ -26,7 +26,13 @@ The Balances client allows you to inspect account funds across all supported cur
 ```csharp
 using Bachs.Net.Clients;
 
-var balance = await client.Balances.GetBalancesAsync();
+var response = await client.Balances.GetBalancesAsync();
+if (!response.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Balance lookup failed: {response.Error?.Detail ?? "Unknown error"}");
+}
+
+var balance = response.Data;
 
 Console.WriteLine($"Total Consolidated (USD): ${balance.TotalUsd:F2}");
 
@@ -44,10 +50,16 @@ foreach (var (currency, bucket) in balance.Currencies)
 using Bachs.Net.Common;
 
 // Check balance of a connected merchant
-var merchantBalance = await client.Balances.GetBalancesAsync(new RequestOptions
+var response = await client.Balances.GetBalancesAsync(new RequestOptions
 {
     AccountId = "acc_merchant_456"
 });
+if (!response.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Merchant balance lookup failed: {response.Error?.Detail ?? "Unknown error"}");
+}
+
+var merchantBalance = response.Data;
 ```
 
 ---
@@ -55,7 +67,13 @@ var merchantBalance = await client.Balances.GetBalancesAsync(new RequestOptions
 ### 2. Retrieve Balance Settings
 
 ```csharp
-var settings = await client.Balances.GetSettingsAsync();
+var response = await client.Balances.GetSettingsAsync();
+if (!response.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Balance settings lookup failed: {response.Error?.Detail ?? "Unknown error"}");
+}
+
+var settings = response.Data;
 
 Console.WriteLine($"Payout Schedule: {settings.PayoutSchedule}"); // 'manual', 'daily', 'weekly', 'monthly'
 Console.WriteLine($"Default Destination: {settings.DefaultDestinationId}");
@@ -68,11 +86,17 @@ Console.WriteLine($"Default Destination: {settings.DefaultDestinationId}");
 ```csharp
 using Bachs.Net.Models.Balances;
 
-var updated = await client.Balances.UpdateSettingsAsync(new BalanceSettings
+var response = await client.Balances.UpdateSettingsAsync(new BalanceSettings
 {
     PayoutSchedule = "daily",
     DefaultDestinationId = "dest_bank_998877"
 });
+if (!response.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Balance settings update failed: {response.Error?.Detail ?? "Unknown error"}");
+}
+
+var updated = response.Data;
 
 Console.WriteLine($"Updated Schedule to: {updated.PayoutSchedule}");
 ```

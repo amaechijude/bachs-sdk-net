@@ -141,19 +141,18 @@ public sealed class BachsClient : IBachsClient, IDisposable
 
     private Uri BuildRequestUri(string path) => new(Options.GetEffectiveBaseUrl(), path);
 
-    public async Task<TResponse> GetAsync<TResponse>(
+    public async Task<BachsResponse<TResponse>> GetAsync<TResponse>(
         string path,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {
         using var request = new HttpRequestMessage(HttpMethod.Get, BuildRequestUri(path));
-        var response = await SendAsync<TResponse>(request, requestOptions, cancellationToken)
+        return await SendAsync<TResponse>(request, requestOptions, cancellationToken)
             .ConfigureAwait(false);
-        return response.Data;
     }
 
-    public async Task<TResponse> PostAsync<TRequest, TResponse>(
+    public async Task<BachsResponse<TResponse>> PostAsync<TRequest, TResponse>(
         string path,
         TRequest body,
         BachsRequestOptions? requestOptions = null,
@@ -163,24 +162,22 @@ public sealed class BachsClient : IBachsClient, IDisposable
         using var request = new HttpRequestMessage(HttpMethod.Post, BuildRequestUri(path));
         request.Content = JsonContent.Create(body, options: BachsJsonSerializer.Options);
 
-        var response = await SendAsync<TResponse>(request, requestOptions, cancellationToken)
+        return await SendAsync<TResponse>(request, requestOptions, cancellationToken)
             .ConfigureAwait(false);
-        return response.Data;
     }
 
-    public async Task<TResponse> PostAsync<TResponse>(
+    public async Task<BachsResponse<TResponse>> PostAsync<TResponse>(
         string path,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {
         using var request = new HttpRequestMessage(HttpMethod.Post, BuildRequestUri(path));
-        var response = await SendAsync<TResponse>(request, requestOptions, cancellationToken)
+        return await SendAsync<TResponse>(request, requestOptions, cancellationToken)
             .ConfigureAwait(false);
-        return response.Data;
     }
 
-    public async Task<TResponse> PatchAsync<TRequest, TResponse>(
+    public async Task<BachsResponse<TResponse>> PatchAsync<TRequest, TResponse>(
         string path,
         TRequest body,
         BachsRequestOptions? requestOptions = null,
@@ -190,12 +187,11 @@ public sealed class BachsClient : IBachsClient, IDisposable
         using var request = new HttpRequestMessage(HttpMethod.Patch, BuildRequestUri(path));
         request.Content = JsonContent.Create(body, options: BachsJsonSerializer.Options);
 
-        var response = await SendAsync<TResponse>(request, requestOptions, cancellationToken)
+        return await SendAsync<TResponse>(request, requestOptions, cancellationToken)
             .ConfigureAwait(false);
-        return response.Data;
     }
 
-    public async Task<TResponse> PutAsync<TRequest, TResponse>(
+    public async Task<BachsResponse<TResponse>> PutAsync<TRequest, TResponse>(
         string path,
         TRequest body,
         BachsRequestOptions? requestOptions = null,
@@ -205,31 +201,30 @@ public sealed class BachsClient : IBachsClient, IDisposable
         using var request = new HttpRequestMessage(HttpMethod.Put, BuildRequestUri(path));
         request.Content = JsonContent.Create(body, options: BachsJsonSerializer.Options);
 
-        var response = await SendAsync<TResponse>(request, requestOptions, cancellationToken)
+        return await SendAsync<TResponse>(request, requestOptions, cancellationToken)
             .ConfigureAwait(false);
-        return response.Data;
     }
 
-    public async Task<TResponse> DeleteAsync<TResponse>(
+    public async Task<BachsResponse<TResponse>> DeleteAsync<TResponse>(
         string path,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {
         using var request = new HttpRequestMessage(HttpMethod.Delete, BuildRequestUri(path));
-        var response = await SendAsync<TResponse>(request, requestOptions, cancellationToken)
+        return await SendAsync<TResponse>(request, requestOptions, cancellationToken)
             .ConfigureAwait(false);
-        return response.Data;
     }
 
-    public async Task DeleteAsync(
+    public async Task<BachsResponse<object?>> DeleteAsync(
         string path,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {
         using var request = new HttpRequestMessage(HttpMethod.Delete, BuildRequestUri(path));
-        await SendAsync<object>(request, requestOptions, cancellationToken).ConfigureAwait(false);
+        return await SendAsync<object?>(request, requestOptions, cancellationToken)
+            .ConfigureAwait(false);
     }
 
     private async Task<BachsResponse<TResponse>> SendAsync<TResponse>(
@@ -294,30 +289,17 @@ public sealed class BachsClient : IBachsClient, IDisposable
 
                 using (response)
                 {
-                    string? responseContent = null;
+                    var responseContent =
+                        response.StatusCode is HttpStatusCode.NoContent
+                            ? null
+                            : await response.Content.ReadAsStringAsync(cancellationToken)
+                                .ConfigureAwait(false);
                     TResponse data = default!;
+                    BachsError? error = null;
 
-                    // Read content as string for errors so we can attach it to the exception
                     if (response is { IsSuccessStatusCode: false })
                     {
-                        responseContent = await response
-                            .Content.ReadAsStringAsync(cancellationToken)
-                            .ConfigureAwait(false);
-
-                        BachsError? error = null;
-                        if (!string.IsNullOrWhiteSpace(responseContent))
-                        {
-                            try
-                            {
-                                error = BachsJsonSerializer.Deserialize<BachsError>(
-                                    responseContent
-                                );
-                            }
-                            catch
-                            {
-                                // Ignore JSON parsing failure for non-JSON error pages
-                            }
-                        }
+                        error = DeserializeError(responseContent);
 
                         if (Options.ThrowOnApiErrors)
                         {
@@ -332,60 +314,49 @@ public sealed class BachsClient : IBachsClient, IDisposable
 
                     if (typeof(TResponse) == typeof(string))
                     {
-                        responseContent ??= await response
-                            .Content.ReadAsStringAsync(cancellationToken)
-                            .ConfigureAwait(false);
-                        data = (TResponse)(object)responseContent;
+                        data = (TResponse)(object)(responseContent ?? string.Empty);
                     }
-                    else if (response.StatusCode is not HttpStatusCode.NoContent)
+                    else if (
+                        response.IsSuccessStatusCode
+                        && response.StatusCode is not HttpStatusCode.NoContent
+                        && !string.IsNullOrWhiteSpace(responseContent)
+                    )
                     {
-                        if (
-                            response is { IsSuccessStatusCode: false }
-                            && !string.IsNullOrWhiteSpace(responseContent)
-                        )
-                        {
-                            data = BachsJsonSerializer.Deserialize<TResponse>(responseContent)!;
-                        }
-                        else if (response.IsSuccessStatusCode)
-                        {
-                            // Success path: stream deserialize directly without allocating string
-                            var stream = await response
-                                .Content.ReadAsStreamAsync(cancellationToken)
-                                .ConfigureAwait(false);
-                            try
-                            {
-                                data = (
-                                    await System
-                                        .Text.Json.JsonSerializer.DeserializeAsync<TResponse>(
-                                            stream,
-                                            BachsJsonSerializer.Options,
-                                            cancellationToken
-                                        )
-                                        .ConfigureAwait(false)
-                                )!;
-                            }
-                            catch (System.Text.Json.JsonException)
-                            {
-                                // Ignore potential empty success responses parsing failures
-                            }
-                        }
+                        data = BachsJsonSerializer.Deserialize<TResponse>(responseContent)!;
                     }
 
                     return new BachsResponse<TResponse>
                     {
                         Data = data,
+                        Error = error,
                         StatusCode = response.StatusCode,
                         RateLimit = rateLimit,
                         Headers = response.Headers,
                         RawJson = responseContent,
                     };
                 }
+
             }
             finally
             {
                 if (needsCloning)
                     currentRequest.Dispose();
             }
+        }
+    }
+
+    private static BachsError? DeserializeError(string? responseContent)
+    {
+        if (string.IsNullOrWhiteSpace(responseContent))
+            return null;
+
+        try
+        {
+            return BachsJsonSerializer.Deserialize<BachsError>(responseContent);
+        }
+        catch (System.Text.Json.JsonException)
+        {
+            return null;
         }
     }
 

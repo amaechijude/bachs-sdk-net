@@ -66,9 +66,9 @@ public sealed class BachsClientOptions
 
     /// <summary>
     /// Gets or sets whether to throw typed exceptions (<see cref="BachsApiException"/>) on HTTP error status codes.
-    /// Defaults to true.
+    /// Defaults to false, so API failures are returned as unsuccessful <see cref="BachsResponse{T}"/> results.
     /// </summary>
-    public bool ThrowOnApiErrors { get; set; } = true;
+    public bool ThrowOnApiErrors { get; set; }
 
     /// <summary>
     /// Resolves the effective base URL based on <see cref="BaseUrl"/>, <see cref="Environment"/>,

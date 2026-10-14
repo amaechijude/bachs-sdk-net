@@ -33,7 +33,7 @@ using Bachs.Net.Common;
 using Bachs.Net.Models.Common;
 using Bachs.Net.Models.Payouts;
 
-var payout = await client.Payouts.CreateAsync(new CreatePayoutRequest
+var response = await client.Payouts.CreateAsync(new CreatePayoutRequest
 {
     Amount = 500.00m,
     Currency = BachsCurrency.USD, // Defaults to BachsCurrency.USD
@@ -43,6 +43,12 @@ var payout = await client.Payouts.CreateAsync(new CreatePayoutRequest
 {
     IdempotencyKey = "payout_batch_oct_01"
 });
+if (!response.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Payout creation failed: {response.Error?.Detail ?? "Unknown error"}");
+}
+
+var payout = response.Data;
 
 Console.WriteLine($"Payout ID: {payout.Id}");
 Console.WriteLine($"Status: {payout.Status}"); // 'pending', 'processing', 'completed', 'failed'
@@ -51,12 +57,18 @@ Console.WriteLine($"Status: {payout.Status}"); // 'pending', 'processing', 'comp
 #### 2. Request a Payout Quote (Cross-Currency FX)
 
 ```csharp
-var quote = await client.Payouts.CreateQuoteAsync(new CreatePayoutQuoteRequest
+var response = await client.Payouts.CreateQuoteAsync(new CreatePayoutQuoteRequest
 {
     DestinationId = "dest_bank_998877",
     Currency = BachsCurrency.USD, // Defaults to BachsCurrency.USD
     Amount = 500.00m
 });
+if (!response.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Payout quote request failed: {response.Error?.Detail ?? "Unknown error"}");
+}
+
+var quote = response.Data;
 
 Console.WriteLine($"Source Amount required: {quote.SourceAmount} {quote.SourceCurrency}");
 Console.WriteLine($"Exchange Rate: {quote.Rate}");
@@ -66,7 +78,13 @@ Console.WriteLine($"Quote valid until: {quote.ExpiresAt}");
 #### 3. Retrieve a Payout
 
 ```csharp
-var withdrawal = await client.Payouts.GetAsync("wd_100200300");
+var response = await client.Payouts.GetAsync("wd_100200300");
+if (!response.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Payout lookup failed: {response.Error?.Detail ?? "Unknown error"}");
+}
+
+var withdrawal = response.Data;
 
 Console.WriteLine($"Payout: {withdrawal.Amount} {withdrawal.Currency} -> {withdrawal.Status}");
 ```
@@ -74,11 +92,17 @@ Console.WriteLine($"Payout: {withdrawal.Amount} {withdrawal.Currency} -> {withdr
 #### 4. List Payouts
 
 ```csharp
-var page = await client.Payouts.ListAsync(new ListPayoutsOptions
+var response = await client.Payouts.ListAsync(new ListPayoutsOptions
 {
     Status = "completed",
     Limit = 20
 });
+if (!response.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Payout list request failed: {response.Error?.Detail ?? "Unknown error"}");
+}
+
+var page = response.Data;
 
 foreach (var item in page.Data)
 {
@@ -109,7 +133,7 @@ foreach (var item in page.Data)
 #### Register a Bank Account Destination
 
 ```csharp
-var destination = await client.PayoutDestinations.CreateAsync(new CreatePayoutDestinationRequest
+var response = await client.PayoutDestinations.CreateAsync(new CreatePayoutDestinationRequest
 {
     Type = "bank_account",
     Currency = BachsCurrency.NGN, // Defaults to BachsCurrency.USD
@@ -120,6 +144,12 @@ var destination = await client.PayoutDestinations.CreateAsync(new CreatePayoutDe
         ["account_name"] = "Acme Technologies Ltd"
     }
 });
+if (!response.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Payout destination creation failed: {response.Error?.Detail ?? "Unknown error"}");
+}
+
+var destination = response.Data;
 
 Console.WriteLine($"Destination Registered: {destination.Id}");
 ```
@@ -127,7 +157,12 @@ Console.WriteLine($"Destination Registered: {destination.Id}");
 #### Delete a Destination
 
 ```csharp
-await client.PayoutDestinations.DeleteAsync("dest_bank_998877");
+var response = await client.PayoutDestinations.DeleteAsync("dest_bank_998877");
+if (!response.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Payout destination deletion failed: {response.Error?.Detail ?? "Unknown error"}");
+}
+
 Console.WriteLine("Payout destination removed.");
 ```
 

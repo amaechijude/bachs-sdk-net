@@ -83,7 +83,7 @@ using Bachs.Net.Models.Common;
 
 app.MapPost("/create-checkout", async (ICheckoutSessionsClient checkoutClient) =>
 {
-    var session = await checkoutClient.CreateAsync(new CreateCheckoutSessionRequest
+    var response = await checkoutClient.CreateAsync(new CreateCheckoutSessionRequest
     {
         Pricing = new CheckoutPricingRequest
         {
@@ -99,7 +99,12 @@ app.MapPost("/create-checkout", async (ICheckoutSessionsClient checkoutClient) =
         CancelUrl = "https://example.com/checkout/cancel"
     });
 
-    return Results.Ok(new { checkoutUrl = session.CheckoutUrl });
+    if (!response.IsSuccessStatusCode)
+    {
+        return Results.Problem($"Checkout session creation failed: {response.Error?.Detail ?? "Unknown error"}");
+    }
+
+    return Results.Ok(new { checkoutUrl = response.Data.CheckoutUrl });
 });
 ```
 
@@ -158,6 +163,23 @@ builder.Services.AddBachsClient(
 
 ---
 
+## Result Pattern & Error Handling
+
+All public API methods return a `BachsResponse<T>` wrapper with the parsed payload exposed on `.Data`. This keeps status codes, headers, rate-limit metadata, and raw payloads available without forcing a `try/catch` around every call.
+
+```csharp
+var response = await client.CheckoutSessions.CreateAsync(request);
+if (!response.IsSuccessStatusCode)
+{
+    // Inspect response.Error, response.StatusCode, response.RawJson, etc.
+    return;
+}
+
+var session = response.Data;
+```
+
+When you want exception-based behavior for HTTP failures, set `ThrowOnApiErrors = true` on `BachsClientOptions`.
+
 ## Sub API Clients & Documentation
 
 `Bachs.Net` provides 16 domain-focused clients. Access them directly via `client.<Resource>` on `IBachsClient` or inject their interfaces individually using ASP.NET Core Dependency Injection:
@@ -210,11 +232,18 @@ var request = CreateCheckoutSessionRequestBuilder
     .WithCancelUrl("https://myapp.com/cart")
     .Build();
 
-var session = await client.CheckoutSessions.CreateAsync(
+var response = await client.CheckoutSessions.CreateAsync(
     request,
     // Optional request options: specify idempotency key
     new RequestOptions("order-invoice-1002")
 );
+
+if (!response.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Checkout session creation failed: {response.Error?.Detail ?? "Unknown error"}");
+}
+
+var session = response.Data;
 
 Console.WriteLine($"Redirect customer to: {session.CheckoutUrl}");
 ```
@@ -226,7 +255,7 @@ using Bachs.Net.Models.Common;
 using Bachs.Net.Models.Products;
 
 // Create a recurring subscription product (Pro Plan, $29/month, 14-day trial)
-var product = await client.Products.CreateAsync(new CreateProductRequest
+var response = await client.Products.CreateAsync(new CreateProductRequest
 {
     Name = "Pro Plan",
     Description = "Monthly access to Pro features",
@@ -247,6 +276,13 @@ var product = await client.Products.CreateAsync(new CreateProductRequest
         Frequency = 14
     }
 });
+
+if (!response.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Product creation failed: {response.Error?.Detail ?? "Unknown error"}");
+}
+
+var product = response.Data;
 
 Console.WriteLine($"Created product: {product.Id}");
 ```

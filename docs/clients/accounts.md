@@ -33,7 +33,7 @@ using Bachs.Net.Clients;
 using Bachs.Net.Common;
 using Bachs.Net.Models.Accounts;
 
-var account = await client.Accounts.CreateAsync(new CreateAccountRequest
+var response = await client.Accounts.CreateAsync(new CreateAccountRequest
 {
     Type = "standard", // 'standard', 'custom', 'express'
     Country = "NG",
@@ -44,6 +44,12 @@ var account = await client.Accounts.CreateAsync(new CreateAccountRequest
 {
     IdempotencyKey = "onboard_vendor_4819"
 });
+if (!response.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Connected account creation failed: {response.Error?.Detail ?? "Unknown error"}");
+}
+
+var account = response.Data;
 
 Console.WriteLine($"Connected Account ID: {account.Id}");
 ```
@@ -55,12 +61,18 @@ Console.WriteLine($"Connected Account ID: {account.Id}");
 Redirect the merchant to Bachs's hosted onboarding flow to securely collect banking, tax, and KYC identity documents:
 
 ```csharp
-var link = await client.Accounts.CreateAccountLinkAsync(account.Id, new CreateAccountLinkRequest
+var response = await client.Accounts.CreateAccountLinkAsync(account.Id, new CreateAccountLinkRequest
 {
     Type = "onboarding",
     ReturnUrl = "https://marketplace.com/onboarding/complete",
     RefreshUrl = "https://marketplace.com/onboarding/refresh"
 });
+if (!response.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Account onboarding link creation failed: {response.Error?.Detail ?? "Unknown error"}");
+}
+
+var link = response.Data;
 
 Console.WriteLine($"Direct merchant to: {link.Url}");
 Console.WriteLine($"Link expires at: {link.ExpiresAt}");
@@ -71,7 +83,13 @@ Console.WriteLine($"Link expires at: {link.ExpiresAt}");
 ### 3. Retrieve a Connected Account
 
 ```csharp
-var details = await client.Accounts.GetAsync("acc_100200300");
+var response = await client.Accounts.GetAsync("acc_100200300");
+if (!response.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Connected account lookup failed: {response.Error?.Detail ?? "Unknown error"}");
+}
+
+var details = response.Data;
 
 Console.WriteLine($"Business: {details.BusinessName}");
 Console.WriteLine($"Type: {details.Type}");
@@ -90,7 +108,7 @@ using Bachs.Net.Models.Checkout;
 using Bachs.Net.Models.Checkout.Request;
 using Bachs.Net.Models.Common;
 
-var merchantSession = await client.CheckoutSessions.CreateAsync(new CreateCheckoutSessionRequest
+var response = await client.CheckoutSessions.CreateAsync(new CreateCheckoutSessionRequest
 {
     Pricing = new CheckoutPricingRequest { Currency = BachsCurrency.USD, Amount = 100.00m }, // Currency defaults to BachsCurrency.USD
     SuccessUrl = "https://shop.com/success",
@@ -99,6 +117,12 @@ var merchantSession = await client.CheckoutSessions.CreateAsync(new CreateChecko
 {
     AccountId = account.Id // Routes request to this sub-account
 });
+if (!response.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Merchant checkout session creation failed: {response.Error?.Detail ?? "Unknown error"}");
+}
+
+var merchantSession = response.Data;
 ```
 
 ---
@@ -106,7 +130,13 @@ var merchantSession = await client.CheckoutSessions.CreateAsync(new CreateChecko
 ### 5. Inspect Self / Platform Profile
 
 ```csharp
-var me = await client.Accounts.GetMeAsync();
+var response = await client.Accounts.GetMeAsync();
+if (!response.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Current account lookup failed: {response.Error?.Detail ?? "Unknown error"}");
+}
+
+var me = response.Data;
 
 Console.WriteLine($"Current platform account: {me.Id} ({me.BusinessName})");
 ```

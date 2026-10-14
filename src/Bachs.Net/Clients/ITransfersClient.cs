@@ -11,7 +11,7 @@ public interface ITransfersClient
     /// <summary>
     /// Creates a transfer of funds.
     /// </summary>
-    Task<Transfer> CreateAsync(
+    Task<BachsResponse<Transfer>> CreateAsync(
         CreateTransferRequest request,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -20,7 +20,7 @@ public interface ITransfersClient
     /// <summary>
     /// Retrieves a transfer by its ID.
     /// </summary>
-    Task<Transfer> GetAsync(
+    Task<BachsResponse<Transfer>> GetAsync(
         string transferId,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -29,7 +29,7 @@ public interface ITransfersClient
     /// <summary>
     /// Lists transfers with pagination.
     /// </summary>
-    Task<BachsList<Transfer>> ListAsync(
+    Task<BachsResponse<BachsList<Transfer>>> ListAsync(
         ListTransfersOptions? options = null,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default

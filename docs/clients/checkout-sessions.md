@@ -53,8 +53,13 @@ var request = CreateCheckoutSessionRequestBuilder
     .WithCancelUrl("https://example.com/billing/cancel")
     .Build();
 
-CreateCheckoutSessionResponse session = await client.CheckoutSessions.CreateAsync(request,new RequestOptions { IdempotencyKey = "
-idx_key" });
+var response = await client.CheckoutSessions.CreateAsync(request,new RequestOptions { IdempotencyKey = "idx_key" });
+if (!response.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Checkout session creation failed: {response.Error?.Detail ?? "Unknown error"}");
+}
+
+var session = response.Data;
 
 Console.WriteLine($"Checkout ID: {session.CheckoutId}");
 Console.WriteLine($"Redirect Customer to: {session.CheckoutUrl}");
@@ -85,10 +90,16 @@ var request = CreateCheckoutSessionRequestBuilder
     .WithMetadata("order_id", "order_100234")
     .Build();
 
-CreateCheckoutSessionResponse session = await client.CheckoutSessions.CreateAsync(
+var response = await client.CheckoutSessions.CreateAsync(
     request,
     new RequestOptions { IdempotencyKey = "checkout_order_100234" }
 );
+if (!response.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Checkout session creation failed: {response.Error?.Detail ?? "Unknown error"}");
+}
+
+var session = response.Data;
 
 Console.WriteLine($"Checkout ID: {session.CheckoutId}");
 Console.WriteLine($"Hosted Checkout URL: {session.CheckoutUrl}");
@@ -101,7 +112,13 @@ Console.WriteLine($"Hosted Checkout URL: {session.CheckoutUrl}");
 Retrieve detailed session status, charge information, and resolved line items:
 
 ```csharp
-GetCheckoutSessionResponse session = await client.CheckoutSessions.GetAsync("chk_1M2N3o4P5q6R7s8T");
+var response = await client.CheckoutSessions.GetAsync("chk_1M2N3o4P5q6R7s8T");
+if (!response.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Checkout session lookup failed: {response.Error?.Detail ?? "Unknown error"}");
+}
+
+var session = response.Data;
 
 Console.WriteLine($"Status: {session.Status}");          // 'open', 'completed', 'expired', 'cancelled'
 Console.WriteLine($"Payment Status: {session.PaymentStatus}"); // 'succeeded', 'requires_payment_method', etc.

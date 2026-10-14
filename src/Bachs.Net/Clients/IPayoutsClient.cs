@@ -11,7 +11,7 @@ public interface IPayoutsClient
     /// <summary>
     /// Creates and initiates a payout withdrawal.
     /// </summary>
-    Task<Payout> CreateAsync(
+    Task<BachsResponse<Payout>> CreateAsync(
         CreatePayoutRequest request,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -20,7 +20,7 @@ public interface IPayoutsClient
     /// <summary>
     /// Requests a conversion quote for an international/cross-currency payout.
     /// </summary>
-    Task<PayoutQuote> CreateQuoteAsync(
+    Task<BachsResponse<PayoutQuote>> CreateQuoteAsync(
         CreatePayoutQuoteRequest request,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -29,7 +29,7 @@ public interface IPayoutsClient
     /// <summary>
     /// Retrieves a payout by its withdrawal ID.
     /// </summary>
-    Task<Payout> GetAsync(
+    Task<BachsResponse<Payout>> GetAsync(
         string withdrawalId,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -38,7 +38,7 @@ public interface IPayoutsClient
     /// <summary>
     /// Lists payouts with pagination and filtering.
     /// </summary>
-    Task<BachsList<Payout>> ListAsync(
+    Task<BachsResponse<BachsList<Payout>>> ListAsync(
         ListPayoutsOptions? options = null,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -53,7 +53,7 @@ public interface IPayoutDestinationsClient
     /// <summary>
     /// Registers a new payout destination.
     /// </summary>
-    Task<PayoutDestination> CreateAsync(
+    Task<BachsResponse<PayoutDestination>> CreateAsync(
         CreatePayoutDestinationRequest request,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -62,7 +62,7 @@ public interface IPayoutDestinationsClient
     /// <summary>
     /// Retrieves a payout destination by its ID.
     /// </summary>
-    Task<PayoutDestination> GetAsync(
+    Task<BachsResponse<PayoutDestination>> GetAsync(
         string destinationId,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -71,7 +71,7 @@ public interface IPayoutDestinationsClient
     /// <summary>
     /// Lists saved payout destinations.
     /// </summary>
-    Task<BachsList<PayoutDestination>> ListAsync(
+    Task<BachsResponse<BachsList<PayoutDestination>>> ListAsync(
         BachsListRequestOptions? options = null,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -80,7 +80,7 @@ public interface IPayoutDestinationsClient
     /// <summary>
     /// Updates a payout destination.
     /// </summary>
-    Task<PayoutDestination> UpdateAsync(
+    Task<BachsResponse<PayoutDestination>> UpdateAsync(
         string destinationId,
         UpdatePayoutDestinationRequest request,
         BachsRequestOptions? requestOptions = null,
@@ -90,7 +90,7 @@ public interface IPayoutDestinationsClient
     /// <summary>
     /// Deletes a payout destination.
     /// </summary>
-    Task DeleteAsync(
+    Task<BachsResponse<object?>> DeleteAsync(
         string destinationId,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default

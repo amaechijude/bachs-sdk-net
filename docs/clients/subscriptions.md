@@ -27,7 +27,13 @@ The Subscriptions client manages recurring billing lifecycles, plan updates, sta
 ```csharp
 using Bachs.Net.Clients;
 
-var subscription = await client.Subscriptions.GetAsync("sub_100200300");
+var response = await client.Subscriptions.GetAsync("sub_100200300");
+if (!response.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Subscription lookup failed: {response.Error?.Detail ?? "Unknown error"}");
+}
+
+var subscription = response.Data;
 
 Console.WriteLine($"Status: {subscription.Status}"); // 'active', 'past_due', 'canceled', 'trialing'
 Console.WriteLine($"Customer ID: {subscription.CustomerId}");
@@ -42,11 +48,17 @@ Console.WriteLine($"Current Period End: {subscription.CurrentPeriodEnd:yyyy-MM-d
 ```csharp
 using Bachs.Net.Models.Subscriptions;
 
-var page = await client.Subscriptions.ListAsync(new ListSubscriptionsOptions
+var response = await client.Subscriptions.ListAsync(new ListSubscriptionsOptions
 {
     CustomerId = "cus_123456789",
     Limit = 20
 });
+if (!response.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Subscription list request failed: {response.Error?.Detail ?? "Unknown error"}");
+}
+
+var page = response.Data;
 
 foreach (var sub in page.Data)
 {
@@ -61,7 +73,7 @@ foreach (var sub in page.Data)
 Upgrades or downgrades a subscription to a different catalog product:
 
 ```csharp
-var updated = await client.Subscriptions.UpdateAsync("sub_100200300", new UpdateSubscriptionRequest
+var response = await client.Subscriptions.UpdateAsync("sub_100200300", new UpdateSubscriptionRequest
 {
     ProductId = "prod_enterprise_tier",
     Metadata = new Dictionary<string, string>
@@ -69,6 +81,12 @@ var updated = await client.Subscriptions.UpdateAsync("sub_100200300", new Update
         ["upgrade_reason"] = "Customer upgraded via in-app banner"
     }
 });
+if (!response.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Subscription update failed: {response.Error?.Detail ?? "Unknown error"}");
+}
+
+var updated = response.Data;
 
 Console.WriteLine($"Switched to product: {updated.ProductId}");
 ```
@@ -78,7 +96,13 @@ Console.WriteLine($"Switched to product: {updated.ProductId}");
 ### 4. Cancel a Subscription
 
 ```csharp
-var canceled = await client.Subscriptions.CancelAsync("sub_100200300");
+var response = await client.Subscriptions.CancelAsync("sub_100200300");
+if (!response.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Subscription cancellation failed: {response.Error?.Detail ?? "Unknown error"}");
+}
+
+var canceled = response.Data;
 
 Console.WriteLine($"Subscription {canceled.Id} is now {canceled.Status}");
 Console.WriteLine($"Canceled at: {canceled.CanceledAt}");

@@ -25,7 +25,13 @@ The Payments client provides access to captured transactions, settled charges, c
 ```csharp
 using Bachs.Net.Clients;
 
-var payment = await client.Payments.GetAsync("ch_100200300");
+var response = await client.Payments.GetAsync("ch_100200300");
+if (!response.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Payment lookup failed: {response.Error?.Detail ?? "Unknown error"}");
+}
+
+var payment = response.Data;
 
 Console.WriteLine($"Payment ID: {payment.Id}");
 Console.WriteLine($"Status: {payment.Status}");             // 'succeeded', 'failed', 'pending'
@@ -42,12 +48,18 @@ Console.WriteLine($"Settled Net: {payment.Amount - (payment.Fees?.BachsFee ?? 0m
 ```csharp
 using Bachs.Net.Models.Payments;
 
-var payments = await client.Payments.ListAsync(new ListPaymentsOptions
+var response = await client.Payments.ListAsync(new ListPaymentsOptions
 {
     Status = "succeeded",
     CustomerId = "cus_123456789",
     Limit = 25
 });
+if (!response.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Payment list request failed: {response.Error?.Detail ?? "Unknown error"}");
+}
+
+var payments = response.Data;
 
 foreach (var tx in payments.Data)
 {

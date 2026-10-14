@@ -31,7 +31,7 @@ using Bachs.Net.Common;
 using Bachs.Net.Models.Common;
 using Bachs.Net.Models.Transfers;
 
-var transfer = await client.Transfers.CreateAsync(new CreateTransferRequest
+var response = await client.Transfers.CreateAsync(new CreateTransferRequest
 {
     Amount = 250.00m,
     Currency = BachsCurrency.USD, // Defaults to BachsCurrency.USD
@@ -40,6 +40,12 @@ var transfer = await client.Transfers.CreateAsync(new CreateTransferRequest
 {
     IdempotencyKey = "transfer_batch_item_99"
 });
+if (!response.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Transfer creation failed: {response.Error?.Detail ?? "Unknown error"}");
+}
+
+var transfer = response.Data;
 
 Console.WriteLine($"Transfer ID: {transfer.Id}");
 Console.WriteLine($"Status: {transfer.Status}"); // 'succeeded', 'pending', 'failed'
@@ -50,7 +56,13 @@ Console.WriteLine($"Status: {transfer.Status}"); // 'succeeded', 'pending', 'fai
 ### 2. Retrieve a Transfer
 
 ```csharp
-var record = await client.Transfers.GetAsync("tr_100200300");
+var response = await client.Transfers.GetAsync("tr_100200300");
+if (!response.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Transfer lookup failed: {response.Error?.Detail ?? "Unknown error"}");
+}
+
+var record = response.Data;
 
 Console.WriteLine($"Transferred: {record.Amount} {record.Currency} to {record.Destination}");
 Console.WriteLine($"Executed at: {record.CreatedAt:u}");
@@ -61,10 +73,16 @@ Console.WriteLine($"Executed at: {record.CreatedAt:u}");
 ### 3. List Transfers
 
 ```csharp
-var page = await client.Transfers.ListAsync(new ListTransfersOptions
+var response = await client.Transfers.ListAsync(new ListTransfersOptions
 {
     Limit = 25
 });
+if (!response.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Transfer list request failed: {response.Error?.Detail ?? "Unknown error"}");
+}
+
+var page = response.Data;
 
 foreach (var item in page.Data)
 {

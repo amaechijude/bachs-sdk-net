@@ -33,7 +33,7 @@ using Bachs.Net.Clients;
 using Bachs.Net.Models.Common;
 using Bachs.Net.Models.Products;
 
-var product = await client.Products.CreateAsync(new CreateProductRequest
+var response = await client.Products.CreateAsync(new CreateProductRequest
 {
     Name = "E-Book: Cloud Architecture",
     Description = "Comprehensive PDF guide and source code examples.",
@@ -44,6 +44,12 @@ var product = await client.Products.CreateAsync(new CreateProductRequest
         Currency = BachsCurrency.USD // Defaults to BachsCurrency.USD
     }
 });
+if (!response.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Product creation failed: {response.Error?.Detail ?? "Unknown error"}");
+}
+
+var product = response.Data;
 
 Console.WriteLine($"Created Product ID: {product.Id}");
 ```
@@ -51,7 +57,7 @@ Console.WriteLine($"Created Product ID: {product.Id}");
 #### Example B: Recurring Subscription Plan with Trial
 
 ```csharp
-var subscriptionPlan = await client.Products.CreateAsync(new CreateProductRequest
+var response = await client.Products.CreateAsync(new CreateProductRequest
 {
     Name = "Pro Membership",
     Description = "Access to full analytics suite and unlimited storage.",
@@ -72,6 +78,12 @@ var subscriptionPlan = await client.Products.CreateAsync(new CreateProductReques
         Frequency = 14 // 14-day free trial
     }
 });
+if (!response.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Subscription plan creation failed: {response.Error?.Detail ?? "Unknown error"}");
+}
+
+var subscriptionPlan = response.Data;
 ```
 
 ---
@@ -79,7 +91,13 @@ var subscriptionPlan = await client.Products.CreateAsync(new CreateProductReques
 ### 2. Retrieve a Product
 
 ```csharp
-var product = await client.Products.GetAsync("prod_pro_plan");
+var response = await client.Products.GetAsync("prod_pro_plan");
+if (!response.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Product lookup failed: {response.Error?.Detail ?? "Unknown error"}");
+}
+
+var product = response.Data;
 
 Console.WriteLine($"Name: {product.Name}");
 Console.WriteLine($"Price: {product.Price?.Amount} {product.Price?.Currency}");
@@ -91,11 +109,17 @@ Console.WriteLine($"Archived: {product.Archived}");
 ### 3. List Products
 
 ```csharp
-var page = await client.Products.ListAsync(new ListProductsOptions
+var response = await client.Products.ListAsync(new ListProductsOptions
 {
     Limit = 25,
     IncludeArchived = false
 });
+if (!response.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Product list request failed: {response.Error?.Detail ?? "Unknown error"}");
+}
+
+var page = response.Data;
 
 foreach (var item in page.Data)
 {
@@ -108,11 +132,17 @@ foreach (var item in page.Data)
 ### 4. Update a Product
 
 ```csharp
-var updated = await client.Products.UpdateAsync("prod_pro_plan", new UpdateProductRequest
+var response = await client.Products.UpdateAsync("prod_pro_plan", new UpdateProductRequest
 {
     Name = "Pro Membership (2026 Edition)",
     Description = "Updated feature set with new team collaboration tools."
 });
+if (!response.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Product update failed: {response.Error?.Detail ?? "Unknown error"}");
+}
+
+var updated = response.Data;
 ```
 
 ---
@@ -121,11 +151,23 @@ var updated = await client.Products.UpdateAsync("prod_pro_plan", new UpdateProdu
 
 ```csharp
 // Archive to retire from checkout
-var archived = await client.Products.ArchiveAsync("prod_legacy_tier");
+var archiveResponse = await client.Products.ArchiveAsync("prod_legacy_tier");
+if (!archiveResponse.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Archive request failed: {archiveResponse.Error?.Detail ?? "Unknown error"}");
+}
+
+var archived = archiveResponse.Data;
 Console.WriteLine($"Is Archived: {archived.Archived}"); // true
 
 // Reactivate when needed
-var restored = await client.Products.UnarchiveAsync("prod_legacy_tier");
+var restoreResponse = await client.Products.UnarchiveAsync("prod_legacy_tier");
+if (!restoreResponse.IsSuccessStatusCode)
+{
+    throw new InvalidOperationException($"Unarchive request failed: {restoreResponse.Error?.Detail ?? "Unknown error"}");
+}
+
+var restored = restoreResponse.Data;
 Console.WriteLine($"Is Archived: {restored.Archived}"); // false
 ```
 

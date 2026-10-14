@@ -12,7 +12,7 @@ public sealed class WebhooksClient(IBachsClient bachsClient)
     : BaseClient(bachsClient),
         IWebhooksClient
 {
-    public Task<WebhookEndpoint> CreateEndpointAsync(
+    public Task<BachsResponse<WebhookEndpoint>> CreateEndpointAsync(
         CreateWebhookEndpointRequest request,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -27,7 +27,7 @@ public sealed class WebhooksClient(IBachsClient bachsClient)
         );
     }
 
-    public Task<WebhookEndpoint> GetEndpointAsync(
+    public Task<BachsResponse<WebhookEndpoint>> GetEndpointAsync(
         string endpointId,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -41,7 +41,7 @@ public sealed class WebhooksClient(IBachsClient bachsClient)
         );
     }
 
-    public Task<BachsList<WebhookEndpoint>> ListEndpointsAsync(
+    public Task<BachsResponse<BachsList<WebhookEndpoint>>> ListEndpointsAsync(
         ListWebhookEndpointsOptions? options = null,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -58,7 +58,7 @@ public sealed class WebhooksClient(IBachsClient bachsClient)
         );
     }
 
-    public Task<WebhookEndpoint> UpdateEndpointAsync(
+    public Task<BachsResponse<WebhookEndpoint>> UpdateEndpointAsync(
         string endpointId,
         UpdateWebhookEndpointRequest request,
         BachsRequestOptions? requestOptions = null,
@@ -75,7 +75,7 @@ public sealed class WebhooksClient(IBachsClient bachsClient)
         );
     }
 
-    public Task DeleteEndpointAsync(
+    public Task<BachsResponse<object?>> DeleteEndpointAsync(
         string endpointId,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -89,7 +89,7 @@ public sealed class WebhooksClient(IBachsClient bachsClient)
         );
     }
 
-    public Task<SecretRotationResult> RotateSecretAsync(
+    public Task<BachsResponse<SecretRotationResult>> RotateSecretAsync(
         string endpointId,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -103,7 +103,7 @@ public sealed class WebhooksClient(IBachsClient bachsClient)
         );
     }
 
-    public Task<BachsList<WebhookEventRecord>> ListEventsAsync(
+    public Task<BachsResponse<BachsList<WebhookEventRecord>>> ListEventsAsync(
         BachsListRequestOptions? options = null,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
@@ -117,7 +117,7 @@ public sealed class WebhooksClient(IBachsClient bachsClient)
         );
     }
 
-    public Task<WebhookEventRecord> GetEventAsync(
+    public Task<BachsResponse<WebhookEventRecord>> GetEventAsync(
         string eventId,
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
