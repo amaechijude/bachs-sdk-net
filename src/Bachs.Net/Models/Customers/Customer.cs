@@ -150,7 +150,7 @@ public sealed record UpdateCustomerRequest
 /// <summary>
 /// Options for listing customers.
 /// </summary>
-public sealed class ListCustomersOptions : ListRequestOptions
+public sealed class ListCustomersOptions : BachsListRequestOptions
 {
     /// <summary>
     /// Search term to filter customers by email or name.

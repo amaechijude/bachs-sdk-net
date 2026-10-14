@@ -12,7 +12,7 @@ public sealed class AccountsClient(IBachsClient bachsClient)
 {
     public Task<Account> CreateAsync(
         CreateAccountRequest request,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {
@@ -26,7 +26,7 @@ public sealed class AccountsClient(IBachsClient bachsClient)
 
     public Task<Account> GetAsync(
         string accountId,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {
@@ -40,11 +40,11 @@ public sealed class AccountsClient(IBachsClient bachsClient)
 
     public Task<BachsList<Account>> ListAsync(
         ListAccountsOptions? options = null,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {
-        var path = QueryBuilder.BuildUrl("v1/accounts", options?.ToQueryParameters());
+        var path = BachsQueryBuilder.BuildUrl("v1/accounts", options?.ToQueryParameters());
         return BachsClient.GetAsync<BachsList<Account>>(
             path,
             requestOptions ?? options,
@@ -55,7 +55,7 @@ public sealed class AccountsClient(IBachsClient bachsClient)
     public Task<Account> UpdateAsync(
         string accountId,
         UpdateAccountRequest request,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {
@@ -72,7 +72,7 @@ public sealed class AccountsClient(IBachsClient bachsClient)
     public Task<AccountLink> CreateAccountLinkAsync(
         string accountId,
         CreateAccountLinkRequest request,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {
@@ -87,7 +87,7 @@ public sealed class AccountsClient(IBachsClient bachsClient)
     }
 
     public Task<Account> GetMeAsync(
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {

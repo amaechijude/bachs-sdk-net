@@ -12,7 +12,7 @@ public sealed class ConversionsClient(IBachsClient bachsClient)
 {
     public Task<ConversionQuote> CreateQuoteAsync(
         CreateConversionQuoteRequest request,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {
@@ -27,7 +27,7 @@ public sealed class ConversionsClient(IBachsClient bachsClient)
 
     public Task<Conversion> ExecuteAsync(
         ExecuteConversionRequest request,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {
@@ -42,7 +42,7 @@ public sealed class ConversionsClient(IBachsClient bachsClient)
 
     public Task<Conversion> GetAsync(
         string conversionId,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {
@@ -56,11 +56,11 @@ public sealed class ConversionsClient(IBachsClient bachsClient)
 
     public Task<BachsList<Conversion>> ListAsync(
         ListConversionsOptions? options = null,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {
-        var path = QueryBuilder.BuildUrl("v1/conversions", options?.ToQueryParameters());
+        var path = BachsQueryBuilder.BuildUrl("v1/conversions", options?.ToQueryParameters());
         return BachsClient.GetAsync<BachsList<Conversion>>(
             path,
             requestOptions ?? options,

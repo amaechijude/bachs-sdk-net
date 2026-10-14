@@ -103,7 +103,7 @@ public interface IBachsClient
     /// </summary>
     Task<TResponse> GetAsync<TResponse>(
         string path,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 
@@ -113,7 +113,7 @@ public interface IBachsClient
     Task<TResponse> PostAsync<TRequest, TResponse>(
         string path,
         TRequest body,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 
@@ -122,7 +122,7 @@ public interface IBachsClient
     /// </summary>
     Task<TResponse> PostAsync<TResponse>(
         string path,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 
@@ -132,7 +132,7 @@ public interface IBachsClient
     Task<TResponse> PatchAsync<TRequest, TResponse>(
         string path,
         TRequest body,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 
@@ -142,7 +142,7 @@ public interface IBachsClient
     Task<TResponse> PutAsync<TRequest, TResponse>(
         string path,
         TRequest body,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 
@@ -151,7 +151,7 @@ public interface IBachsClient
     /// </summary>
     Task<TResponse> DeleteAsync<TResponse>(
         string path,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 
@@ -160,7 +160,7 @@ public interface IBachsClient
     /// </summary>
     Task DeleteAsync(
         string path,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 

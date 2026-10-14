@@ -9,7 +9,7 @@ namespace Bachs.Net.Clients;
 public sealed class MiscClient(IBachsClient bachsClient) : BaseClient(bachsClient), IMiscClient
 {
     public Task<IReadOnlyList<string>> GetSupportedCurrenciesAsync(
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {
@@ -22,11 +22,11 @@ public sealed class MiscClient(IBachsClient bachsClient) : BaseClient(bachsClien
 
     public Task<IReadOnlyList<BankInfo>> GetBanksAsync(
         string country = "NG",
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {
-        var path = QueryBuilder.BuildUrl(
+        var path = BachsQueryBuilder.BuildUrl(
             "v1/reference/banks",
             new Dictionary<string, string> { ["country"] = country }
         );
@@ -40,7 +40,7 @@ public sealed class MiscClient(IBachsClient bachsClient) : BaseClient(bachsClien
 
     public Task<ResolveBankAccountResponse> ResolveBankAccountAsync(
         ResolveBankAccountRequest request,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {

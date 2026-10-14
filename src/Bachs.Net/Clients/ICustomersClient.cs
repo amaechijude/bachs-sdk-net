@@ -13,7 +13,7 @@ public interface ICustomersClient
     /// </summary>
     Task<Customer> CreateAsync(
         CreateCustomerRequest request,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 
@@ -22,7 +22,7 @@ public interface ICustomersClient
     /// </summary>
     Task<Customer> GetAsync(
         string customerId,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 
@@ -31,7 +31,7 @@ public interface ICustomersClient
     /// </summary>
     Task<BachsList<Customer>> ListAsync(
         ListCustomersOptions? options = null,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 
@@ -41,7 +41,7 @@ public interface ICustomersClient
     Task<Customer> UpdateAsync(
         string customerId,
         UpdateCustomerRequest request,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 
@@ -50,7 +50,7 @@ public interface ICustomersClient
     /// </summary>
     Task<CustomerPortalSession> CreatePortalSessionAsync(
         string customerId,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 }

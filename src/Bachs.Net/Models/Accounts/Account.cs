@@ -131,4 +131,4 @@ public sealed record CreatePersonRequest
     public string? Email { get; init; }
 }
 
-public sealed class ListAccountsOptions : ListRequestOptions { }
+public sealed class ListAccountsOptions : BachsListRequestOptions { }

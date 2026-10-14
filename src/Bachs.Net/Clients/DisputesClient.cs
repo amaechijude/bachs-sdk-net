@@ -12,7 +12,7 @@ public sealed class DisputesClient(IBachsClient bachsClient)
 {
     public Task<Dispute> GetAsync(
         string disputeId,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {
@@ -26,11 +26,11 @@ public sealed class DisputesClient(IBachsClient bachsClient)
 
     public Task<BachsList<Dispute>> ListAsync(
         ListDisputesOptions? options = null,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {
-        var path = QueryBuilder.BuildUrl("v1/disputes", options?.ToQueryParameters());
+        var path = BachsQueryBuilder.BuildUrl("v1/disputes", options?.ToQueryParameters());
         return BachsClient.GetAsync<BachsList<Dispute>>(
             path,
             requestOptions ?? options,
@@ -41,7 +41,7 @@ public sealed class DisputesClient(IBachsClient bachsClient)
     public Task<Dispute> UpdateEvidenceAsync(
         string disputeId,
         UpdateDisputeEvidenceRequest request,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {
@@ -57,7 +57,7 @@ public sealed class DisputesClient(IBachsClient bachsClient)
 
     public Task<Dispute> SubmitAsync(
         string disputeId,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {

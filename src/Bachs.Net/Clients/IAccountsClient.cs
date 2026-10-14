@@ -13,7 +13,7 @@ public interface IAccountsClient
     /// </summary>
     Task<Account> CreateAsync(
         CreateAccountRequest request,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 
@@ -22,7 +22,7 @@ public interface IAccountsClient
     /// </summary>
     Task<Account> GetAsync(
         string accountId,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 
@@ -31,7 +31,7 @@ public interface IAccountsClient
     /// </summary>
     Task<BachsList<Account>> ListAsync(
         ListAccountsOptions? options = null,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 
@@ -41,7 +41,7 @@ public interface IAccountsClient
     Task<Account> UpdateAsync(
         string accountId,
         UpdateAccountRequest request,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 
@@ -51,7 +51,7 @@ public interface IAccountsClient
     Task<AccountLink> CreateAccountLinkAsync(
         string accountId,
         CreateAccountLinkRequest request,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 
@@ -59,7 +59,7 @@ public interface IAccountsClient
     /// Retrieves the current platform account profile.
     /// </summary>
     Task<Account> GetMeAsync(
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 }

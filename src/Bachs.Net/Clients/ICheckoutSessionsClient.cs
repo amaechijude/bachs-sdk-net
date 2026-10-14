@@ -18,7 +18,7 @@ public interface ICheckoutSessionsClient
     /// <returns>The created checkout session response containing the hosted checkout URL.</returns>
     Task<CreateCheckoutSessionResponse> CreateAsync(
         CreateCheckoutSessionRequest request,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 
@@ -31,7 +31,7 @@ public interface ICheckoutSessionsClient
     /// <returns>The detailed checkout session details including resolved line items and charges.</returns>
     Task<GetCheckoutSessionResponse> GetAsync(
         string checkoutId,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 }

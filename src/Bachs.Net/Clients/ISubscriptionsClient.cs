@@ -13,7 +13,7 @@ public interface ISubscriptionsClient
     /// </summary>
     Task<Subscription> GetAsync(
         string subscriptionId,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 
@@ -22,7 +22,7 @@ public interface ISubscriptionsClient
     /// </summary>
     Task<BachsList<Subscription>> ListAsync(
         ListSubscriptionsOptions? options = null,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 
@@ -32,7 +32,7 @@ public interface ISubscriptionsClient
     Task<Subscription> UpdateAsync(
         string subscriptionId,
         UpdateSubscriptionRequest request,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 
@@ -41,7 +41,7 @@ public interface ISubscriptionsClient
     /// </summary>
     Task<Subscription> CancelAsync(
         string subscriptionId,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 }

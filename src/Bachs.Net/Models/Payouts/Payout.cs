@@ -238,7 +238,7 @@ public sealed record UpdatePayoutDestinationRequest
 /// <summary>
 /// Options for listing payouts.
 /// </summary>
-public sealed class ListPayoutsOptions : ListRequestOptions
+public sealed class ListPayoutsOptions : BachsListRequestOptions
 {
     public string? DestinationId { get; set; }
     public string? Status { get; set; }

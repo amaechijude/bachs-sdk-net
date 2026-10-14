@@ -13,7 +13,7 @@ public interface IConversionsClient
     /// </summary>
     Task<ConversionQuote> CreateQuoteAsync(
         CreateConversionQuoteRequest request,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 
@@ -22,7 +22,7 @@ public interface IConversionsClient
     /// </summary>
     Task<Conversion> ExecuteAsync(
         ExecuteConversionRequest request,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 
@@ -31,7 +31,7 @@ public interface IConversionsClient
     /// </summary>
     Task<Conversion> GetAsync(
         string conversionId,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 
@@ -40,7 +40,7 @@ public interface IConversionsClient
     /// </summary>
     Task<BachsList<Conversion>> ListAsync(
         ListConversionsOptions? options = null,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 }

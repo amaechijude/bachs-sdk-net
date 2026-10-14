@@ -13,7 +13,7 @@ public interface IDisputesClient
     /// </summary>
     Task<Dispute> GetAsync(
         string disputeId,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 
@@ -22,7 +22,7 @@ public interface IDisputesClient
     /// </summary>
     Task<BachsList<Dispute>> ListAsync(
         ListDisputesOptions? options = null,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 
@@ -32,7 +32,7 @@ public interface IDisputesClient
     Task<Dispute> UpdateEvidenceAsync(
         string disputeId,
         UpdateDisputeEvidenceRequest request,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 
@@ -41,7 +41,7 @@ public interface IDisputesClient
     /// </summary>
     Task<Dispute> SubmitAsync(
         string disputeId,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 }

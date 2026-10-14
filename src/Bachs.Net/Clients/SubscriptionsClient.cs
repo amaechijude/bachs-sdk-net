@@ -12,7 +12,7 @@ public sealed class SubscriptionsClient(IBachsClient bachsClient)
 {
     public Task<Subscription> GetAsync(
         string subscriptionId,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {
@@ -26,11 +26,11 @@ public sealed class SubscriptionsClient(IBachsClient bachsClient)
 
     public Task<BachsList<Subscription>> ListAsync(
         ListSubscriptionsOptions? options = null,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {
-        var path = QueryBuilder.BuildUrl("v1/subscriptions", options?.ToQueryParameters());
+        var path = BachsQueryBuilder.BuildUrl("v1/subscriptions", options?.ToQueryParameters());
         return BachsClient.GetAsync<BachsList<Subscription>>(
             path,
             requestOptions ?? options,
@@ -41,7 +41,7 @@ public sealed class SubscriptionsClient(IBachsClient bachsClient)
     public Task<Subscription> UpdateAsync(
         string subscriptionId,
         UpdateSubscriptionRequest request,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {
@@ -57,7 +57,7 @@ public sealed class SubscriptionsClient(IBachsClient bachsClient)
 
     public Task<Subscription> CancelAsync(
         string subscriptionId,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {

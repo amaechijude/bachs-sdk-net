@@ -96,7 +96,7 @@ public sealed record ExecuteConversionRequest
     public string QuoteId { get; init; } = string.Empty;
 }
 
-public sealed class ListConversionsOptions : ListRequestOptions
+public sealed class ListConversionsOptions : BachsListRequestOptions
 {
     public string? Status { get; set; }
 

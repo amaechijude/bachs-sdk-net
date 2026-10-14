@@ -12,7 +12,7 @@ public interface IBalancesClient
     /// Retrieves organization balance buckets across all currencies.
     /// </summary>
     Task<Balance> GetBalancesAsync(
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 
@@ -20,7 +20,7 @@ public interface IBalancesClient
     /// Retrieves current automatic payout balance settings.
     /// </summary>
     Task<BalanceSettings> GetSettingsAsync(
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 
@@ -29,7 +29,7 @@ public interface IBalancesClient
     /// </summary>
     Task<BalanceSettings> UpdateSettingsAsync(
         BalanceSettings settings,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 }

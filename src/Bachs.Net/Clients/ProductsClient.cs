@@ -12,7 +12,7 @@ public sealed class ProductsClient(IBachsClient bachsClient)
 {
     public Task<Product> CreateAsync(
         CreateProductRequest request,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {
@@ -27,7 +27,7 @@ public sealed class ProductsClient(IBachsClient bachsClient)
 
     public Task<Product> GetAsync(
         string productId,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {
@@ -41,11 +41,11 @@ public sealed class ProductsClient(IBachsClient bachsClient)
 
     public Task<BachsList<Product>> ListAsync(
         ListProductsOptions? options = null,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {
-        var path = QueryBuilder.BuildUrl("v1/products", options?.ToQueryParameters());
+        var path = BachsQueryBuilder.BuildUrl("v1/products", options?.ToQueryParameters());
         return BachsClient.GetAsync<BachsList<Product>>(
             path,
             requestOptions ?? options,
@@ -56,7 +56,7 @@ public sealed class ProductsClient(IBachsClient bachsClient)
     public Task<Product> UpdateAsync(
         string productId,
         UpdateProductRequest request,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {
@@ -72,7 +72,7 @@ public sealed class ProductsClient(IBachsClient bachsClient)
 
     public Task<Product> ArchiveAsync(
         string productId,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {
@@ -86,7 +86,7 @@ public sealed class ProductsClient(IBachsClient bachsClient)
 
     public Task<Product> UnarchiveAsync(
         string productId,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {

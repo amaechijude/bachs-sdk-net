@@ -3,7 +3,7 @@ namespace Bachs.Net.Common;
 /// <summary>
 /// Options that can be configured per request to the Bachs API.
 /// </summary>
-public class RequestOptions
+public class BachsRequestOptions
 {
     /// <summary>
     /// Gets or sets an idempotency key sent via the 'Idempotency-Key' header on POST and PATCH requests.
@@ -23,15 +23,15 @@ public class RequestOptions
     public IDictionary<string, string>? CustomHeaders { get; set; }
 
     /// <summary>
-    /// Creates a new instance of <see cref="RequestOptions"/>.
+    /// Creates a new instance of <see cref="BachsRequestOptions"/>.
     /// </summary>
-    public RequestOptions() { }
+    public BachsRequestOptions() { }
 
     /// <summary>
-    /// Creates a new instance of <see cref="RequestOptions"/> with the specified idempotency key.
+    /// Creates a new instance of <see cref="BachsRequestOptions"/> with the specified idempotency key.
     /// </summary>
     /// <param name="idempotencyKey">The idempotency key.</param>
-    public RequestOptions(string idempotencyKey)
+    public BachsRequestOptions(string idempotencyKey)
     {
         IdempotencyKey = idempotencyKey;
     }
@@ -39,7 +39,7 @@ public class RequestOptions
     /// <summary>
     /// Sets the idempotency key and returns this instance.
     /// </summary>
-    public RequestOptions WithIdempotencyKey(string idempotencyKey)
+    public BachsRequestOptions WithIdempotencyKey(string idempotencyKey)
     {
         IdempotencyKey = idempotencyKey;
         return this;
@@ -48,7 +48,7 @@ public class RequestOptions
     /// <summary>
     /// Sets the connected account ID and returns this instance.
     /// </summary>
-    public RequestOptions WithAccountId(string accountId)
+    public BachsRequestOptions WithAccountId(string accountId)
     {
         AccountId = accountId;
         return this;
@@ -57,7 +57,7 @@ public class RequestOptions
     /// <summary>
     /// Adds a custom header and returns this instance.
     /// </summary>
-    public RequestOptions WithHeader(string key, string value)
+    public BachsRequestOptions WithHeader(string key, string value)
     {
         CustomHeaders ??= new Dictionary<string, string>();
         CustomHeaders[key] = value;

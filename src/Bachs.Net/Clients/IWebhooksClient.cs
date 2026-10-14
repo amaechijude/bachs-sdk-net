@@ -15,7 +15,7 @@ public interface IWebhooksClient : IWebhookEventValidator, IWebhookValidator
     /// </summary>
     Task<WebhookEndpoint> CreateEndpointAsync(
         CreateWebhookEndpointRequest request,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 
@@ -24,7 +24,7 @@ public interface IWebhooksClient : IWebhookEventValidator, IWebhookValidator
     /// </summary>
     Task<WebhookEndpoint> GetEndpointAsync(
         string endpointId,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 
@@ -33,7 +33,7 @@ public interface IWebhooksClient : IWebhookEventValidator, IWebhookValidator
     /// </summary>
     Task<BachsList<WebhookEndpoint>> ListEndpointsAsync(
         ListWebhookEndpointsOptions? options = null,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 
@@ -43,7 +43,7 @@ public interface IWebhooksClient : IWebhookEventValidator, IWebhookValidator
     Task<WebhookEndpoint> UpdateEndpointAsync(
         string endpointId,
         UpdateWebhookEndpointRequest request,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 
@@ -52,7 +52,7 @@ public interface IWebhooksClient : IWebhookEventValidator, IWebhookValidator
     /// </summary>
     Task DeleteEndpointAsync(
         string endpointId,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 
@@ -61,7 +61,7 @@ public interface IWebhooksClient : IWebhookEventValidator, IWebhookValidator
     /// </summary>
     Task<SecretRotationResult> RotateSecretAsync(
         string endpointId,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 
@@ -69,8 +69,8 @@ public interface IWebhooksClient : IWebhookEventValidator, IWebhookValidator
     /// Lists webhook events recorded for your organization.
     /// </summary>
     Task<BachsList<WebhookEventRecord>> ListEventsAsync(
-        ListRequestOptions? options = null,
-        RequestOptions? requestOptions = null,
+        BachsListRequestOptions? options = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 
@@ -79,7 +79,7 @@ public interface IWebhooksClient : IWebhookEventValidator, IWebhookValidator
     /// </summary>
     Task<WebhookEventRecord> GetEventAsync(
         string eventId,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 }

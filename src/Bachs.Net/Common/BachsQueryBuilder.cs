@@ -6,7 +6,7 @@ namespace Bachs.Net.Common;
 /// <summary>
 /// Helper for safely building URL query parameter strings.
 /// </summary>
-public static class QueryBuilder
+public static class BachsQueryBuilder
 {
     /// <summary>
     /// Appends query parameters to a base URL path.

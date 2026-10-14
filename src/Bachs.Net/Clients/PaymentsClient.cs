@@ -12,7 +12,7 @@ public sealed class PaymentsClient(IBachsClient bachsClient)
 {
     public Task<Payment> GetAsync(
         string paymentId,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {
@@ -26,11 +26,11 @@ public sealed class PaymentsClient(IBachsClient bachsClient)
 
     public Task<BachsList<Payment>> ListAsync(
         ListPaymentsOptions? options = null,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {
-        var path = QueryBuilder.BuildUrl("v1/payments", options?.ToQueryParameters());
+        var path = BachsQueryBuilder.BuildUrl("v1/payments", options?.ToQueryParameters());
         return BachsClient.GetAsync<BachsList<Payment>>(
             path,
             requestOptions ?? options,

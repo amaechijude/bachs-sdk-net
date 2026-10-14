@@ -13,7 +13,7 @@ public interface IRefundsClient
     /// </summary>
     Task<Refund> CreateAsync(
         CreateRefundRequest request,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 
@@ -22,7 +22,7 @@ public interface IRefundsClient
     /// </summary>
     Task<Refund> GetAsync(
         string refundId,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 
@@ -31,7 +31,7 @@ public interface IRefundsClient
     /// </summary>
     Task<BachsList<Refund>> ListAsync(
         ListRefundsOptions? options = null,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 
@@ -40,7 +40,7 @@ public interface IRefundsClient
     /// </summary>
     Task<BachsList<Refund>> GetByPaymentIdAsync(
         string paymentId,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 }

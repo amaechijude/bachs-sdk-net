@@ -14,7 +14,7 @@ public interface IVirtualAccountsClient
     /// </summary>
     Task<VirtualAccount> CreateAsync(
         CreateVirtualAccountRequest request,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 
@@ -23,7 +23,7 @@ public interface IVirtualAccountsClient
     /// </summary>
     Task<VirtualAccount> GetAsync(
         BachsCurrency currency = BachsCurrency.NGN,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 }

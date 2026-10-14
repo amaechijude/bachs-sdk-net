@@ -13,7 +13,7 @@ public interface ITransfersClient
     /// </summary>
     Task<Transfer> CreateAsync(
         CreateTransferRequest request,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 
@@ -22,7 +22,7 @@ public interface ITransfersClient
     /// </summary>
     Task<Transfer> GetAsync(
         string transferId,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 
@@ -31,7 +31,7 @@ public interface ITransfersClient
     /// </summary>
     Task<BachsList<Transfer>> ListAsync(
         ListTransfersOptions? options = null,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 }

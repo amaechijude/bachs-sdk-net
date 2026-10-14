@@ -163,7 +163,7 @@ public sealed record ProductTrialPeriod
 /// <summary>
 /// Options for listing products.
 /// </summary>
-public sealed class ListProductsOptions : ListRequestOptions
+public sealed class ListProductsOptions : BachsListRequestOptions
 {
     /// <summary>
     /// Whether to include archived products in the response. Defaults to false.

@@ -14,7 +14,7 @@ public class BachsApiException(
     string detail,
     string? docUrl = null,
     BachsError? error = null,
-    RateLimitInfo? rateLimit = null,
+    BachsRateLimitInfo? rateLimit = null,
     string? rawResponse = null
 ) : BachsException(FormatMessage(statusCode, errorCode, detail))
 {
@@ -46,7 +46,7 @@ public class BachsApiException(
     /// <summary>
     /// Gets rate limiting information associated with the failed request, if present.
     /// </summary>
-    public RateLimitInfo? RateLimit { get; } = rateLimit;
+    public BachsRateLimitInfo? RateLimit { get; } = rateLimit;
 
     /// <summary>
     /// Gets the raw JSON response payload returned by the server.
@@ -66,7 +66,7 @@ public class BachsApiException(
     public static BachsApiException Create(
         HttpStatusCode statusCode,
         BachsError? error,
-        RateLimitInfo? rateLimit,
+        BachsRateLimitInfo? rateLimit,
         string? rawResponse
     )
     {

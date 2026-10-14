@@ -27,7 +27,7 @@ public sealed record BachsResponse<T>
     /// <summary>
     /// Gets rate limiting information parsed from the response headers, if present.
     /// </summary>
-    public RateLimitInfo? RateLimit { get; init; }
+    public BachsRateLimitInfo? RateLimit { get; init; }
 
     /// <summary>
     /// Gets the response headers.

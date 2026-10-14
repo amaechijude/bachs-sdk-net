@@ -13,7 +13,7 @@ public interface IProductsClient
     /// </summary>
     Task<Product> CreateAsync(
         CreateProductRequest request,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 
@@ -22,7 +22,7 @@ public interface IProductsClient
     /// </summary>
     Task<Product> GetAsync(
         string productId,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 
@@ -31,7 +31,7 @@ public interface IProductsClient
     /// </summary>
     Task<BachsList<Product>> ListAsync(
         ListProductsOptions? options = null,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 
@@ -41,7 +41,7 @@ public interface IProductsClient
     Task<Product> UpdateAsync(
         string productId,
         UpdateProductRequest request,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 
@@ -50,7 +50,7 @@ public interface IProductsClient
     /// </summary>
     Task<Product> ArchiveAsync(
         string productId,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 
@@ -59,7 +59,7 @@ public interface IProductsClient
     /// </summary>
     Task<Product> UnarchiveAsync(
         string productId,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 }

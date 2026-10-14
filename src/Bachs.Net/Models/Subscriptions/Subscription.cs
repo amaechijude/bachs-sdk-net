@@ -113,7 +113,7 @@ public sealed record UpdateSubscriptionRequest
 /// <summary>
 /// Options for listing subscriptions.
 /// </summary>
-public sealed class ListSubscriptionsOptions : ListRequestOptions
+public sealed class ListSubscriptionsOptions : BachsListRequestOptions
 {
     /// <summary>
     /// Filter by customer ID.

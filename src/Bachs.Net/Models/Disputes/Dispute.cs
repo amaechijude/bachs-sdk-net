@@ -75,7 +75,7 @@ public sealed record DisputeEvidenceResponse
     public string Status { get; init; } = string.Empty;
 }
 
-public sealed class ListDisputesOptions : ListRequestOptions
+public sealed class ListDisputesOptions : BachsListRequestOptions
 {
     public string? Status { get; set; }
 

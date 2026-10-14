@@ -143,7 +143,7 @@ public sealed class BachsClient : IBachsClient, IDisposable
 
     public async Task<TResponse> GetAsync<TResponse>(
         string path,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {
@@ -156,7 +156,7 @@ public sealed class BachsClient : IBachsClient, IDisposable
     public async Task<TResponse> PostAsync<TRequest, TResponse>(
         string path,
         TRequest body,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {
@@ -170,7 +170,7 @@ public sealed class BachsClient : IBachsClient, IDisposable
 
     public async Task<TResponse> PostAsync<TResponse>(
         string path,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {
@@ -183,7 +183,7 @@ public sealed class BachsClient : IBachsClient, IDisposable
     public async Task<TResponse> PatchAsync<TRequest, TResponse>(
         string path,
         TRequest body,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {
@@ -198,7 +198,7 @@ public sealed class BachsClient : IBachsClient, IDisposable
     public async Task<TResponse> PutAsync<TRequest, TResponse>(
         string path,
         TRequest body,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {
@@ -212,7 +212,7 @@ public sealed class BachsClient : IBachsClient, IDisposable
 
     public async Task<TResponse> DeleteAsync<TResponse>(
         string path,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {
@@ -224,7 +224,7 @@ public sealed class BachsClient : IBachsClient, IDisposable
 
     public async Task DeleteAsync(
         string path,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {
@@ -234,7 +234,7 @@ public sealed class BachsClient : IBachsClient, IDisposable
 
     private async Task<BachsResponse<TResponse>> SendAsync<TResponse>(
         HttpRequestMessage request,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {
@@ -280,7 +280,7 @@ public sealed class BachsClient : IBachsClient, IDisposable
                     continue;
                 }
 
-                var rateLimit = RateLimitInfo.FromHeaders(response.Headers);
+                var rateLimit = BachsRateLimitInfo.FromHeaders(response.Headers);
 
                 // Handle transient retry on 429 or 5xx
                 if (attempt <= maxRetries && ShouldRetry(response.StatusCode))
@@ -389,7 +389,10 @@ public sealed class BachsClient : IBachsClient, IDisposable
         }
     }
 
-    private void ApplyRequestHeaders(HttpRequestMessage request, RequestOptions? requestOptions)
+    private void ApplyRequestHeaders(
+        HttpRequestMessage request,
+        BachsRequestOptions? requestOptions
+    )
     {
         // 1. Authorization
         if (!string.IsNullOrWhiteSpace(Options.ApiKey))

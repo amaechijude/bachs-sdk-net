@@ -14,7 +14,7 @@ public sealed class WebhooksClient(IBachsClient bachsClient)
 {
     public Task<WebhookEndpoint> CreateEndpointAsync(
         CreateWebhookEndpointRequest request,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {
@@ -29,7 +29,7 @@ public sealed class WebhooksClient(IBachsClient bachsClient)
 
     public Task<WebhookEndpoint> GetEndpointAsync(
         string endpointId,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {
@@ -43,11 +43,14 @@ public sealed class WebhooksClient(IBachsClient bachsClient)
 
     public Task<BachsList<WebhookEndpoint>> ListEndpointsAsync(
         ListWebhookEndpointsOptions? options = null,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {
-        var path = QueryBuilder.BuildUrl("v1/webhooks/endpoints", options?.ToQueryParameters());
+        var path = BachsQueryBuilder.BuildUrl(
+            "v1/webhooks/endpoints",
+            options?.ToQueryParameters()
+        );
         return BachsClient.GetAsync<BachsList<WebhookEndpoint>>(
             path,
             requestOptions ?? options,
@@ -58,7 +61,7 @@ public sealed class WebhooksClient(IBachsClient bachsClient)
     public Task<WebhookEndpoint> UpdateEndpointAsync(
         string endpointId,
         UpdateWebhookEndpointRequest request,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {
@@ -74,7 +77,7 @@ public sealed class WebhooksClient(IBachsClient bachsClient)
 
     public Task DeleteEndpointAsync(
         string endpointId,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {
@@ -88,7 +91,7 @@ public sealed class WebhooksClient(IBachsClient bachsClient)
 
     public Task<SecretRotationResult> RotateSecretAsync(
         string endpointId,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {
@@ -101,12 +104,12 @@ public sealed class WebhooksClient(IBachsClient bachsClient)
     }
 
     public Task<BachsList<WebhookEventRecord>> ListEventsAsync(
-        ListRequestOptions? options = null,
-        RequestOptions? requestOptions = null,
+        BachsListRequestOptions? options = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {
-        var path = QueryBuilder.BuildUrl("v1/webhooks/events", options?.ToQueryParameters());
+        var path = BachsQueryBuilder.BuildUrl("v1/webhooks/events", options?.ToQueryParameters());
         return BachsClient.GetAsync<BachsList<WebhookEventRecord>>(
             path,
             requestOptions ?? options,
@@ -116,7 +119,7 @@ public sealed class WebhooksClient(IBachsClient bachsClient)
 
     public Task<WebhookEventRecord> GetEventAsync(
         string eventId,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {

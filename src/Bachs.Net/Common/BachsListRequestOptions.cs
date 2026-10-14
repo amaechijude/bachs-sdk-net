@@ -3,7 +3,7 @@ namespace Bachs.Net.Common;
 /// <summary>
 /// Options for paginated list requests to the Bachs API.
 /// </summary>
-public class ListRequestOptions : RequestOptions
+public class BachsListRequestOptions : BachsRequestOptions
 {
     /// <summary>
     /// Gets or sets the maximum number of items to return (1-100).

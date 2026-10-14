@@ -89,7 +89,7 @@ public sealed class BachsClientTests
             new BachsClientOptions { ApiKey = "sk_sandbox_testkey123" }
         );
 
-        var requestOptions = new RequestOptions()
+        var requestOptions = new BachsRequestOptions()
             .WithIdempotencyKey("idem-unique-123")
             .WithAccountId("acct_connected456");
 

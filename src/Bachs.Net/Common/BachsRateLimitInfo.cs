@@ -5,7 +5,7 @@ namespace Bachs.Net.Common;
 /// <summary>
 /// Contains rate limiting information extracted from Bachs API response headers.
 /// </summary>
-public sealed record RateLimitInfo
+public sealed record BachsRateLimitInfo
 {
     /// <summary>
     /// Gets the maximum requests allowed in the current time window (from X-RateLimit-Limit).
@@ -31,8 +31,8 @@ public sealed record RateLimitInfo
     /// Parses rate limit headers from HTTP response headers.
     /// </summary>
     /// <param name="headers">The response headers.</param>
-    /// <returns>A populated <see cref="RateLimitInfo"/> instance.</returns>
-    public static RateLimitInfo FromHeaders(HttpResponseHeaders headers)
+    /// <returns>A populated <see cref="BachsRateLimitInfo"/> instance.</returns>
+    public static BachsRateLimitInfo FromHeaders(HttpResponseHeaders headers)
     {
         int? limit = null;
         if (
@@ -82,7 +82,7 @@ public sealed record RateLimitInfo
             retryAfter = TimeSpan.FromSeconds(seconds);
         }
 
-        return new RateLimitInfo
+        return new BachsRateLimitInfo
         {
             Limit = limit,
             Remaining = remaining,

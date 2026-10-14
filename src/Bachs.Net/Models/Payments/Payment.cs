@@ -150,7 +150,7 @@ public sealed record PaymentFees
 /// <summary>
 /// Options for listing payments.
 /// </summary>
-public sealed class ListPaymentsOptions : ListRequestOptions
+public sealed class ListPaymentsOptions : BachsListRequestOptions
 {
     /// <summary>
     /// Filter by customer ID.

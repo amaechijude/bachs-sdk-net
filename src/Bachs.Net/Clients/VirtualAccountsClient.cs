@@ -13,7 +13,7 @@ public sealed class VirtualAccountsClient(IBachsClient bachsClient)
 {
     public Task<VirtualAccount> CreateAsync(
         CreateVirtualAccountRequest request,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {
@@ -28,11 +28,11 @@ public sealed class VirtualAccountsClient(IBachsClient bachsClient)
 
     public Task<VirtualAccount> GetAsync(
         BachsCurrency currency = BachsCurrency.NGN,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {
-        var path = QueryBuilder.BuildUrl(
+        var path = BachsQueryBuilder.BuildUrl(
             "v1/virtual-accounts",
             new Dictionary<string, string> { ["currency"] = currency.ToString() }
         );

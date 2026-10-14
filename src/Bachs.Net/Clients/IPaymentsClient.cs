@@ -13,7 +13,7 @@ public interface IPaymentsClient
     /// </summary>
     Task<Payment> GetAsync(
         string paymentId,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 
@@ -22,7 +22,7 @@ public interface IPaymentsClient
     /// </summary>
     Task<BachsList<Payment>> ListAsync(
         ListPaymentsOptions? options = null,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 }

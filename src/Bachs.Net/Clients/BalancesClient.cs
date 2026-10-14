@@ -11,7 +11,7 @@ public sealed class BalancesClient(IBachsClient bachsClient)
         IBalancesClient
 {
     public Task<Balance> GetBalancesAsync(
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {
@@ -19,7 +19,7 @@ public sealed class BalancesClient(IBachsClient bachsClient)
     }
 
     public Task<BalanceSettings> GetSettingsAsync(
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {
@@ -32,7 +32,7 @@ public sealed class BalancesClient(IBachsClient bachsClient)
 
     public Task<BalanceSettings> UpdateSettingsAsync(
         BalanceSettings settings,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {

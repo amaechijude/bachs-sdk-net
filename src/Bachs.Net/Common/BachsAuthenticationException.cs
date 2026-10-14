@@ -14,6 +14,6 @@ public sealed class BachsAuthenticationException(
     string detail,
     string? docUrl = null,
     BachsError? error = null,
-    RateLimitInfo? rateLimit = null,
+    BachsRateLimitInfo? rateLimit = null,
     string? rawResponse = null
 ) : BachsApiException(statusCode, errorCode, detail, docUrl, error, rateLimit, rawResponse);

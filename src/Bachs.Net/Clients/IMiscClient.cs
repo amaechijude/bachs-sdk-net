@@ -12,7 +12,7 @@ public interface IMiscClient
     /// Lists supported payout and collection currencies.
     /// </summary>
     Task<IReadOnlyList<string>> GetSupportedCurrenciesAsync(
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 
@@ -21,7 +21,7 @@ public interface IMiscClient
     /// </summary>
     Task<IReadOnlyList<BankInfo>> GetBanksAsync(
         string country = "NG",
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 
@@ -30,7 +30,7 @@ public interface IMiscClient
     /// </summary>
     Task<ResolveBankAccountResponse> ResolveBankAccountAsync(
         ResolveBankAccountRequest request,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
 }

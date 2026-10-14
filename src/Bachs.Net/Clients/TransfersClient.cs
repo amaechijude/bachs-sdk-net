@@ -12,7 +12,7 @@ public sealed class TransfersClient(IBachsClient bachsClient)
 {
     public Task<Transfer> CreateAsync(
         CreateTransferRequest request,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {
@@ -27,7 +27,7 @@ public sealed class TransfersClient(IBachsClient bachsClient)
 
     public Task<Transfer> GetAsync(
         string transferId,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {
@@ -41,11 +41,11 @@ public sealed class TransfersClient(IBachsClient bachsClient)
 
     public Task<BachsList<Transfer>> ListAsync(
         ListTransfersOptions? options = null,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {
-        var path = QueryBuilder.BuildUrl("v1/transfers", options?.ToQueryParameters());
+        var path = BachsQueryBuilder.BuildUrl("v1/transfers", options?.ToQueryParameters());
         return BachsClient.GetAsync<BachsList<Transfer>>(
             path,
             requestOptions ?? options,

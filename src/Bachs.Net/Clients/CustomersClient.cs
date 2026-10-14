@@ -12,7 +12,7 @@ public sealed class CustomersClient(IBachsClient bachsClient)
 {
     public Task<Customer> CreateAsync(
         CreateCustomerRequest request,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {
@@ -27,7 +27,7 @@ public sealed class CustomersClient(IBachsClient bachsClient)
 
     public Task<Customer> GetAsync(
         string customerId,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {
@@ -41,11 +41,11 @@ public sealed class CustomersClient(IBachsClient bachsClient)
 
     public Task<BachsList<Customer>> ListAsync(
         ListCustomersOptions? options = null,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {
-        var path = QueryBuilder.BuildUrl("v1/customers", options?.ToQueryParameters());
+        var path = BachsQueryBuilder.BuildUrl("v1/customers", options?.ToQueryParameters());
         return BachsClient.GetAsync<BachsList<Customer>>(
             path,
             requestOptions ?? options,
@@ -56,7 +56,7 @@ public sealed class CustomersClient(IBachsClient bachsClient)
     public Task<Customer> UpdateAsync(
         string customerId,
         UpdateCustomerRequest request,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {
@@ -72,7 +72,7 @@ public sealed class CustomersClient(IBachsClient bachsClient)
 
     public Task<CustomerPortalSession> CreatePortalSessionAsync(
         string customerId,
-        RequestOptions? requestOptions = null,
+        BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     )
     {

@@ -138,7 +138,7 @@ public sealed record CreateRefundRequest
 /// <summary>
 /// Options for listing refunds.
 /// </summary>
-public sealed class ListRefundsOptions : ListRequestOptions
+public sealed class ListRefundsOptions : BachsListRequestOptions
 {
     /// <summary>
     /// Filter by charge ID.
