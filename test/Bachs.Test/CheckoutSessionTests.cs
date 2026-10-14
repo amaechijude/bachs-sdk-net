@@ -3,7 +3,6 @@ using System.Text;
 using Bachs.Net.Clients;
 using Bachs.Net.Common;
 using Bachs.Net.Models.Checkout;
-using Bachs.Net.Models.Checkout.Request;
 using Bachs.Net.Models.Common;
 using Bachs.Net.Serialization;
 

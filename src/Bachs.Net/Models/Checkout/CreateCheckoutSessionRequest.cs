@@ -1,7 +1,7 @@
 using System.Text.Json.Serialization;
 using Bachs.Net.Models.Common;
 
-namespace Bachs.Net.Models.Checkout.Request;
+namespace Bachs.Net.Models.Checkout;
 
 /// <summary>
 /// Request parameters to create a new checkout session.

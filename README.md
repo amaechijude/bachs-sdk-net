@@ -1,8 +1,7 @@
-# Bachs.Net
+# BachsSDK.Net
 
 > Modern, Developer-first C# / .NET 8+ SDK for [Bachs](https://docs.bachs.io/) payments, billing, hosted checkout, subscriptions, and webhooks.
 
-[![NuGet Version](https://img.shields.io/nuget/v/Bachs.Net.svg)](https://www.nuget.org/packages/Bachs.Net/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 ---

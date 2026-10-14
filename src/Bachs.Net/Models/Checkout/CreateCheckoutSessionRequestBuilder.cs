@@ -1,4 +1,3 @@
-using Bachs.Net.Models.Checkout.Request;
 using Bachs.Net.Models.Common;
 
 namespace Bachs.Net.Models.Checkout;

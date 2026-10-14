@@ -1,6 +1,5 @@
 using Bachs.Net.Common;
 using Bachs.Net.Models.Checkout;
-using Bachs.Net.Models.Checkout.Request;
 
 namespace Bachs.Net.Clients;
 

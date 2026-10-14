@@ -1,5 +1,4 @@
 using Bachs.Net.Common;
-using Bachs.Net.Models.Checkout.Request;
 using Bachs.Net.Models.Common;
 
 namespace Bachs.Net.Models.Checkout;
@@ -71,10 +70,9 @@ public sealed class RawPricingCheckoutRequestBuilder
         BachsPrice amount
     )
     {
-        var options =
-            _pricing?.CurrencyOptions != null
-                ? new Dictionary<string, BachsPrice>(_pricing.CurrencyOptions)
-                : [];
+        var options = _pricing?.CurrencyOptions is not null
+            ? new Dictionary<string, BachsPrice>(_pricing.CurrencyOptions)
+            : [];
         options[currency.ToString()] = amount;
         ArgumentNullException.ThrowIfNull(_pricing);
         _pricing = _pricing with { CurrencyOptions = options };
@@ -98,7 +96,7 @@ public sealed class RawPricingCheckoutRequestBuilder
     /// </summary>
     public override CreateCheckoutSessionRequest Build()
     {
-        if (_pricing == null)
+        if (_pricing is null)
             throw new BachsInvalidOperationException(
                 "A raw pricing checkout session requires pricing configuration."
             );

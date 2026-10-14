@@ -213,4 +213,4 @@ public interface IWebhookEventValidator
 /// <summary>
 /// Alias interface for <see cref="IWebhookEventValidator"/>.
 /// </summary>
-public interface IWebhookValidator : IWebhookEventValidator { }
+public interface IWebhookValidator : IWebhookEventValidator;

@@ -53,7 +53,8 @@ var request = CreateCheckoutSessionRequestBuilder
     .WithCancelUrl("https://example.com/billing/cancel")
     .Build();
 
-CreateCheckoutSessionResponse session = await client.CheckoutSessions.CreateAsync(request);
+CreateCheckoutSessionResponse session = await client.CheckoutSessions.CreateAsync(request,new RequestOptions { IdempotencyKey = "
+idx_key" });
 
 Console.WriteLine($"Checkout ID: {session.CheckoutId}");
 Console.WriteLine($"Redirect Customer to: {session.CheckoutUrl}");
@@ -84,9 +85,6 @@ var request = CreateCheckoutSessionRequestBuilder
     .WithMetadata("order_id", "order_100234")
     .Build();
 
-// Or the shorthand overload: CreateCheckoutSessionRequestBuilder.WithPricing(49.99m)
-// Currency defaults to BachsCurrency.USD.
-
 CreateCheckoutSessionResponse session = await client.CheckoutSessions.CreateAsync(
     request,
     new RequestOptions { IdempotencyKey = "checkout_order_100234" }
@@ -109,13 +107,13 @@ Console.WriteLine($"Status: {session.Status}");          // 'open', 'completed',
 Console.WriteLine($"Payment Status: {session.PaymentStatus}"); // 'succeeded', 'requires_payment_method', etc.
 Console.WriteLine($"Total Amount: {session.Amount} {session.Currency}");
 
-if (session.Charge != null)
+if (session.Charge is not null)
 {
     Console.WriteLine($"Payment ID: {session.Charge.PaymentId}");
     Console.WriteLine($"Payment Method: {session.Charge.PaymentMethod}");
 }
 
-if (session.Products != null)
+if (session.Products is not null)
 {
     foreach (var item in session.Products)
     {

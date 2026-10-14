@@ -190,36 +190,50 @@ app.MapPost("/webhooks/bachs", async (HttpRequest request, IWebhooksClient webho
 
     var timestamp = request.Headers["X-Bachs-Timestamp"].ToString();
 
-    try
-    {
-        // 1. Strongly-Typed Event Validation (Recommended):
-        // Automatically verifies HMAC signature and timestamp, and returns a strongly-typed event record.
-        var bachsEvent = webhooks.ValidateTypedEvent(
+    // Non-throwing validation: invalid signatures, stale timestamps, missing secrets,
+    // or invalid payloads return false.
+    if (!webhooks.TryValidateTypedEvent(
             rawPayload,
             signature,
-            timestampHeader: timestamp
-        );
-
-        // Pattern-match across events with zero magic strings and strongly-typed data payloads:
-        return bachsEvent switch
-        {
-            CollectionSucceededEvent e => HandlePayment(e.Data),           // e.Data is strongly-typed Payment
-            CheckoutCompletedEvent e   => HandleCheckout(e.Data),          // e.Data is GetCheckoutSessionResponse
-            PayoutPaidEvent e          => HandlePayout(e.Data),            // e.Data is Payout
-            SubscriptionCreatedEvent e => HandleSubscription(e.Data),      // e.Data is Subscription
-            InvoicePaidEvent e          => HandleInvoice(e.Data),           // e.Data is InvoiceEventData
-            UnknownBachsEvent e        => Results.Ok(),                    // Forward-compatible fallback
-            _                          => Results.Ok()
-        };
-    }
-    catch (BachsException ex)
+            out var bachsEvent,
+            timestampHeader: timestamp))
     {
-        return Results.BadRequest(new { error = ex.Message });
+        return Results.BadRequest(new { error = "Invalid webhook signature or payload." });
     }
+
+    // Pattern-match across events with zero magic strings and strongly-typed data payloads:
+    return bachsEvent switch
+    {
+        CollectionSucceededEvent e => HandlePayment(e.Data),           // e.Data is strongly-typed Payment
+        CheckoutCompletedEvent e   => HandleCheckout(e.Data),          // e.Data is GetCheckoutSessionResponse
+        PayoutPaidEvent e          => HandlePayout(e.Data),             // e.Data is Payout
+        SubscriptionCreatedEvent e => HandleSubscription(e.Data),      // e.Data is Subscription
+        InvoicePaidEvent e          => HandleInvoice(e.Data),           // e.Data is InvoiceEventData
+        UnknownBachsEvent e        => Results.Ok(),                    // Forward-compatible fallback
+        _                          => Results.Ok()
+    };
 });
 ```
 
-> **Tip**: You can also use `webhooks.TryValidateTypedEvent(rawPayload, signature, out var typedEvent)` if you prefer non-throwing control flow.
+If you prefer exceptions for invalid deliveries, use `ValidateTypedEvent` in a `try-catch` instead:
+
+```csharp
+try
+{
+    var bachsEvent = webhooks.ValidateTypedEvent(
+        rawPayload,
+        signature,
+        timestampHeader: timestamp
+    );
+    return Results.Ok(new { type = bachsEvent.Type });
+}
+catch (BachsException ex)
+{
+    return Results.BadRequest(new { error = ex.Message });
+}
+```
+
+Replace the `Results.Ok` line with the event switch from the non-throwing example to dispatch each typed event. `ValidateTypedEvent` throws `BachsException` when validation or payload deserialization fails. It can also throw `BachsInvalidOperationException` if no webhook secret is configured or supplied.
 
 ### Validating via Standalone `WebhookEventValidator`
 

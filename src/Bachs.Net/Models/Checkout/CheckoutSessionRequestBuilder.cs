@@ -1,4 +1,3 @@
-using Bachs.Net.Models.Checkout.Request;
 using Bachs.Net.Models.Common;
 
 namespace Bachs.Net.Models.Checkout;
@@ -32,6 +31,35 @@ public abstract class CheckoutSessionRequestBuilder<TBuilder>
     public TBuilder WithCustomer(CheckoutCustomerRequest customer)
     {
         CustomerRequest = customer;
+        return Self;
+    }
+
+    /// <summary>
+    /// Sets the customer email for the checkout session. This is a convenience method for creating a new customer with just an email address.
+    /// </summary>
+    /// <param name="email"></param>
+    /// <returns></returns>
+    public TBuilder WithCustomer(string email)
+    {
+        CustomerRequest = new CheckoutCustomerRequest { Email = email };
+        return Self;
+    }
+
+    /// <summary>
+    /// Sets the customer information for the checkout session, including email, name, and optional phone number. This is a convenience method for creating a new customer with basic contact details.
+    /// </summary>
+    /// <param name="email"></param>
+    /// <param name="name"></param>
+    /// <param name="phoneNumber"></param>
+    /// <returns></returns>
+    public TBuilder WithCustomer(string email, string name, string? phoneNumber = null)
+    {
+        CustomerRequest = new CheckoutCustomerRequest
+        {
+            Email = email,
+            Name = name,
+            PhoneNumber = phoneNumber,
+        };
         return Self;
     }
 
