@@ -1,9 +1,12 @@
+using System.Net;
 using Bachs.Net.Clients;
 using Bachs.Net.Common;
 using Bachs.Net.WebHooks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Http.Resilience;
 using Microsoft.Extensions.Options;
+using Polly;
 
 namespace Bachs.Net.Extensions;
 
@@ -16,14 +19,14 @@ public static class BachsServiceExtensions
     /// Registers the Bachs API client and sub-clients in the dependency injection container.
     /// </summary>
     /// <remarks>
-    /// We recommend using the returned <see cref="IHttpClientBuilder"/> to configure standard
-    /// resilience handlers (e.g., Polly or <c>AddStandardResilienceHandler</c>). If you do so, ensure
-    /// <see cref="BachsClientOptions.MaxRetries"/> remains 0 (the default) to avoid nested retries.
+    /// The registered client uses a standard HTTP resilience pipeline configured from
+    /// <see cref="BachsClientOptions"/>. Its retries replace the standalone client's retry loop.
+    /// Options are validated with <see cref="BachsClientOptions.Validate"/> when first resolved.
     /// </remarks>
     /// <param name="services">The <see cref="IServiceCollection"/> to add the client to.</param>
     /// <param name="configureOptions">Delegate to configure <see cref="BachsClientOptions"/>.</param>
-    /// <returns>An <see cref="IHttpClientBuilder"/> for configuring the underlying HTTP client and resilience pipelines.</returns>
-    public static IHttpClientBuilder AddBachsClient(
+    /// <returns>The service collection for further service registration.</returns>
+    public static IServiceCollection AddBachsClient(
         this IServiceCollection services,
         Action<BachsClientOptions> configureOptions
     )
@@ -32,26 +35,8 @@ public static class BachsServiceExtensions
         ArgumentNullException.ThrowIfNull(configureOptions);
 
         services.Configure(configureOptions);
+        services.PostConfigure<BachsClientOptions>(options => options.Validate());
         return RegisterClientCore(services);
-    }
-
-    /// <summary>
-    /// Registers the Bachs API client and sub-clients with options and an HTTP client builder configurator.
-    /// </summary>
-    /// <param name="services">The <see cref="IServiceCollection"/> to add the client to.</param>
-    /// <param name="configureOptions">Delegate to configure <see cref="BachsClientOptions"/>.</param>
-    /// <param name="configureHttpClient">Delegate to configure the <see cref="IHttpClientBuilder"/> (e.g. resilience handlers).</param>
-    /// <returns>An <see cref="IHttpClientBuilder"/> for further configuration.</returns>
-    public static IHttpClientBuilder AddBachsClient(
-        this IServiceCollection services,
-        Action<BachsClientOptions> configureOptions,
-        Action<IHttpClientBuilder> configureHttpClient
-    )
-    {
-        ArgumentNullException.ThrowIfNull(configureHttpClient);
-        var builder = services.AddBachsClient(configureOptions);
-        configureHttpClient(builder);
-        return builder;
     }
 
     /// <summary>
@@ -59,45 +44,69 @@ public static class BachsServiceExtensions
     /// </summary>
     /// <param name="services">The <see cref="IServiceCollection"/> to add the client to.</param>
     /// <param name="apiKey">The Bachs secret key (sk_sandbox_... or sk_live_...).</param>
-    /// <returns>An <see cref="IHttpClientBuilder"/> for configuring the underlying HTTP client and resilience pipelines.</returns>
-    public static IHttpClientBuilder AddBachsClient(this IServiceCollection services, string apiKey)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(apiKey);
-        return services.AddBachsClient(options => options.ApiKey = apiKey);
-    }
-
-    /// <summary>
-    /// Registers the Bachs API client with a secret API key and an HTTP client builder configurator.
-    /// </summary>
-    /// <param name="services">The <see cref="IServiceCollection"/> to add the client to.</param>
-    /// <param name="apiKey">The Bachs secret key (sk_sandbox_... or sk_live_...).</param>
-    /// <param name="configureHttpClient">Delegate to configure the <see cref="IHttpClientBuilder"/> (e.g. resilience handlers).</param>
-    /// <returns>An <see cref="IHttpClientBuilder"/> for further configuration.</returns>
-    public static IHttpClientBuilder AddBachsClient(
+    /// <param name="webhookSecret">The Bachs webhook secret (whsec_...).</param>
+    /// <returns>An <see cref="IServiceCollection"/> for configuring the underlying HTTP client and resilience pipelines.</returns>
+    public static IServiceCollection AddBachsClient(
         this IServiceCollection services,
         string apiKey,
-        Action<IHttpClientBuilder> configureHttpClient
+        string webhookSecret
     )
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(apiKey);
-        ArgumentNullException.ThrowIfNull(configureHttpClient);
-        var builder = services.AddBachsClient(apiKey);
-        configureHttpClient(builder);
-        return builder;
+        return services.AddBachsClient(options =>
+        {
+            options.ApiKey = apiKey;
+            options.WebhookSecret = webhookSecret;
+        });
     }
 
-    private static IHttpClientBuilder RegisterClientCore(IServiceCollection services)
+    private static IServiceCollection RegisterClientCore(IServiceCollection services)
     {
-        var builder = services.AddHttpClient<IBachsClient, BachsClient>(
-            (serviceProvider, httpClient) =>
-            {
-                var options = serviceProvider
-                    .GetRequiredService<IOptions<BachsClientOptions>>()
-                    .Value;
-                httpClient.BaseAddress = options.GetEffectiveBaseUrl();
-                httpClient.Timeout = options.Timeout;
-            }
-        );
+        services
+            .AddHttpClient<IBachsClient, BachsClient>(
+                (sp, httpClient) =>
+                {
+                    var bachs = sp.GetRequiredService<IOptions<BachsClientOptions>>().Value;
+                    httpClient.BaseAddress = bachs.GetEffectiveBaseUrl();
+
+                    // Timeouts are owned by the resilience pipeline.
+                    httpClient.Timeout = Timeout.InfiniteTimeSpan;
+                }
+            )
+            .AddStandardResilienceHandler()
+            .Configure(
+                (options, sp) =>
+                {
+                    var bachs = sp.GetRequiredService<IOptions<BachsClientOptions>>().Value;
+
+                    // Timeouts
+                    options.TotalRequestTimeout.Timeout = bachs.TotalRequestTimeout;
+                    options.AttemptTimeout.Timeout = bachs.AttemptTimeout;
+
+                    // Retries. Polly requires MaxRetryAttempts >= 1, so "no retries" is
+                    // expressed through ShouldHandle below rather than by setting 0.
+                    options.Retry.MaxRetryAttempts = Math.Max(1, bachs.MaxRetries);
+                    options.Retry.BackoffType = DelayBackoffType.Exponential;
+                    options.Retry.Delay = bachs.RetryDelay;
+                    options.Retry.MaxDelay = bachs.MaxRetryDelay;
+                    options.Retry.UseJitter = true;
+                    options.Retry.ShouldRetryAfterHeader = true;
+                    options.Retry.ShouldHandle = args =>
+                        ValueTask.FromResult(ShouldRetry(bachs, args.Outcome));
+
+                    // Circuit breaker
+                    options.CircuitBreaker.FailureRatio = bachs.CircuitBreakerFailureRatio;
+                    options.CircuitBreaker.MinimumThroughput =
+                        bachs.CircuitBreakerMinimumThroughput;
+                    options.CircuitBreaker.SamplingDuration = bachs.CircuitBreakerSamplingDuration;
+                    options.CircuitBreaker.BreakDuration = bachs.CircuitBreakerBreakDuration;
+                    options.CircuitBreaker.ShouldHandle = args =>
+                        ValueTask.FromResult(
+                            bachs.EnableCircuitBreaker
+                                && HttpClientResiliencePredicates.IsTransient(args.Outcome)
+                        );
+                }
+            );
 
         // Register typed sub-clients for granular constructor injection
         services.TryAddTransient(sp => sp.GetRequiredService<IBachsClient>().CheckoutSessions);
@@ -123,6 +132,45 @@ public static class BachsServiceExtensions
         );
         services.TryAddTransient(sp => sp.GetRequiredService<IBachsClient>().Misc);
 
-        return builder;
+        return services;
     }
+
+    /// <summary>
+    /// Decides whether an outcome is a transient failure worth retrying.
+    /// </summary>
+    private static bool ShouldRetry(BachsClientOptions bachs, Outcome<HttpResponseMessage> outcome)
+    {
+        if (bachs.MaxRetries <= 0)
+            return false;
+
+        if (outcome.Exception is HttpRequestException or Polly.Timeout.TimeoutRejectedException)
+            return true;
+
+        if (
+            outcome.Result is not { StatusCode: var status } response
+            || status
+                is not (
+                    HttpStatusCode.TooManyRequests
+                    or HttpStatusCode.RequestTimeout
+                    or HttpStatusCode.InternalServerError
+                    or HttpStatusCode.BadGateway
+                    or HttpStatusCode.ServiceUnavailable
+                    or HttpStatusCode.GatewayTimeout
+                )
+        )
+        {
+            return false;
+        }
+
+        // If the server asks us to wait longer than we are willing to, fail now
+        // instead of burning the request budget.
+        return GetRetryAfter(response) is not { } retryAfter || retryAfter <= bachs.MaxRetryDelay;
+    }
+
+    /// <summary>
+    /// Reads the <c>Retry-After</c> header, which Bachs sends as a number of seconds on a 429.
+    /// .NET parses that form into <see cref="System.Net.Http.Headers.RetryConditionHeaderValue.Delta"/>.
+    /// </summary>
+    private static TimeSpan? GetRetryAfter(HttpResponseMessage response) =>
+        response.Headers.RetryAfter?.Delta is { } delta && delta >= TimeSpan.Zero ? delta : null;
 }

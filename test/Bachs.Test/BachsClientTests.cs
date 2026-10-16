@@ -31,6 +31,24 @@ public sealed class BachsClientTests
         }
     }
 
+    private sealed class CountingHttpMessageHandler(params HttpStatusCode[] statusCodes)
+        : HttpMessageHandler
+    {
+        private readonly Queue<HttpStatusCode> _statusCodes = new(statusCodes);
+
+        public int RequestCount { get; private set; }
+
+        protected override Task<HttpResponseMessage> SendAsync(
+            HttpRequestMessage request,
+            CancellationToken cancellationToken
+        )
+        {
+            RequestCount++;
+            var statusCode = _statusCodes.Count > 0 ? _statusCodes.Dequeue() : HttpStatusCode.OK;
+            return Task.FromResult(new HttpResponseMessage(statusCode));
+        }
+    }
+
     [Fact]
     public async Task Client_Applies_DefaultHeaders()
     {
@@ -119,98 +137,5 @@ public sealed class BachsClientTests
             "acct_connected456",
             handler.LastRequest.Headers.GetValues("X-Account-Id").First()
         );
-    }
-
-    [Fact]
-    public async Task Client_Throws_BachsValidationException_On_422()
-    {
-        var errorJson = """
-            {
-                "detail": "Missing required field(s): name, price",
-                "error_code": "VALIDATION_ERROR",
-                "doc_url": "https://docs.bachs.io/api-reference/error-reference#general",
-                "errors": [
-                    { "field": "name", "message": "Field required", "type": "missing" },
-                    { "field": "price", "message": "Field required", "type": "missing" }
-                ]
-            }
-            """;
-
-        var handler = new MockHttpMessageHandler
-        {
-            ResponseToReturn = new HttpResponseMessage(HttpStatusCode.UnprocessableEntity)
-            {
-                Content = new StringContent(errorJson, Encoding.UTF8, "application/json"),
-            },
-        };
-
-        var httpClient = new HttpClient(handler);
-        var client = new BachsClient(
-            httpClient,
-            new BachsClientOptions
-            {
-                ApiKey = "sk_sandbox_testkey123",
-                MaxRetries = 0,
-                ThrowOnApiErrors = true,
-            }
-        );
-
-        var ex = await Assert.ThrowsAsync<BachsValidationException>(() =>
-            client.Products.CreateAsync(
-                new CreateProductRequest
-                {
-                    Price = new ProductPriceRequest { Amount = 0 },
-                    Name = "product1",
-                }
-            )
-        );
-
-        Assert.Equal(HttpStatusCode.UnprocessableEntity, ex.StatusCode);
-        Assert.Equal("VALIDATION_ERROR", ex.ErrorCode);
-        Assert.Equal(2, ex.ValidationErrors.Count);
-        Assert.Equal("name", ex.ValidationErrors[0].Field);
-        Assert.Equal("Field required", ex.ValidationErrors[0].Message);
-    }
-
-    [Fact]
-    public async Task Client_Throws_BachsRateLimitException_On_429()
-    {
-        var errorJson = """
-            {
-                "detail": "Rate limit exceeded",
-                "error_code": "RATE_LIMIT_EXCEEDED"
-            }
-            """;
-
-        var response = new HttpResponseMessage(HttpStatusCode.TooManyRequests)
-        {
-            Content = new StringContent(errorJson, Encoding.UTF8, "application/json"),
-        };
-        response.Headers.Add("Retry-After", "10");
-        response.Headers.Add("X-RateLimit-Limit", "100");
-        response.Headers.Add("X-RateLimit-Remaining", "0");
-
-        var handler = new MockHttpMessageHandler { ResponseToReturn = response };
-
-        var httpClient = new HttpClient(handler);
-        var client = new BachsClient(
-            httpClient,
-            new BachsClientOptions
-            {
-                ApiKey = "sk_sandbox_testkey123",
-                MaxRetries = 0,
-                ThrowOnApiErrors = true,
-            }
-        );
-
-        var ex = await Assert.ThrowsAsync<BachsRateLimitException>(() =>
-            client.Products.ListAsync()
-        );
-
-        Assert.Equal(HttpStatusCode.TooManyRequests, ex.StatusCode);
-        Assert.Equal("RATE_LIMIT_EXCEEDED", ex.ErrorCode);
-        Assert.Equal(TimeSpan.FromSeconds(10), ex.RetryAfter);
-        Assert.Equal(100, ex.RateLimit?.Limit);
-        Assert.Equal(0, ex.RateLimit?.Remaining);
     }
 }

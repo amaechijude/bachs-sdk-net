@@ -11,7 +11,7 @@ public sealed class BachsServiceExtensionsTests
     public void AddBachsClient_Registers_Client_And_SubClients()
     {
         var services = new ServiceCollection();
-        services.AddBachsClient("sk_sandbox_testkey123");
+        services.AddBachsClient("sk_sandbox_testkey123", "whsecret");
 
         var serviceProvider = services.BuildServiceProvider();
 
@@ -41,62 +41,22 @@ public sealed class BachsServiceExtensionsTests
     }
 
     [Fact]
-    public void AddBachsClient_Returns_IHttpClientBuilder_And_Allows_Resilience_Configuration()
+    public void AddBachsClient_Returns_ServiceCollection_And_Registers_Client()
     {
         var services = new ServiceCollection();
-        IHttpClientBuilder builder = services.AddBachsClient(options =>
+        var result = services.AddBachsClient(options =>
         {
             options.ApiKey = "sk_sandbox_testkey123";
-            options.MaxRetries = 0; // Handled by resilience pipeline
+            options.CircuitBreakerFailureRatio = 0.3;
         });
 
-        Assert.NotNull(builder);
-        Assert.NotNull(builder.Services);
-
-        // Configure standard resilience pipeline from Microsoft.Extensions.Http.Resilience
-        builder.AddStandardResilienceHandler();
+        Assert.Same(services, result);
 
         var serviceProvider = services.BuildServiceProvider();
         var client = serviceProvider.GetService<IBachsClient>();
         Assert.NotNull(client);
         Assert.Equal("sk_sandbox_testkey123", client.Options.ApiKey);
-        Assert.Equal(0, client.Options.MaxRetries);
-    }
-
-    [Fact]
-    public void AddBachsClient_With_ConfigureHttpClient_Delegate_Configures_Resilience()
-    {
-        var services = new ServiceCollection();
-        services.AddBachsClient(
-            options =>
-            {
-                options.ApiKey = "sk_sandbox_testkey123";
-                options.MaxRetries = 0;
-            },
-            builder =>
-            {
-                builder.AddStandardResilienceHandler();
-            }
-        );
-
-        var serviceProvider = services.BuildServiceProvider();
-        var client = serviceProvider.GetService<IBachsClient>();
-        Assert.NotNull(client);
+        Assert.Equal(0.3, client.Options.CircuitBreakerFailureRatio);
         Assert.NotNull(serviceProvider.GetService<ICheckoutSessionsClient>());
-    }
-
-    [Fact]
-    public void AddBachsClient_With_ApiKey_And_ConfigureHttpClient_Configures_Resilience()
-    {
-        var services = new ServiceCollection();
-        services.AddBachsClient(
-            "sk_sandbox_testkey123",
-            builder => builder.AddStandardResilienceHandler()
-        );
-
-        var serviceProvider = services.BuildServiceProvider();
-        var client = serviceProvider.GetService<IBachsClient>();
-        Assert.NotNull(client);
-        Assert.NotNull(serviceProvider.GetService<IProductsClient>());
     }
 }

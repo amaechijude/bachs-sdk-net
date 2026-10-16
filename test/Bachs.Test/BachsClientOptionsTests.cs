@@ -53,4 +53,28 @@ public sealed class BachsClientOptionsTests
 
         Assert.Equal("https://my-custom-proxy.internal/", url.ToString());
     }
+
+    [Fact]
+    public void Validate_Throws_WhenCircuitBreakerFailureThresholdIsNotPositive()
+    {
+        var options = new BachsClientOptions
+        {
+            ApiKey = "sk_sandbox_test123",
+            CircuitBreakerFailureRatio = 0,
+        };
+
+        Assert.Throws<BachsInvalidOperationException>(() => options.Validate());
+    }
+
+    [Fact]
+    public void Validate_Throws_WhenCircuitBreakerBreakDurationIsNotPositive()
+    {
+        var options = new BachsClientOptions
+        {
+            ApiKey = "sk_sandbox_test123",
+            CircuitBreakerBreakDuration = TimeSpan.Zero,
+        };
+
+        Assert.Throws<BachsInvalidOperationException>(() => options.Validate());
+    }
 }

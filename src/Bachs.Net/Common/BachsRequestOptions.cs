@@ -6,6 +6,12 @@ namespace Bachs.Net.Common;
 public class BachsRequestOptions
 {
     /// <summary>
+    /// Gets or sets the Apikey for specific operations.
+    /// When set, it will override the default api for the request request
+    /// </summary>
+    public string? ScopedApiKey { get; set; }
+
+    /// <summary>
     /// Gets or sets an idempotency key sent via the 'Idempotency-Key' header on POST and PATCH requests.
     /// Retrying the same request with the same idempotency key returns the cached successful response.
     /// </summary>

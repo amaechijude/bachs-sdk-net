@@ -28,6 +28,18 @@ public static class BachsJsonSerializer
         JsonSerializer.Deserialize<T>(message, DefaultSerializerOptions);
 
     /// <summary>
+    /// Deserializes a JSON string to the specified type using Bachs default conventions.
+    /// </summary>
+    public static T? Deserialize<T>(Stream message) =>
+        JsonSerializer.Deserialize<T>(message, DefaultSerializerOptions);
+
+    /// <summary>
+    /// async Deserializes a JSON stream to the specified type using Bachs default conventions.
+    /// </summary>
+    public static ValueTask<T?> DeserializeAsync<T>(Stream message) =>
+        JsonSerializer.DeserializeAsync<T>(message, DefaultSerializerOptions);
+
+    /// <summary>
     /// Gets the shared default <see cref="JsonSerializerOptions"/> configured for the Bachs API.
     /// </summary>
     /// <returns>The default <see cref="JsonSerializerOptions"/>.</returns>

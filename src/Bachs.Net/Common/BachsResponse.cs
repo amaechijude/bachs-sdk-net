@@ -25,22 +25,12 @@ public sealed record BachsResponse<T>
     public HttpStatusCode StatusCode { get; init; }
 
     /// <summary>
+    /// Get the exception that is thrown on error
+    /// </summary>
+    public BachsException? BachsException { get; init; }
+
+    /// <summary>
     /// Gets whether the HTTP status code indicates success (2xx).
     /// </summary>
-    public bool IsSuccessStatusCode => (int)StatusCode >= 200 && (int)StatusCode <= 299;
-
-    /// <summary>
-    /// Gets rate limiting information parsed from the response headers, if present.
-    /// </summary>
-    public BachsRateLimitInfo? RateLimit { get; init; }
-
-    /// <summary>
-    /// Gets the response headers.
-    /// </summary>
-    public HttpResponseHeaders? Headers { get; init; }
-
-    /// <summary>
-    /// Gets the raw JSON response body.
-    /// </summary>
-    public string? RawJson { get; init; }
+    public bool IsSuccessStatusCode => (int)StatusCode is >= 200 and <= 299;
 }

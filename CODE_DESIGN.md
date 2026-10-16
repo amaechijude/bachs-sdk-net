@@ -49,9 +49,10 @@ caller
   → <Domain>Client.Method(...)                 // Clients/<Domain>Client.cs
     → IBachsClient.GetAsync / PostAsync / ...  // Clients/BachsClient.cs
       → BuildRequestUri(path)                  // BaseUrl (from options) + path
-      → SendAsync<TResponse>()                 // retry loop
+      → SendAsync<TResponse>()                 // retry + circuit-breaker pipeline
           • ApplyRequestHeaders (Bearer, Idempotency-Key, X-Account-Id, custom)
           • retry on 429 / 5xx / HttpRequestException (exponential backoff + jitter)
+          • open circuit after configured consecutive transient failures
           • success → stream-deserialize with BachsJsonSerializer.Options
           • failure → BachsApiException.Create(status, error, ...)
   → BachsResponse<T> / T                       // returned to caller
@@ -157,8 +158,9 @@ standalone users.
 **Why:** correct retry semantics without request-object reuse bugs; jitter avoids
 thundering-herd retries across many clients.
 
-**Note:** with DI + Polly (`AddStandardResilienceHandler()`), leave `MaxRetries = 0`
-(the default) so resilience is owned by exactly one layer.
+The configurable circuit breaker rejects requests while open with
+`BachsCircuitBreakerOpenException`. After the break duration, a single probe is
+allowed; transient probe failures reopen the circuit.
 
 **Where:** `BachsClient.SendAsync` and helpers.
 
@@ -351,8 +353,8 @@ with the relevant status code(s).
   otherwise return `BachsResponse<T>` with the error status.
 - **Style:** file-scoped namespaces, primary constructors, top-level XML docs on
   public members (the library ships with IntelliSense documentation).
-- **Retry ownership:** exactly one layer retries — built-in (`MaxRetries > 0`) **or**
-  Polly/DI resilience, never both.
+- **Resilience:** retries and circuit breaking are owned by the Bachs client and
+  configured through `BachsClientOptions`.
 
 ---
 
@@ -364,6 +366,7 @@ with the relevant status code(s).
 | add an endpoint | `Clients/I<Domain>Client.cs`, `Clients/<Domain>Client.cs`, `Models/<Domain>/` |
 | change headers / auth | `BachsClient.ApplyRequestHeaders` |
 | change retry behavior | `BachsClient.SendAsync` + `Common/BachsClientOptions.MaxRetries` |
+| change circuit-breaker behavior | `Clients/BachsCircuitBreaker.cs` + `Common/BachsClientOptions` |
 | change error mapping | `Common/BachsApiException.Create` |
 | change JSON conventions | `Serialization/BachsJsonSerializer.cs`, `Serialization/BachsPriceJsonConverter.cs` |
 | work on webhooks | `WebHooks/BachsWebhook.cs`, `WebHooks/BachsTypedEvent.cs` |

@@ -163,5 +163,4 @@ public interface IBachsClient
         BachsRequestOptions? requestOptions = null,
         CancellationToken cancellationToken = default
     );
-
 }

@@ -11,7 +11,7 @@
 - ⚡ **Full API Coverage**: Checkout sessions, products, customers, subscriptions, payments, refunds, payouts, balances, conversions, transfers, disputes, connected accounts (Connect), and virtual accounts.
 - 🔒 **Production & Sandbox Ready**: Automatically selects Sandbox (`https://sandbox-api.bachs.io`) for `sk_sandbox_` keys and Production (`https://api.bachs.io`) for `sk_live_` keys.
 - 💉 **First-Class ASP.NET Core DI Support**: Easily configure with `services.AddBachsClient(...)` using typed HTTP client factories and modular service injection.
-- 🔁 **Resilience & Rate Limiting**: Built-in automatic retries with exponential backoff and jitter for transient errors (429, 5xx), respecting `Retry-After` headers.
+- 🔁 **Resilience & Rate Limiting**: Built-in retries with exponential backoff and jitter plus a configurable circuit breaker for transient errors (429, 5xx, network failures).
 - 🛡️ **Webhook Verification**: Built-in verification for `X-Bachs-Signature` and `X-Bachs-Signature-V2` with zero-downtime secret rotation support and anti-replay tolerance checks.
 - 💰 **Monetary Precision**: Transparent decimal-string handling (`"29.00"`) compliant with the Bachs API precision standard.
 - 🔑 **Idempotency & Connect Support**: Effortlessly pass `Idempotency-Key` and `X-Account-Id` per request.
@@ -47,11 +47,12 @@ var client = new BachsClient("sk_sandbox_your_secret_key");
 // Or configure explicitly with options:
 var client = new BachsClient(new BachsClientOptions
 {
-    ApiKey = "sk_sandbox_your_secret_key",
-    Timeout = TimeSpan.FromSeconds(30),
-    MaxRetries = 2
+    ApiKey = "sk_sandbox_your_secret_key"
 });
 ```
+
+Standalone clients use a shared `HttpClient`. To apply the configurable timeout,
+retry, and circuit-breaker pipeline, register the client with `AddBachsClient`.
 
 ---
 
@@ -110,56 +111,33 @@ app.MapPost("/create-checkout", async (ICheckoutSessionsClient checkoutClient) =
 
 ---
 
-### 3. Custom Resilience with Microsoft.Extensions.Http.Resilience
+### 3. Retry and Circuit Breaker Configuration
 
-`AddBachsClient` returns an `IHttpClientBuilder`, allowing you to seamlessly integrate your own resilience pipelines via [Microsoft.Extensions.Http.Resilience](https://www.nuget.org/packages/Microsoft.Extensions.Http.Resilience):
-
-```bash
-dotnet add package Microsoft.Extensions.Http.Resilience
-```
-
-#### Standard Resilience Handler (Recommended)
-
-When using Microsoft's standard resilience handler (retry, circuit breaker, rate limiter, and timeout), disable internal retries by setting `MaxRetries = 0`:
+The dependency-injected client uses a standard HTTP resilience pipeline configured
+through `BachsClientOptions`. By default, requests have a 30-second total timeout
+and a 10-second per-attempt timeout, with up to 3 retries using exponential
+backoff. The circuit breaker uses a 10% failure ratio after at least 100 requests
+in a 30-second sampling window and remains open for 5 seconds. Retries and the
+circuit breaker can be disabled independently.
 
 ```csharp
 builder.Services.AddBachsClient(options =>
 {
     options.ApiKey = builder.Configuration["Bachs:ApiKey"]!;
-    options.MaxRetries = 0; // Handled by Polly / Microsoft Resilience pipeline
-})
-.AddStandardResilienceHandler();
-```
-
-#### Custom Pipeline Configuration
-
-You can also customize retry parameters, timeouts, and hedged requests:
-
-```csharp
-builder.Services.AddBachsClient(options =>
-{
-    options.ApiKey = builder.Configuration["Bachs:ApiKey"]!;
-    options.MaxRetries = 0;
-})
-.AddStandardResilienceHandler(options =>
-{
-    options.AttemptTimeout.Timeout = TimeSpan.FromSeconds(15);
-    options.CircuitBreaker.SamplingDuration = TimeSpan.FromSeconds(30);
-    options.TotalRequestTimeout.Timeout = TimeSpan.FromSeconds(60);
+    options.TotalRequestTimeout = TimeSpan.FromSeconds(45);
+    options.AttemptTimeout = TimeSpan.FromSeconds(12);
+    options.MaxRetries = 2;
+    options.RetryDelay = TimeSpan.FromSeconds(1);
+    options.CircuitBreakerFailureRatio = 0.2;
+    options.CircuitBreakerMinimumThroughput = 20;
+    options.CircuitBreakerSamplingDuration = TimeSpan.FromSeconds(30);
+    options.CircuitBreakerBreakDuration = TimeSpan.FromSeconds(15);
 });
 ```
 
-Or configure inline via delegate:
-
-```csharp
-builder.Services.AddBachsClient(
-    apiKey: builder.Configuration["Bachs:ApiKey"]!,
-    configureHttpClient: httpClientBuilder =>
-    {
-        httpClientBuilder.AddStandardResilienceHandler();
-    }
-);
-```
+Standalone clients created with `new BachsClient(...)` use a shared `HttpClient`
+without this resilience pipeline. The timeout, retry, and circuit-breaker options
+are applied to clients registered with `AddBachsClient`.
 
 ---
 

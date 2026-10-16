@@ -24,14 +24,23 @@ This guide details all 16 specialized sub-clients available through [`IBachsClie
 2. **Via Granular ASP.NET Core Dependency Injection**:
    ```csharp
    // In Program.cs
-   builder.Services.AddBachsClient(options => options.ApiKey = "sk_test_...")
-       .AddStandardResilienceHandler(); // Configurable via Microsoft.Extensions.Http.Resilience
+   builder.Services.AddBachsClient(options =>
+   {
+       options.ApiKey = "sk_test_...";
+       options.TotalRequestTimeout = TimeSpan.FromSeconds(30);
+       options.AttemptTimeout = TimeSpan.FromSeconds(10);
+       options.MaxRetries = 3;
+       options.CircuitBreakerFailureRatio = 0.1;
+       options.CircuitBreakerMinimumThroughput = 100;
+       options.CircuitBreakerSamplingDuration = TimeSpan.FromSeconds(30);
+       options.CircuitBreakerBreakDuration = TimeSpan.FromSeconds(5);
+   });
 
    // In your endpoint or service
    app.MapPost("/checkout", async (ICheckoutSessionsClient checkoutClient) => { ... });
    ```
 
-All sub-clients inherit from [`BaseClient`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Clients/BaseClient.cs), execute resilient HTTP requests with built-in retries and exponential backoff (or through custom `Microsoft.Extensions.Http.Resilience` pipelines configured on `IHttpClientBuilder`), and deserialize responses directly into strongly-typed C# models.
+All sub-clients inherit from [`BaseClient`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Clients/BaseClient.cs), execute resilient HTTP requests with built-in retries, exponential backoff, and a configurable circuit breaker when registered through dependency injection, and deserialize responses directly into strongly-typed C# models.
 
 ---
 
