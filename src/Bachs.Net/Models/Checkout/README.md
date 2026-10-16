@@ -104,7 +104,7 @@ Cart-specific methods on `ProductCartCheckoutRequestBuilder`:
 - Every cart item must specify a non-empty `ProductId`.
 - Every cart item must have `Quantity >= 1`.
 - Root `Pricing` is guaranteed to be `null` (enforcing mutual exclusivity).
-- Violations throw [`BachsInvalidOperationException`](../../Common/BachsInvalidOperationException.cs) before any HTTP call is made.
+- Violations throw [`BachsInvalidOperationException`](../../Exceptions/BachsInvalidOperationException.cs) before any HTTP call is made.
 
 ---
 
@@ -166,7 +166,7 @@ Pricing-specific methods on `RawPricingCheckoutRequestBuilder`:
 > **Ordering**: `WithPriceType`, `WithPresetAmount`, `WithPriceBounds`, `WithCurrencyOption(s)` all mutate the seeded pricing record, so they throw `ArgumentNullException` when called before `WithPricing(...)`.
 
 ### Validation enforced by `RawPricingCheckoutRequestBuilder.Build()`
-- `Pricing` must be configured; otherwise `Build()` throws [`BachsInvalidOperationException`](../../Common/BachsInvalidOperationException.cs).
+- `Pricing` must be configured; otherwise `Build()` throws [`BachsInvalidOperationException`](../../Exceptions/BachsInvalidOperationException.cs).
 - Root `ProductCart` is guaranteed to be `null` (enforcing mutual exclusivity).
 
 ---

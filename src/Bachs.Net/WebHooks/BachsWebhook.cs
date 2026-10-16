@@ -2,6 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Security.Cryptography;
 using System.Text;
 using Bachs.Net.Common;
+using Bachs.Net.Exceptions;
 using Bachs.Net.Serialization;
 
 namespace Bachs.Net.WebHooks;

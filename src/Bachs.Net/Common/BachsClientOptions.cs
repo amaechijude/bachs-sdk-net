@@ -1,3 +1,5 @@
+using Bachs.Net.Exceptions;
+
 namespace Bachs.Net.Common;
 
 public enum BachsEnvironment

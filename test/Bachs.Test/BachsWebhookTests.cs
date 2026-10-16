@@ -1,6 +1,7 @@
 using System.Security.Cryptography;
 using System.Text;
 using Bachs.Net.Common;
+using Bachs.Net.Exceptions;
 using Bachs.Net.WebHooks;
 
 namespace Bachs.Test;

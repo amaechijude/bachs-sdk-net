@@ -1,6 +1,7 @@
 using System.Net;
+using Bachs.Net.Common;
 
-namespace Bachs.Net.Common;
+namespace Bachs.Net.Exceptions;
 
 /// <summary>
 /// Exception thrown when a request conflicts with current server state or idempotency lock (HTTP 409).

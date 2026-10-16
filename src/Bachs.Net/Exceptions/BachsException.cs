@@ -1,4 +1,4 @@
-namespace Bachs.Net.Common;
+namespace Bachs.Net.Exceptions;
 
 /// <summary>
 /// Base exception thrown by the Bachs .NET SDK.

@@ -1,14 +1,15 @@
 using System.Net;
+using Bachs.Net.Common;
 
-namespace Bachs.Net.Common;
+namespace Bachs.Net.Exceptions;
 
 /// <summary>
-/// Exception thrown when an authenticated API key lacks the required permissions/scopes (HTTP 403).
+/// Exception thrown when authentication fails due to a missing or invalid API key (HTTP 401).
 /// </summary>
 /// <remarks>
-/// Initializes a new instance of the <see cref="BachsForbiddenException"/> class.
+/// Initializes a new instance of the <see cref="BachsAuthenticationException"/> class.
 /// </remarks>
-public sealed class BachsForbiddenException(
+public sealed class BachsAuthenticationException(
     HttpStatusCode statusCode,
     string errorCode,
     string detail,

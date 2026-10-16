@@ -1,4 +1,4 @@
-namespace Bachs.Net.Common;
+namespace Bachs.Net.Exceptions;
 
 /// <summary>
 /// Initializes a new instance of <see cref="BachsInvalidOperationException"/> with a message.

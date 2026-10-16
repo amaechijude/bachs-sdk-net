@@ -109,10 +109,10 @@ Console.WriteLine($"Retrieved {page.Data.Count} items. HasMore: {page.Pagination
 ```
 
 ### 3. Error Handling
-The SDK provides typed exceptions inheriting from [`BachsApiException`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Common/BachsApiException.cs):
-- [`BachsValidationException`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Common/BachsValidationException.cs) — HTTP 400 / 422 with `ValidationErrors` list.
-- [`BachsAuthenticationException`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Common/BachsAuthenticationException.cs) — HTTP 401 Unauthorized.
-- [`BachsForbiddenException`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Common/BachsForbiddenException.cs) — HTTP 403 Forbidden.
-- [`BachsNotFoundException`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Common/BachsNotFoundException.cs) — HTTP 404 Not Found.
-- [`BachsConflictException`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Common/BachsConflictException.cs) — HTTP 409 Conflict.
-- [`BachsRateLimitException`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Common/BachsRateLimitException.cs) — HTTP 429 Too Many Requests with `RetryAfter` parsed from header.
+The SDK provides typed exceptions inheriting from [`BachsApiException`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Exceptions/BachsApiException.cs):
+- [`BachsValidationException`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Exceptions/BachsValidationException.cs) — HTTP 400 / 422 with `ValidationErrors` list.
+- [`BachsAuthenticationException`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Exceptions/BachsAuthenticationException.cs) — HTTP 401 Unauthorized.
+- [`BachsForbiddenException`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Exceptions/BachsForbiddenException.cs) — HTTP 403 Forbidden.
+- [`BachsNotFoundException`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Exceptions/BachsNotFoundException.cs) — HTTP 404 Not Found.
+- [`BachsConflictException`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Exceptions/BachsConflictException.cs) — HTTP 409 Conflict.
+- [`BachsRateLimitException`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Exceptions/BachsRateLimitException.cs) — HTTP 429 Too Many Requests with `RetryAfter` parsed from header.

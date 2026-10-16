@@ -1,4 +1,5 @@
 using Bachs.Net.Common;
+using Bachs.Net.Exceptions;
 
 namespace Bachs.Test;
 

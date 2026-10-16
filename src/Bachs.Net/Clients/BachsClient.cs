@@ -1,7 +1,9 @@
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Text.Json;
 using Bachs.Net.Common;
+using Bachs.Net.Exceptions;
 using Bachs.Net.Serialization;
 using Microsoft.Extensions.Options;
 using Polly.CircuitBreaker;
@@ -225,106 +227,6 @@ public sealed class BachsClient : IBachsClient, IDisposable
     private static JsonContent CreateJsonContent<TRequest>(TRequest body) =>
         JsonContent.Create(body, options: BachsJsonSerializer.Options);
 
-    private async Task<BachsResponse<TResponse>> SendAsync<TResponse>(
-        HttpMethod method,
-        string path,
-        HttpContent? content,
-        BachsRequestOptions? requestOptions,
-        CancellationToken cancellationToken
-    )
-    {
-        TResponse data = default!;
-        BachsError? error = null;
-        try
-        {
-            // Disposing the request also disposes its content.
-            using var request = new HttpRequestMessage(method, BuildRequestUri(path))
-            {
-                Content = content,
-            };
-            ApplyRequestHeaders(request, requestOptions);
-
-            using var response = await _httpClient
-                .SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken)
-                .ConfigureAwait(false);
-
-            if (
-                response is
-                { StatusCode: HttpStatusCode.NoContent, Content.Headers.ContentLength: 0 }
-            )
-            {
-                return new BachsResponse<TResponse>
-                {
-                    Data = data,
-                    Error = error,
-                    StatusCode = response.StatusCode,
-                };
-            }
-
-            var responseStream = await response
-                .Content.ReadAsStringAsync(cancellationToken)
-                .ConfigureAwait(false);
-
-            if (string.IsNullOrWhiteSpace(responseStream))
-            {
-                return new BachsResponse<TResponse>
-                {
-                    Data = data,
-                    Error = error,
-                    StatusCode = response.StatusCode,
-                };
-            }
-
-            if (response.IsSuccessStatusCode is false)
-            {
-                error = DeserializeError(responseStream);
-            }
-            else
-            {
-                data =
-                    typeof(TResponse) == typeof(string)
-                        ? (TResponse)(object)responseStream
-                        : BachsJsonSerializer.Deserialize<TResponse>(responseStream)!;
-            }
-
-            return new BachsResponse<TResponse>
-            {
-                Data = data,
-                Error = error,
-                StatusCode = response.StatusCode,
-            };
-        }
-        catch (BrokenCircuitException)
-        {
-            throw;
-            // Circuit breaker is open
-        }
-        catch (TimeoutRejectedException)
-        {
-            throw;
-            // Polly timeout strategy triggered
-        }
-        catch (HttpRequestException)
-        {
-            throw;
-            // Network failure, DNS, connection refused, SSL, etc.
-        }
-        catch (TaskCanceledException) when (cancellationToken.IsCancellationRequested is false)
-        {
-            // HttpClient timeout
-            throw;
-        }
-        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
-        {
-            // User/request cancellation
-            throw;
-        }
-        catch (Exception)
-        {
-            throw;
-        }
-    }
-
     private static BachsError? DeserializeError(string? responseContent)
     {
         if (string.IsNullOrWhiteSpace(responseContent))
@@ -376,9 +278,88 @@ public sealed class BachsClient : IBachsClient, IDisposable
         }
     }
 
+    private static TResponse DeserializeResponse<TResponse>(string responseContent)
+    {
+        try
+        {
+            if (typeof(TResponse) == typeof(string))
+            {
+                return (TResponse)(object)responseContent;
+            }
+
+            return BachsJsonSerializer.Deserialize<TResponse>(responseContent)!;
+        }
+        catch (JsonException ex)
+        {
+            throw new BachsSerializationException(ex);
+        }
+    }
+
     public void Dispose()
     {
         // No-op: the internal HttpClient is either shared statically or injected via DI,
         // so BachsClient does not own its lifecycle.
+    }
+
+    private async Task<BachsResponse<TResponse>> SendAsync<TResponse>(
+        HttpMethod method,
+        string path,
+        HttpContent? content,
+        BachsRequestOptions? requestOptions,
+        CancellationToken cancellationToken
+    )
+    {
+        // Disposing the request also disposes its content.
+        using var httpRequest = new HttpRequestMessage(method, BuildRequestUri(path))
+        {
+            Content = content,
+        };
+
+        ApplyRequestHeaders(httpRequest, requestOptions);
+        HttpResponseMessage httpResponse;
+
+        try
+        {
+            // HttpResponseMessage is disposable, so we wrap its usage
+            httpResponse = await _httpClient
+                .SendAsync(httpRequest, cancellationToken)
+                .ConfigureAwait(false);
+        }
+        catch (TimeoutRejectedException ex)
+        {
+            throw new BachsTimeoutException(ex);
+        }
+        catch (BrokenCircuitException ex)
+        {
+            throw new BachsServiceUnavailableException(ex);
+        }
+        catch (HttpRequestException ex)
+        {
+            throw new BachsNetworkException(ex);
+        }
+        catch (JsonException ex)
+        {
+            throw new BachsSerializationException(ex);
+        }
+
+        // Use a 'using' block or declaration to ensure it's disposed
+        // immediately after we read the content streams.
+        using (httpResponse)
+        {
+            if (httpResponse.IsSuccessStatusCode)
+            {
+                var data = await httpResponse.Content.ReadFromJsonAsync<TResponse>(
+                    options: BachsJsonSerializer.Options,
+                    cancellationToken: cancellationToken
+                );
+                return BachsResponse<TResponse>.Success<TResponse>(data!, httpResponse.StatusCode);
+            }
+
+            var errorBody = await httpResponse.Content.ReadFromJsonAsync<BachsError>(
+                options: BachsJsonSerializer.Options,
+                cancellationToken: cancellationToken
+            );
+            return BachsResponse<TResponse>.Failure(errorBody, httpResponse.StatusCode);
+        }
     }
 }

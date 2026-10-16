@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using Bachs.Net.Common;
+using Bachs.Net.Exceptions;
 
 namespace Bachs.Net.WebHooks;
 
@@ -18,7 +19,7 @@ public interface IWebhookEventValidator
     /// <param name="toleranceSeconds">Maximum allowed drift in seconds between delivery timestamp and current time. Defaults to 300 (5 minutes).</param>
     /// <param name="timestampHeader">Optional 'X-Bachs-Timestamp' header when using V1 signatures.</param>
     /// <returns>The verified and parsed <see cref="BachsWebhookEvent"/>.</returns>
-    /// <exception cref="Common.BachsException">Thrown if signature verification fails or payload is invalid.</exception>
+    /// <exception cref="BachsException">Thrown if signature verification fails or payload is invalid.</exception>
     /// <exception cref="BachsInvalidOperationException">Thrown if secret is not provided and no default secret is configured.</exception>
     BachsWebhookEvent ValidateEvent(
         string payload,
@@ -37,7 +38,7 @@ public interface IWebhookEventValidator
     /// <param name="toleranceSeconds">Maximum allowed drift in seconds between delivery timestamp and current time. Defaults to 300 (5 minutes).</param>
     /// <param name="timestampHeader">Optional 'X-Bachs-Timestamp' header when using V1 signatures.</param>
     /// <returns>The verified and parsed <see cref="BachsWebhookEvent"/>.</returns>
-    /// <exception cref="Common.BachsException">Thrown if signature verification fails or payload is invalid.</exception>
+    /// <exception cref="BachsException">Thrown if signature verification fails or payload is invalid.</exception>
     /// <exception cref="BachsInvalidOperationException">Thrown if secret is not provided and no default secret is configured.</exception>
     BachsWebhookEvent ValidateEvent(
         byte[] payloadBytes,
