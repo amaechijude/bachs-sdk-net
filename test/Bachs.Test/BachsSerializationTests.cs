@@ -1,3 +1,4 @@
+using Bachs.Net.Common;
 using Bachs.Net.Models.Common;
 using Bachs.Net.Models.Products;
 using Bachs.Net.Models.Refunds;
@@ -8,6 +9,23 @@ namespace Bachs.Test;
 
 public sealed class BachsSerializationTests
 {
+    [Fact]
+    public void Deserializes_BachsErrorCode_AndMapsUnknownCodes()
+    {
+        var knownError = BachsJsonSerializer.Deserialize<BachsError>(
+            """{"error_code":"VALIDATION_ERROR","detail":"Invalid input"}"""
+        );
+        var unknownError = BachsJsonSerializer.Deserialize<BachsError>(
+            """{"error_code":"A_FUTURE_ERROR","detail":"A newer API error"}"""
+        );
+
+        Assert.NotNull(knownError);
+        Assert.Equal(BachsErrorCode.VALIDATION_ERROR, knownError.ErrorCode);
+        Assert.NotNull(unknownError);
+        Assert.Equal(BachsErrorCode.UNKNOWN, unknownError.ErrorCode);
+        Assert.Equal("A newer API error", unknownError.Detail);
+    }
+
     [Fact]
     public void Serializes_DecimalAmount_AsTwoDecimalPlacesString()
     {

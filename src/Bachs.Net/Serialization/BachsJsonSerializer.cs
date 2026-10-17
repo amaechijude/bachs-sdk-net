@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Bachs.Net.Common;
 
 namespace Bachs.Net.Serialization;
 
@@ -38,6 +39,11 @@ public static class BachsJsonSerializer
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
             PropertyNameCaseInsensitive = true,
             NumberHandling = JsonNumberHandling.AllowReadingFromString,
-            Converters = { new JsonStringEnumConverter(), new BachsPriceJsonConverter() },
+            Converters =
+            {
+                new BachsErrorCodeJsonConverter(),
+                new JsonStringEnumConverter(),
+                new BachsPriceJsonConverter(),
+            },
         };
 }

@@ -12,7 +12,7 @@ public sealed record BachsError
     /// Gets the stable, machine-readable error code (e.g., 'VALIDATION_ERROR', 'NOT_FOUND', 'UNAUTHORIZED').
     /// </summary>
     [JsonPropertyName("error_code")]
-    public string ErrorCode { get; init; } = string.Empty;
+    public BachsErrorCode ErrorCode { get; init; } = BachsErrorCode.UNKNOWN;
 
     /// <summary>
     /// Gets the human-readable description of what went wrong.
