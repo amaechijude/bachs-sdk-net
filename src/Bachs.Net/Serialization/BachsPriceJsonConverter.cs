@@ -18,8 +18,8 @@ public sealed class BachsPriceJsonConverter : JsonConverter<BachsPrice>
 
         if (reader.TokenType == JsonTokenType.String)
         {
-            var str = reader.GetString().AsSpan();
-            if (str.IsEmpty || str.IsWhiteSpace())
+            var str = reader.GetString();
+            if (string.IsNullOrWhiteSpace(str))
                 return default;
 
             if (

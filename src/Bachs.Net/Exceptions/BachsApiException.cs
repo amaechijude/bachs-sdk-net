@@ -71,10 +71,9 @@ public class BachsApiException(
         string? rawResponse
     )
     {
-        var errorCode =
-            error is { ErrorCode: not BachsErrorCode.UNKNOWN }
-                ? error.ErrorCode.ToString()
-                : statusCode.ToString().ToUpperInvariant();
+        var errorCode = error is { ErrorCode: not BachsErrorCode.UNKNOWN }
+            ? error.ErrorCode.ToString()
+            : statusCode.ToString().ToUpperInvariant();
         var detail =
             error?.Detail
             ?? $"Request failed with HTTP status code {(int)statusCode} ({statusCode}).";

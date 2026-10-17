@@ -203,14 +203,11 @@ public static class BachsWebhook
             );
         }
 
-        var evt = BachsJsonSerializer.Deserialize<BachsWebhookEvent>(payload);
-        if (evt == null)
-        {
-            throw new BachsException(
+        var evt =
+            BachsJsonSerializer.Deserialize<BachsWebhookEvent>(payload)
+            ?? throw new BachsException(
                 "Unable to deserialize webhook payload into a BachsWebhookEvent."
             );
-        }
-
         return evt;
     }
 

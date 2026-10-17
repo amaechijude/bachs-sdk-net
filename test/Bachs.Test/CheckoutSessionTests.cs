@@ -99,14 +99,8 @@ public sealed class CheckoutSessionTests
     public void RawPricingBuilder_BuildsValidRequest()
     {
         var request = CreateCheckoutSessionRequestBuilder
-            .WithPricing(
-                new CheckoutPricingRequest
-                {
-                    Currency = BachsCurrency.USD,
-                    Amount = 49.99m,
-                    PriceType = "fixed",
-                }
-            )
+            .WithPricing(49.99m, BachsCurrency.USD)
+            .WithPriceType("fixed")
             .WithCustomer(
                 new CheckoutCustomerRequest { Email = "buyer@example.com", Name = "Jane Doe" }
             )

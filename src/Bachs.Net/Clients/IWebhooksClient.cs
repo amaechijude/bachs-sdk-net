@@ -1,7 +1,7 @@
 using Bachs.Net.Common;
+using Bachs.Net.Exceptions;
 using Bachs.Net.Models.Webhooks;
 using Bachs.Net.WebHooks;
-using Bachs.Net.Exceptions;
 
 namespace Bachs.Net.Clients;
 

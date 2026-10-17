@@ -1,6 +1,6 @@
 using Bachs.Net.Common;
-using Bachs.Net.Models.Payouts;
 using Bachs.Net.Exceptions;
+using Bachs.Net.Models.Payouts;
 
 namespace Bachs.Net.Clients;
 

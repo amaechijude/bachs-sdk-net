@@ -1,6 +1,6 @@
 using Bachs.Net.Common;
-using Bachs.Net.Models.Misc;
 using Bachs.Net.Exceptions;
+using Bachs.Net.Models.Misc;
 
 namespace Bachs.Net.Clients;
 

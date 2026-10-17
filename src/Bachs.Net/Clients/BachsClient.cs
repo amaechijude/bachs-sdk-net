@@ -1,4 +1,3 @@
-using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
@@ -136,15 +135,17 @@ public sealed class BachsClient : IBachsClient, IDisposable
 
     private static void ConfigureHttpClientHeaders(HttpClient client)
     {
-        if (!client.DefaultRequestHeaders.Accept.Any(h => h.MediaType == "application/json"))
-            client.DefaultRequestHeaders.Accept.Add(
-                new MediaTypeWithQualityHeaderValue("application/json")
-            );
+        var headers = client.DefaultRequestHeaders;
 
-        if (client.DefaultRequestHeaders.UserAgent is { Count: 0 })
-            client.DefaultRequestHeaders.UserAgent.Add(
-                new ProductInfoHeaderValue("Bachs.Net", SdkVersion)
-            );
+        var hasJsonAccept = headers.Accept.Any(accept =>
+            string.Equals(accept.MediaType, "application/json", StringComparison.OrdinalIgnoreCase)
+        );
+
+        if (!hasJsonAccept)
+            headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+        if (headers.UserAgent is { Count: 0 })
+            headers.UserAgent.Add(new ProductInfoHeaderValue("Bachs.Net", SdkVersion));
     }
 
     private Uri BuildRequestUri(string path) => new(Options.GetEffectiveBaseUrl(), path);
@@ -227,21 +228,6 @@ public sealed class BachsClient : IBachsClient, IDisposable
     private static JsonContent CreateJsonContent<TRequest>(TRequest body) =>
         JsonContent.Create(body, options: BachsJsonSerializer.Options);
 
-    private static BachsError? DeserializeError(string? responseContent)
-    {
-        if (string.IsNullOrWhiteSpace(responseContent))
-            return null;
-
-        try
-        {
-            return BachsJsonSerializer.Deserialize<BachsError>(responseContent);
-        }
-        catch (System.Text.Json.JsonException)
-        {
-            return null;
-        }
-    }
-
     private void ApplyRequestHeaders(
         HttpRequestMessage request,
         BachsRequestOptions? requestOptions
@@ -268,30 +254,12 @@ public sealed class BachsClient : IBachsClient, IDisposable
         }
 
         // 4. Custom headers
-        if (requestOptions?.CustomHeaders is { Count: > 0 })
+        if (requestOptions?.CustomHeaders is not { Count: > 0 })
+            return;
+        foreach (var (headerKey, headerVal) in requestOptions.CustomHeaders)
         {
-            foreach (var (headerKey, headerVal) in requestOptions.CustomHeaders)
-            {
-                request.Headers.Remove(headerKey);
-                request.Headers.Add(headerKey, headerVal);
-            }
-        }
-    }
-
-    private static TResponse DeserializeResponse<TResponse>(string responseContent)
-    {
-        try
-        {
-            if (typeof(TResponse) == typeof(string))
-            {
-                return (TResponse)(object)responseContent;
-            }
-
-            return BachsJsonSerializer.Deserialize<TResponse>(responseContent)!;
-        }
-        catch (JsonException ex)
-        {
-            throw new BachsSerializationException(ex);
+            request.Headers.Remove(headerKey);
+            request.Headers.Add(headerKey, headerVal);
         }
     }
 

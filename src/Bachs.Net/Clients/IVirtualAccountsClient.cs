@@ -1,7 +1,7 @@
 using Bachs.Net.Common;
+using Bachs.Net.Exceptions;
 using Bachs.Net.Models.Common;
 using Bachs.Net.Models.VirtualAccounts;
-using Bachs.Net.Exceptions;
 
 namespace Bachs.Net.Clients;
 

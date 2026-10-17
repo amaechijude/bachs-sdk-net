@@ -1,6 +1,6 @@
 using Bachs.Net.Common;
-using Bachs.Net.Models.Refunds;
 using Bachs.Net.Exceptions;
+using Bachs.Net.Models.Refunds;
 
 namespace Bachs.Net.Clients;
 
