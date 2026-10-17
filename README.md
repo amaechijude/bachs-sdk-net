@@ -29,13 +29,13 @@ Issues related to the SDK should be reported in this repository, not to Bachs su
 Install the package via NuGet CLI:
 
 ```bash
-dotnet add package Bachs.Net
+dotnet add package Bachs.Sdk
 ```
 
 Or via Package Manager Console in Visual Studio:
 
 ```powershell
-Install-Package Bachs.Net
+Install-Package Bachs.Sdk
 ```
 
 ---
