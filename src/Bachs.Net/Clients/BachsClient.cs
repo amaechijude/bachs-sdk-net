@@ -305,6 +305,12 @@ public sealed class BachsClient : IBachsClient, IDisposable
         {
             throw new BachsNetworkException(ex);
         }
+        catch (OperationCanceledException ex) when (!cancellationToken.IsCancellationRequested)
+        {
+            // Treat transport-level timeouts (e.g. HttpClient.Timeout) as SDK timeouts,
+            // but let genuine caller cancellation propagate unchanged.
+            throw new BachsTimeoutException(ex);
+        }
         catch (JsonException ex)
         {
             throw new BachsSerializationException(ex);
@@ -314,19 +320,50 @@ public sealed class BachsClient : IBachsClient, IDisposable
         // immediately after we read the content streams.
         using (httpResponse)
         {
+            string body;
+            try
+            {
+                body = await httpResponse
+                    .Content.ReadAsStringAsync(cancellationToken)
+                    .ConfigureAwait(false);
+            }
+            catch (JsonException ex)
+            {
+                throw new BachsSerializationException(ex);
+            }
+
             if (httpResponse.IsSuccessStatusCode)
             {
-                var data = await httpResponse.Content.ReadFromJsonAsync<TResponse>(
-                    options: BachsJsonSerializer.Options,
-                    cancellationToken: cancellationToken
-                );
+                TResponse? data = default;
+                if (!string.IsNullOrWhiteSpace(body))
+                {
+                    try
+                    {
+                        data = BachsJsonSerializer.Deserialize<TResponse>(body);
+                    }
+                    catch (JsonException ex)
+                    {
+                        throw new BachsSerializationException(ex);
+                    }
+                }
+
                 return BachsResponse<TResponse>.Success<TResponse>(data!, httpResponse.StatusCode);
             }
 
-            var errorBody = await httpResponse.Content.ReadFromJsonAsync<BachsError>(
-                options: BachsJsonSerializer.Options,
-                cancellationToken: cancellationToken
-            );
+            BachsError? errorBody = null;
+            if (!string.IsNullOrWhiteSpace(body))
+            {
+                try
+                {
+                    errorBody = BachsJsonSerializer.Deserialize<BachsError>(body);
+                }
+                catch (JsonException)
+                {
+                    // Non-JSON or unexpected error body: keep the status code, drop the body.
+                    errorBody = null;
+                }
+            }
+
             return BachsResponse<TResponse>.Failure(errorBody, httpResponse.StatusCode);
         }
     }

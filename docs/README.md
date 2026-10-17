@@ -4,6 +4,12 @@ Welcome to the comprehensive reference documentation for the **Bachs .NET SDK** 
 
 This guide details all 16 specialized sub-clients available through [`IBachsClient`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Clients/IBachsClient.cs), enabling seamless integration with Bachs payment infrastructure, hosted checkout, product catalog, customer management, subscriptions, payouts, Connect accounts, and webhooks.
 
+## Disclaimer
+
+This project is independently developed and maintained by the community. It is not an official Bachs product and is not supported by the Bachs team.
+
+Issues related to the SDK should be reported in this repository, not to Bachs support.
+
 ---
 
 ## Architecture Overview

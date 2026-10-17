@@ -4,6 +4,12 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
+## Disclaimer
+
+This project is independently developed and maintained by the community. It is not an official Bachs product and is not supported by the Bachs team.
+
+Issues related to the SDK should be reported in this repository, not to Bachs support.
+
 ---
 
 ## Features

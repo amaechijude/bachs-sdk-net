@@ -222,7 +222,7 @@ public static class BachsTypedEventParser
             case BachsEventTypes.CheckoutCompleted:
             {
                 var data = evt.GetData<GetCheckoutSessionResponse>();
-                return data != null
+                return data is not null
                     ? new CheckoutCompletedEvent
                     {
                         Id = id,
@@ -238,7 +238,7 @@ public static class BachsTypedEventParser
             case BachsEventTypes.CheckoutExpired:
             {
                 var data = evt.GetData<GetCheckoutSessionResponse>();
-                return data != null
+                return data is not null
                     ? new CheckoutExpiredEvent
                     {
                         Id = id,
@@ -254,7 +254,7 @@ public static class BachsTypedEventParser
             case BachsEventTypes.CollectionSucceeded:
             {
                 var data = evt.GetData<Payment>();
-                return data != null
+                return data is not null
                     ? new CollectionSucceededEvent
                     {
                         Id = id,
@@ -270,7 +270,7 @@ public static class BachsTypedEventParser
             case BachsEventTypes.CollectionFailed:
             {
                 var data = evt.GetData<Payment>();
-                return data != null
+                return data is not null
                     ? new CollectionFailedEvent
                     {
                         Id = id,
@@ -286,7 +286,7 @@ public static class BachsTypedEventParser
             case BachsEventTypes.CollectionUnderpaid:
             {
                 var data = evt.GetData<Payment>();
-                return data != null
+                return data is not null
                     ? new CollectionUnderpaidEvent
                     {
                         Id = id,
@@ -315,7 +315,7 @@ public static class BachsTypedEventParser
             case BachsEventTypes.CustomerSubscriptionCreated:
             {
                 var data = evt.GetData<Subscription>();
-                return data != null
+                return data is not null
                     ? new SubscriptionCreatedEvent
                     {
                         Id = id,
@@ -331,7 +331,7 @@ public static class BachsTypedEventParser
             case BachsEventTypes.CustomerSubscriptionUpdated:
             {
                 var data = evt.GetData<Subscription>();
-                return data != null
+                return data is not null
                     ? new SubscriptionUpdatedEvent
                     {
                         Id = id,
@@ -347,7 +347,7 @@ public static class BachsTypedEventParser
             case BachsEventTypes.CustomerSubscriptionDeleted:
             {
                 var data = evt.GetData<Subscription>();
-                return data != null
+                return data is not null
                     ? new SubscriptionDeletedEvent
                     {
                         Id = id,
@@ -363,7 +363,7 @@ public static class BachsTypedEventParser
             case BachsEventTypes.InvoiceCreated:
             {
                 var data = evt.GetData<InvoiceEventData>();
-                return data != null
+                return data is not null
                     ? new InvoiceCreatedEvent
                     {
                         Id = id,
@@ -379,7 +379,7 @@ public static class BachsTypedEventParser
             case BachsEventTypes.InvoicePaid:
             {
                 var data = evt.GetData<InvoiceEventData>();
-                return data != null
+                return data is not null
                     ? new InvoicePaidEvent
                     {
                         Id = id,
@@ -395,7 +395,7 @@ public static class BachsTypedEventParser
             case BachsEventTypes.InvoicePaymentFailed:
             {
                 var data = evt.GetData<InvoiceEventData>();
-                return data != null
+                return data is not null
                     ? new InvoicePaymentFailedEvent
                     {
                         Id = id,
@@ -411,7 +411,7 @@ public static class BachsTypedEventParser
             case BachsEventTypes.PayoutCreated:
             {
                 var data = evt.GetData<Payout>();
-                return data != null
+                return data is not null
                     ? new PayoutCreatedEvent
                     {
                         Id = id,
@@ -427,7 +427,7 @@ public static class BachsTypedEventParser
             case BachsEventTypes.PayoutPaid:
             {
                 var data = evt.GetData<Payout>();
-                return data != null
+                return data is not null
                     ? new PayoutPaidEvent
                     {
                         Id = id,
@@ -443,7 +443,7 @@ public static class BachsTypedEventParser
             case BachsEventTypes.PayoutFailed:
             {
                 var data = evt.GetData<Payout>();
-                return data != null
+                return data is not null
                     ? new PayoutFailedEvent
                     {
                         Id = id,
@@ -459,7 +459,7 @@ public static class BachsTypedEventParser
             case BachsEventTypes.RefundCreated:
             {
                 var data = evt.GetData<Refund>();
-                return data != null
+                return data is not null
                     ? new RefundCreatedEvent
                     {
                         Id = id,
@@ -475,7 +475,7 @@ public static class BachsTypedEventParser
             case BachsEventTypes.RefundPaid:
             {
                 var data = evt.GetData<Refund>();
-                return data != null
+                return data is not null
                     ? new RefundPaidEvent
                     {
                         Id = id,
@@ -491,7 +491,7 @@ public static class BachsTypedEventParser
             case BachsEventTypes.RefundFailed:
             {
                 var data = evt.GetData<Refund>();
-                return data != null
+                return data is not null
                     ? new RefundFailedEvent
                     {
                         Id = id,
@@ -507,7 +507,7 @@ public static class BachsTypedEventParser
             case BachsEventTypes.DisputeCreated:
             {
                 var data = evt.GetData<Dispute>();
-                return data != null
+                return data is not null
                     ? new DisputeCreatedEvent
                     {
                         Id = id,
@@ -523,7 +523,7 @@ public static class BachsTypedEventParser
             case BachsEventTypes.DisputeUpdated:
             {
                 var data = evt.GetData<Dispute>();
-                return data != null
+                return data is not null
                     ? new DisputeUpdatedEvent
                     {
                         Id = id,
@@ -539,7 +539,7 @@ public static class BachsTypedEventParser
             case BachsEventTypes.ConversionCompleted:
             {
                 var data = evt.GetData<Conversion>();
-                return data != null
+                return data is not null
                     ? new ConversionCompletedEvent
                     {
                         Id = id,
@@ -555,7 +555,7 @@ public static class BachsTypedEventParser
             case BachsEventTypes.ConversionFailed:
             {
                 var data = evt.GetData<Conversion>();
-                return data != null
+                return data is not null
                     ? new ConversionFailedEvent
                     {
                         Id = id,
@@ -571,7 +571,7 @@ public static class BachsTypedEventParser
             case BachsEventTypes.CustomerCreated:
             {
                 var data = evt.GetData<Customer>();
-                return data != null
+                return data is not null
                     ? new CustomerCreatedEvent
                     {
                         Id = id,
@@ -587,7 +587,7 @@ public static class BachsTypedEventParser
             case BachsEventTypes.CustomerUpdated:
             {
                 var data = evt.GetData<Customer>();
-                return data != null
+                return data is not null
                     ? new CustomerUpdatedEvent
                     {
                         Id = id,
@@ -603,7 +603,7 @@ public static class BachsTypedEventParser
             case BachsEventTypes.AccountUpdated:
             {
                 var data = evt.GetData<AccountUpdatedEventData>();
-                return data != null
+                return data is not null
                     ? new AccountUpdatedEvent
                     {
                         Id = id,
@@ -619,7 +619,7 @@ public static class BachsTypedEventParser
             case BachsEventTypes.CapabilityUpdated:
             {
                 var data = evt.GetData<CapabilityUpdatedEventData>();
-                return data != null
+                return data is not null
                     ? new CapabilityUpdatedEvent
                     {
                         Id = id,
@@ -635,7 +635,7 @@ public static class BachsTypedEventParser
             case BachsEventTypes.TransferCreated:
             {
                 var data = evt.GetData<TransferEventData>();
-                return data != null
+                return data is not null
                     ? new TransferCreatedEvent
                     {
                         Id = id,

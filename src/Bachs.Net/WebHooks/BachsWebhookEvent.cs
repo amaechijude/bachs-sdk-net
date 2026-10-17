@@ -50,7 +50,20 @@ public sealed record BachsWebhookEvent
     /// </summary>
     /// <typeparam name="T">Target model type.</typeparam>
     /// <returns>Deserialized event data object.</returns>
-    public T? GetData<T>() => Data.Deserialize<T>(options: BachsJsonSerializer.Options);
+    public T? GetData<T>()
+    {
+        if (Data.ValueKind is JsonValueKind.Undefined or JsonValueKind.Null)
+            return default;
+
+        try
+        {
+            return Data.Deserialize<T>(options: BachsJsonSerializer.Options);
+        }
+        catch (JsonException)
+        {
+            return default;
+        }
+    }
 
     // BachsJsonSerializer.Deserialize<T>(Data.GetRawText());
 

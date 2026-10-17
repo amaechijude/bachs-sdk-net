@@ -131,7 +131,7 @@ public static class BachsWebhook
 
         foreach (var sig in signatures)
         {
-            var sigBytes = Encoding.UTF8.GetBytes(sig);
+            var sigBytes = Encoding.UTF8.GetBytes(sig.Trim().ToLowerInvariant());
             if (
                 sigBytes.Length == expectedBytes.Length
                 && CryptographicOperations.FixedTimeEquals(sigBytes, expectedBytes)
@@ -158,7 +158,7 @@ public static class BachsWebhook
 
         var expectedHex = ComputeHmac(payloadBytes, timestamp, secret);
         var expectedBytes = Encoding.UTF8.GetBytes(expectedHex);
-        var sigBytes = Encoding.UTF8.GetBytes(signature.Trim());
+        var sigBytes = Encoding.UTF8.GetBytes(signature.Trim().ToLowerInvariant());
 
         return sigBytes.Length == expectedBytes.Length
             && CryptographicOperations.FixedTimeEquals(sigBytes, expectedBytes);
