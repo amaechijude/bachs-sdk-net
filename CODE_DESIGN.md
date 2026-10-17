@@ -71,6 +71,46 @@ caller
   → BachsResponse<T>                                 // returned to caller
 ```
 
+#### High-level request flow
+
+```mermaid
+flowchart TD
+    A[Caller] --> B[Domain Client Method]
+    B --> C[IBachsClient verb]
+    C --> D[BuildRequestUri]
+    D --> E[ApplyRequestHeaders]
+    E --> F{Transport mode}
+    F -->|Standalone| G[Shared static HttpClient]
+    F -->|DI| H[Polly Resilience Pipeline]
+    G --> I[HttpResponseMessage]
+    H --> I
+    I --> J{Status code}
+    J -->|2xx| K[BachsResponse.Success]
+    J -->|4xx/5xx| L[BachsResponse.Failure]
+    J -->|transport failure| M[Throw BachsException subtype]
+    K --> N[Return to caller]
+    L --> N
+    M --> N
+```
+
+#### Resilience pipeline (DI mode)
+
+```mermaid
+flowchart LR
+    A[Outgoing request] --> B[Total request timeout]
+    B --> C[Attempt timeout]
+    C --> D[Send HTTP]
+    D --> E{Outcome}
+    E -->|Success 2xx| F[Return response]
+    E -->|Transient| G{Retries left?}
+    E -->|Non-transient| H[Return response]
+    G -->|Yes| I[Backoff + jitter]
+    I --> C
+    G -->|No| J[Propagate failure]
+    D --> K{Circuit breaker}
+    K -->|Open| L[BrokenCircuitException]
+```
+
 ---
 
 ## 2. The request pipeline (the one thing to understand)
