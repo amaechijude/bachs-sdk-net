@@ -1,5 +1,6 @@
 using Bachs.Net.Common;
 using Bachs.Net.Models.Checkout;
+using Bachs.Net.Exceptions;
 
 namespace Bachs.Net.Clients;
 
@@ -15,6 +16,10 @@ public interface ICheckoutSessionsClient
     /// <param name="requestOptions">Optional per-request options (e.g. idempotency key).</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The created checkout session response containing the hosted checkout URL.</returns>
+    /// <exception cref="BachsTimeoutException">Thrown when the request exceeds the configured per-attempt or total timeout.</exception>
+    /// <exception cref="BachsServiceUnavailableException">Thrown when the resilience circuit breaker is open.</exception>
+    /// <exception cref="BachsNetworkException">Thrown when the underlying HTTP request fails (connection, DNS, or socket error).</exception>
+    /// <exception cref="BachsSerializationException">Thrown when the response body cannot be deserialized.</exception>
     Task<BachsResponse<CreateCheckoutSessionResponse>> CreateAsync(
         CreateCheckoutSessionRequest request,
         BachsRequestOptions? requestOptions = null,
@@ -28,6 +33,10 @@ public interface ICheckoutSessionsClient
     /// <param name="requestOptions">Optional per-request options.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The detailed checkout session details including resolved line items and charges.</returns>
+    /// <exception cref="BachsTimeoutException">Thrown when the request exceeds the configured per-attempt or total timeout.</exception>
+    /// <exception cref="BachsServiceUnavailableException">Thrown when the resilience circuit breaker is open.</exception>
+    /// <exception cref="BachsNetworkException">Thrown when the underlying HTTP request fails (connection, DNS, or socket error).</exception>
+    /// <exception cref="BachsSerializationException">Thrown when the response body cannot be deserialized.</exception>
     Task<BachsResponse<GetCheckoutSessionResponse>> GetAsync(
         string checkoutId,
         BachsRequestOptions? requestOptions = null,

@@ -40,19 +40,24 @@ Install-Package Bachs.Net
 
 ```csharp
 using Bachs.Net.Clients;
+using Bachs.Net.Common;
 
-// Initializes automatically against the sandbox based on the key prefix
-var client = new BachsClient("sk_sandbox_your_secret_key");
+// Initializes automatically against the sandbox based on the key prefix.
+// The second argument is the webhook signing secret (optional for pure API usage).
+var client = new BachsClient("sk_sandbox_your_secret_key", "whsec_your_webhook_secret");
 
 // Or configure explicitly with options:
 var client = new BachsClient(new BachsClientOptions
 {
-    ApiKey = "sk_sandbox_your_secret_key"
+    ApiKey = "sk_sandbox_your_secret_key",
+    WebhookSecret = "whsec_your_webhook_secret"
 });
 ```
 
 Standalone clients use a shared `HttpClient`. To apply the configurable timeout,
 retry, and circuit-breaker pipeline, register the client with `AddBachsClient`.
+When the webhook secret is configured, the DI-registered `IWebhookEventValidator`
+uses it as the default secret during verification.
 
 ---
 
@@ -79,7 +84,6 @@ You can now inject either the root `IBachsClient` or specific sub-clients into y
 ```csharp
 using Bachs.Net.Clients;
 using Bachs.Net.Models.Checkout;
-using Bachs.Net.Models.Checkout.Request;
 using Bachs.Net.Models.Common;
 
 app.MapPost("/create-checkout", async (ICheckoutSessionsClient checkoutClient) =>
@@ -102,6 +106,7 @@ app.MapPost("/create-checkout", async (ICheckoutSessionsClient checkoutClient) =
 
     if (!response.IsSuccessStatusCode)
     {
+        // Handle the error: log it, then return an appropriate problem response to the caller.
         return Results.Problem($"Checkout session creation failed: {response.Error?.Detail ?? "Unknown error"}");
     }
 
@@ -116,9 +121,10 @@ app.MapPost("/create-checkout", async (ICheckoutSessionsClient checkoutClient) =
 The dependency-injected client uses a standard HTTP resilience pipeline configured
 through `BachsClientOptions`. By default, requests have a 30-second total timeout
 and a 10-second per-attempt timeout, with up to 3 retries using exponential
-backoff. The circuit breaker uses a 10% failure ratio after at least 100 requests
-in a 30-second sampling window and remains open for 5 seconds. Retries and the
-circuit breaker can be disabled independently.
+backoff (500 ms base delay, capped at 5 seconds per delay, with jitter). The
+circuit breaker uses a 50% failure ratio after at least 20 requests in a 30-second
+sampling window and remains open for 15 seconds. Retries can be disabled with
+`MaxRetries = 0`, and the circuit breaker with `EnableCircuitBreaker = false`.
 
 ```csharp
 builder.Services.AddBachsClient(options =>
@@ -143,20 +149,23 @@ are applied to clients registered with `AddBachsClient`.
 
 ## Result Pattern & Error Handling
 
-All public API methods return a `BachsResponse<T>` wrapper with the parsed payload exposed on `.Data`. This keeps status codes, headers, rate-limit metadata, and raw payloads available without forcing a `try/catch` around every call.
+All public API methods return a `BachsResponse<T>` that exposes the parsed payload on `.Data`, the HTTP `StatusCode`, and — on failure — the parsed `BachsError` on `.Error` (with `IsSuccessStatusCode` as the fast success check). API errors are therefore data rather than exceptions, so you don't need a `try/catch` around every call.
 
 ```csharp
 var response = await client.CheckoutSessions.CreateAsync(request);
 if (!response.IsSuccessStatusCode)
 {
-    // Inspect response.Error, response.StatusCode, response.RawJson, etc.
+    // Handle the error: log it (response.Error has the parsed details) and take the appropriate action.
     return;
 }
 
 var session = response.Data;
 ```
 
-When you want exception-based behavior for HTTP failures, set `ThrowOnApiErrors = true` on `BachsClientOptions`.
+API errors (4xx/5xx) are returned in `BachsResponse<T>.Error`; the HTTP status is on
+`StatusCode` and the success check is `IsSuccessStatusCode`. Genuine transport and
+serialization failures still throw typed exceptions from the `Bachs.Net.Exceptions`
+namespace — see [Error Handling](#error-handling) below.
 
 ## Sub API Clients & Documentation
 
@@ -193,7 +202,6 @@ When you want exception-based behavior for HTTP failures, set `ThrowOnApiErrors 
 using Bachs.Net.Clients;
 using Bachs.Net.Common;
 using Bachs.Net.Models.Checkout;
-using Bachs.Net.Models.Checkout.Request;
 
 // Create a checkout session with product catalog items using the builder
 var request = CreateCheckoutSessionRequestBuilder
@@ -213,12 +221,14 @@ var request = CreateCheckoutSessionRequestBuilder
 var response = await client.CheckoutSessions.CreateAsync(
     request,
     // Optional request options: specify idempotency key
-    new RequestOptions("order-invoice-1002")
+    new BachsRequestOptions("order-invoice-1002")
 );
 
 if (!response.IsSuccessStatusCode)
 {
-    throw new InvalidOperationException($"Checkout session creation failed: {response.Error?.Detail ?? "Unknown error"}");
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Checkout session creation failed ({StatusCode}): {Detail}", (int)response.StatusCode, response.Error?.Detail);
+    return;
 }
 
 var session = response.Data;
@@ -257,7 +267,9 @@ var response = await client.Products.CreateAsync(new CreateProductRequest
 
 if (!response.IsSuccessStatusCode)
 {
-    throw new InvalidOperationException($"Product creation failed: {response.Error?.Detail ?? "Unknown error"}");
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Product creation failed ({StatusCode}): {Detail}", (int)response.StatusCode, response.Error?.Detail);
+    return;
 }
 
 var product = response.Data;
@@ -288,65 +300,92 @@ app.MapPost("/api/webhooks/bachs", async (HttpRequest request, IWebhooksClient w
 
     var timestamp = request.Headers["X-Bachs-Timestamp"].ToString();
 
-    try
+    // Validates the signature, enforces the 5-minute timestamp tolerance, and parses a typed event.
+    // Uses the configured BachsClientOptions.WebhookSecret when secret is omitted.
+    if (!webhooks.TryValidateTypedEvent(rawBody, signature, out var webhookEvent, timestampHeader: timestamp))
     {
-        // Validates signature, anti-replay timestamp tolerance (5 mins), and parses event.
-        // Uses configured BachsClientOptions.WebhookSecret if secret parameter is omitted.
-        var webhookEvent = webhooks.ValidateEvent(rawBody, signature, timestampHeader: timestamp);
-
-        switch (webhookEvent.Type)
-        {
-            case "collection.succeeded":
-                var paymentData = webhookEvent.GetData<Dictionary<string, object>>();
-                // Fulfill order
-                break;
-
-            case "checkout.completed":
-                // Handle checkout completed
-                break;
-
-            case "customer.subscription.created":
-                // Activate customer subscription
-                break;
-        }
-
-        return Results.Ok();
+        return Results.BadRequest(new { error = "Invalid webhook signature or payload." });
     }
-    catch (Exception ex)
+
+    switch (webhookEvent)
     {
-        return Results.BadRequest(new { error = ex.Message });
+        case CollectionSucceededEvent paymentEvent:
+            var paymentData = paymentEvent.Data;
+            // Fulfill order
+            break;
+
+        case CheckoutCompletedEvent checkoutEvent:
+            // Handle checkout completed
+            break;
+
+        case SubscriptionCreatedEvent subscriptionEvent:
+            // Activate customer subscription
+            break;
+
+        case UnknownBachsEvent unknownEvent:
+            // Log or safely ignore unrecognized event types.
+            Console.WriteLine($"Unhandled webhook event: {unknownEvent.Type}");
+            break;
     }
+
+    return Results.Ok();
 });
 ```
 
-Prefer the strongly-typed surface when handling events: `webhooks.ValidateTypedEvent(rawBody, signature, timestampHeader: timestamp)` returns a `BachsTypedEvent` you can pattern-match on (`CollectionSucceededEvent`, `CheckoutCompletedEvent`, …, with `UnknownBachsEvent` as the forward-compatible fallback). Signature validation without an API client is available through the standalone `WebhookEventValidator` or the static `BachsWebhook` class. See [Webhooks documentation](docs/clients/webhooks.md#cryptographic-signature-verification) for secret resolution, tolerance windows, and both signature header formats.
+`webhooks.TryValidateTypedEvent(rawBody, signature, out var webhookEvent, timestampHeader: timestamp)` returns `false` when validation fails and otherwise provides a `BachsTypedEvent` you can pattern-match on (`CollectionSucceededEvent`, `CheckoutCompletedEvent`, …, with `UnknownBachsEvent` as the forward-compatible fallback). Signature validation without an API client is available through the standalone `WebhookEventValidator` or the static `BachsWebhook` class. See [Webhooks documentation](docs/clients/webhooks.md#cryptographic-signature-verification) for secret resolution, tolerance windows, and both signature header formats.
 
 ### Error Handling
 
-The SDK throws descriptive, typed exceptions for API failures:
+API failures (4xx/5xx) are returned, not thrown:
 
 ```csharp
-using Bachs.Net.Common;
+var response = await client.Products.CreateAsync(new CreateProductRequest { /* ... */ });
+if (!response.IsSuccessStatusCode)
+{
+    // Handle the error: log the parsed details (or surface them to the caller).
+    var error = response.Error;
+    Console.WriteLine($"API Error [{error?.ErrorCode}] (HTTP {(int)response.StatusCode}): {error?.Detail}");
+    foreach (var fieldError in error?.Errors ?? [])
+    {
+        Console.WriteLine($" - {fieldError.Field}: {fieldError.Message}");
+    }
+}
+```
+
+Transport and serialization failures throw typed exceptions instead. Every exception
+derives from `BachsException` in the `Bachs.Net.Exceptions` namespace:
+
+```csharp
+using Bachs.Net.Exceptions;
 
 try
 {
-    await client.Products.CreateAsync(new CreateProductRequest());
+    await client.Products.CreateAsync(new CreateProductRequest { /* ... */ });
 }
-catch (BachsValidationException ex)
+catch (BachsTimeoutException)               // per-attempt / total timeout exceeded
 {
-    Console.WriteLine($"Validation failed: {ex.Detail}");
-    foreach (var error in ex.ValidationErrors)
-    {
-        Console.WriteLine($" - {error.Field}: {error.Message}");
-    }
 }
-catch (BachsRateLimitException ex)
+catch (BachsServiceUnavailableException)    // circuit breaker open
 {
-    Console.WriteLine($"Rate limited. Retry after: {ex.RetryAfter?.TotalSeconds} seconds");
 }
-catch (BachsApiException ex)
+catch (BachsNetworkException)               // DNS / socket / connection failure
 {
-    Console.WriteLine($"API Error [{ex.ErrorCode}] (HTTP {(int)ex.StatusCode}): {ex.Detail}");
+}
+catch (BachsSerializationException)         // malformed JSON
+{
+}
+```
+
+The typed HTTP-error exceptions (`BachsValidationException`, `BachsNotFoundException`,
+`BachsRateLimitException`, …) live in the same namespace and are produced by
+`BachsApiException.Create(...)` when you want to convert an unsuccessful response into
+a rich exception:
+
+```csharp
+var response = await client.Products.CreateAsync(new CreateProductRequest { /* ... */ });
+if (!response.IsSuccessStatusCode && response.Error is { } apiError)
+{
+    throw BachsApiException.Create(response.StatusCode, apiError, rateLimit: null, rawResponse: null);
 }
 ```
 

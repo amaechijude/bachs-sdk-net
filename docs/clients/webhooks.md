@@ -10,6 +10,8 @@ In addition to the client, the SDK provides the static [`BachsWebhook`](https://
 - **Standalone validator**: [`WebhookEventValidator`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/WebHooks/WebhookEventValidator.cs) — the same validation surface without an API client, backed by a configured default secret.
 - **DI Service**: `services.AddBachsClient(...)` registers `IWebhooksClient`, `IWebhookEventValidator`, and `IWebhookValidator` as transient services (the latter two resolve to the webhooks client).
 
+> **Handling responses:** Every client method returns `BachsResponse<T>` and returns (rather than throws) on API errors (4xx/5xx). Always check `response.IsSuccessStatusCode` first: on **failure**, inspect `response.Error`/`response.StatusCode` and handle it (log it, retry, or surface it to the caller); on **success**, read the parsed payload from `response.Data`. Transport, timeout, circuit-breaker, and serialization failures still throw typed `Bachs.Net.Exceptions` — see [Response Handling](../README.md#response-handling).
+
 ---
 
 ## Methods Overview
@@ -58,7 +60,9 @@ var response = await client.Webhooks.CreateEndpointAsync(new CreateWebhookEndpoi
 });
 if (!response.IsSuccessStatusCode)
 {
-    throw new InvalidOperationException($"Webhook endpoint creation failed: {response.Error?.Detail ?? "Unknown error"}");
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Webhook endpoint creation failed ({StatusCode}): {Detail}", (int)response.StatusCode, response.Error?.Detail);
+    return;
 }
 
 var endpoint = response.Data;
@@ -76,7 +80,9 @@ Console.WriteLine($"Webhook Secret (save securely): {endpoint.Secret}");
 var getResponse = await client.Webhooks.GetEndpointAsync("we_100200300");
 if (!getResponse.IsSuccessStatusCode)
 {
-    throw new InvalidOperationException($"Webhook endpoint lookup failed: {getResponse.Error?.Detail ?? "Unknown error"}");
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Webhook endpoint lookup failed ({StatusCode}): {Detail}", (int)getResponse.StatusCode, getResponse.Error?.Detail);
+    return;
 }
 
 var ep = getResponse.Data;
@@ -90,7 +96,9 @@ var updateResponse = await client.Webhooks.UpdateEndpointAsync("we_100200300", n
 });
 if (!updateResponse.IsSuccessStatusCode)
 {
-    throw new InvalidOperationException($"Webhook endpoint update failed: {updateResponse.Error?.Detail ?? "Unknown error"}");
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Webhook endpoint update failed ({StatusCode}): {Detail}", (int)updateResponse.StatusCode, updateResponse.Error?.Detail);
+    return;
 }
 
 var updated = updateResponse.Data;
@@ -106,7 +114,9 @@ Generate a new secret while keeping the previous secret valid temporarily during
 var response = await client.Webhooks.RotateSecretAsync("we_100200300");
 if (!response.IsSuccessStatusCode)
 {
-    throw new InvalidOperationException($"Webhook secret rotation failed: {response.Error?.Detail ?? "Unknown error"}");
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Webhook secret rotation failed ({StatusCode}): {Detail}", (int)response.StatusCode, response.Error?.Detail);
+    return;
 }
 
 var rotation = response.Data;
@@ -123,7 +133,9 @@ Console.WriteLine($"New Signing Secret: {rotation.Secret}");
 var response = await client.Webhooks.DeleteEndpointAsync("we_100200300");
 if (!response.IsSuccessStatusCode)
 {
-    throw new InvalidOperationException($"Webhook endpoint deletion failed: {response.Error?.Detail ?? "Unknown error"}");
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Webhook endpoint deletion failed ({StatusCode}): {Detail}", (int)response.StatusCode, response.Error?.Detail);
+    return;
 }
 
 Console.WriteLine("Webhook endpoint unregistered.");
@@ -137,12 +149,14 @@ Console.WriteLine("Webhook endpoint unregistered.");
 var response = await client.Webhooks.ListEventsAsync();
 if (!response.IsSuccessStatusCode)
 {
-    throw new InvalidOperationException($"Webhook event list request failed: {response.Error?.Detail ?? "Unknown error"}");
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Webhook event list request failed ({StatusCode}): {Detail}", (int)response.StatusCode, response.Error?.Detail);
+    return;
 }
 
 var events = response.Data;
 
-foreach (var evt in events.Data)
+foreach (var evt in events.Items)
 {
     Console.WriteLine($"Event {evt.Id}: {evt.Type} at {evt.CreatedAt}");
 }

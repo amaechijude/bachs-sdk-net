@@ -1,5 +1,6 @@
 using Bachs.Net.Common;
 using Bachs.Net.Models.Payouts;
+using Bachs.Net.Exceptions;
 
 namespace Bachs.Net.Clients;
 
@@ -11,6 +12,11 @@ public interface IPayoutsClient
     /// <summary>
     /// Creates and initiates a payout withdrawal.
     /// </summary>
+    /// <exception cref="ArgumentNullException">Thrown when the request body is <see langword="null"/>.</exception>
+    /// <exception cref="BachsTimeoutException">Thrown when the request exceeds the configured per-attempt or total timeout.</exception>
+    /// <exception cref="BachsServiceUnavailableException">Thrown when the resilience circuit breaker is open.</exception>
+    /// <exception cref="BachsNetworkException">Thrown when the underlying HTTP request fails (connection, DNS, or socket error).</exception>
+    /// <exception cref="BachsSerializationException">Thrown when the response body cannot be deserialized.</exception>
     Task<BachsResponse<Payout>> CreateAsync(
         CreatePayoutRequest request,
         BachsRequestOptions? requestOptions = null,
@@ -20,6 +26,11 @@ public interface IPayoutsClient
     /// <summary>
     /// Requests a conversion quote for an international/cross-currency payout.
     /// </summary>
+    /// <exception cref="ArgumentNullException">Thrown when the request body is <see langword="null"/>.</exception>
+    /// <exception cref="BachsTimeoutException">Thrown when the request exceeds the configured per-attempt or total timeout.</exception>
+    /// <exception cref="BachsServiceUnavailableException">Thrown when the resilience circuit breaker is open.</exception>
+    /// <exception cref="BachsNetworkException">Thrown when the underlying HTTP request fails (connection, DNS, or socket error).</exception>
+    /// <exception cref="BachsSerializationException">Thrown when the response body cannot be deserialized.</exception>
     Task<BachsResponse<PayoutQuote>> CreateQuoteAsync(
         CreatePayoutQuoteRequest request,
         BachsRequestOptions? requestOptions = null,
@@ -29,6 +40,11 @@ public interface IPayoutsClient
     /// <summary>
     /// Retrieves a payout by its withdrawal ID.
     /// </summary>
+    /// <exception cref="ArgumentException">Thrown when the identifier argument is null, empty, or whitespace.</exception>
+    /// <exception cref="BachsTimeoutException">Thrown when the request exceeds the configured per-attempt or total timeout.</exception>
+    /// <exception cref="BachsServiceUnavailableException">Thrown when the resilience circuit breaker is open.</exception>
+    /// <exception cref="BachsNetworkException">Thrown when the underlying HTTP request fails (connection, DNS, or socket error).</exception>
+    /// <exception cref="BachsSerializationException">Thrown when the response body cannot be deserialized.</exception>
     Task<BachsResponse<Payout>> GetAsync(
         string withdrawalId,
         BachsRequestOptions? requestOptions = null,
@@ -38,6 +54,10 @@ public interface IPayoutsClient
     /// <summary>
     /// Lists payouts with pagination and filtering.
     /// </summary>
+    /// <exception cref="BachsTimeoutException">Thrown when the request exceeds the configured per-attempt or total timeout.</exception>
+    /// <exception cref="BachsServiceUnavailableException">Thrown when the resilience circuit breaker is open.</exception>
+    /// <exception cref="BachsNetworkException">Thrown when the underlying HTTP request fails (connection, DNS, or socket error).</exception>
+    /// <exception cref="BachsSerializationException">Thrown when the response body cannot be deserialized.</exception>
     Task<BachsResponse<BachsList<Payout>>> ListAsync(
         ListPayoutsOptions? options = null,
         BachsRequestOptions? requestOptions = null,
@@ -53,6 +73,11 @@ public interface IPayoutDestinationsClient
     /// <summary>
     /// Registers a new payout destination.
     /// </summary>
+    /// <exception cref="ArgumentNullException">Thrown when the request body is <see langword="null"/>.</exception>
+    /// <exception cref="BachsTimeoutException">Thrown when the request exceeds the configured per-attempt or total timeout.</exception>
+    /// <exception cref="BachsServiceUnavailableException">Thrown when the resilience circuit breaker is open.</exception>
+    /// <exception cref="BachsNetworkException">Thrown when the underlying HTTP request fails (connection, DNS, or socket error).</exception>
+    /// <exception cref="BachsSerializationException">Thrown when the response body cannot be deserialized.</exception>
     Task<BachsResponse<PayoutDestination>> CreateAsync(
         CreatePayoutDestinationRequest request,
         BachsRequestOptions? requestOptions = null,
@@ -62,6 +87,11 @@ public interface IPayoutDestinationsClient
     /// <summary>
     /// Retrieves a payout destination by its ID.
     /// </summary>
+    /// <exception cref="ArgumentException">Thrown when the identifier argument is null, empty, or whitespace.</exception>
+    /// <exception cref="BachsTimeoutException">Thrown when the request exceeds the configured per-attempt or total timeout.</exception>
+    /// <exception cref="BachsServiceUnavailableException">Thrown when the resilience circuit breaker is open.</exception>
+    /// <exception cref="BachsNetworkException">Thrown when the underlying HTTP request fails (connection, DNS, or socket error).</exception>
+    /// <exception cref="BachsSerializationException">Thrown when the response body cannot be deserialized.</exception>
     Task<BachsResponse<PayoutDestination>> GetAsync(
         string destinationId,
         BachsRequestOptions? requestOptions = null,
@@ -71,6 +101,10 @@ public interface IPayoutDestinationsClient
     /// <summary>
     /// Lists saved payout destinations.
     /// </summary>
+    /// <exception cref="BachsTimeoutException">Thrown when the request exceeds the configured per-attempt or total timeout.</exception>
+    /// <exception cref="BachsServiceUnavailableException">Thrown when the resilience circuit breaker is open.</exception>
+    /// <exception cref="BachsNetworkException">Thrown when the underlying HTTP request fails (connection, DNS, or socket error).</exception>
+    /// <exception cref="BachsSerializationException">Thrown when the response body cannot be deserialized.</exception>
     Task<BachsResponse<BachsList<PayoutDestination>>> ListAsync(
         BachsListRequestOptions? options = null,
         BachsRequestOptions? requestOptions = null,
@@ -80,6 +114,12 @@ public interface IPayoutDestinationsClient
     /// <summary>
     /// Updates a payout destination.
     /// </summary>
+    /// <exception cref="ArgumentException">Thrown when the identifier argument is null, empty, or whitespace.</exception>
+    /// <exception cref="ArgumentNullException">Thrown when the request body is <see langword="null"/>.</exception>
+    /// <exception cref="BachsTimeoutException">Thrown when the request exceeds the configured per-attempt or total timeout.</exception>
+    /// <exception cref="BachsServiceUnavailableException">Thrown when the resilience circuit breaker is open.</exception>
+    /// <exception cref="BachsNetworkException">Thrown when the underlying HTTP request fails (connection, DNS, or socket error).</exception>
+    /// <exception cref="BachsSerializationException">Thrown when the response body cannot be deserialized.</exception>
     Task<BachsResponse<PayoutDestination>> UpdateAsync(
         string destinationId,
         UpdatePayoutDestinationRequest request,
@@ -90,6 +130,11 @@ public interface IPayoutDestinationsClient
     /// <summary>
     /// Deletes a payout destination.
     /// </summary>
+    /// <exception cref="ArgumentException">Thrown when the identifier argument is null, empty, or whitespace.</exception>
+    /// <exception cref="BachsTimeoutException">Thrown when the request exceeds the configured per-attempt or total timeout.</exception>
+    /// <exception cref="BachsServiceUnavailableException">Thrown when the resilience circuit breaker is open.</exception>
+    /// <exception cref="BachsNetworkException">Thrown when the underlying HTTP request fails (connection, DNS, or socket error).</exception>
+    /// <exception cref="BachsSerializationException">Thrown when the response body cannot be deserialized.</exception>
     Task<BachsResponse<object?>> DeleteAsync(
         string destinationId,
         BachsRequestOptions? requestOptions = null,

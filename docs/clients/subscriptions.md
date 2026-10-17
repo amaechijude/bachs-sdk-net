@@ -7,6 +7,8 @@ The Subscriptions client manages recurring billing lifecycles, plan updates, sta
 - **Property**: `client.Subscriptions`
 - **DI Service**: `services.AddBachsClient(...)` registers `ISubscriptionsClient` as a transient service.
 
+> **Handling responses:** Every client method returns `BachsResponse<T>` and returns (rather than throws) on API errors (4xx/5xx). Always check `response.IsSuccessStatusCode` first: on **failure**, inspect `response.Error`/`response.StatusCode` and handle it (log it, retry, or surface it to the caller); on **success**, read the parsed payload from `response.Data`. Transport, timeout, circuit-breaker, and serialization failures still throw typed `Bachs.Net.Exceptions` — see [Response Handling](../README.md#response-handling).
+
 ---
 
 ## Methods Overview
@@ -30,7 +32,9 @@ using Bachs.Net.Clients;
 var response = await client.Subscriptions.GetAsync("sub_100200300");
 if (!response.IsSuccessStatusCode)
 {
-    throw new InvalidOperationException($"Subscription lookup failed: {response.Error?.Detail ?? "Unknown error"}");
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Subscription lookup failed ({StatusCode}): {Detail}", (int)response.StatusCode, response.Error?.Detail);
+    return;
 }
 
 var subscription = response.Data;
@@ -55,12 +59,14 @@ var response = await client.Subscriptions.ListAsync(new ListSubscriptionsOptions
 });
 if (!response.IsSuccessStatusCode)
 {
-    throw new InvalidOperationException($"Subscription list request failed: {response.Error?.Detail ?? "Unknown error"}");
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Subscription list request failed ({StatusCode}): {Detail}", (int)response.StatusCode, response.Error?.Detail);
+    return;
 }
 
 var page = response.Data;
 
-foreach (var sub in page.Data)
+foreach (var sub in page.Items)
 {
     Console.WriteLine($"Subscription {sub.Id} ({sub.Status}) renewal: {sub.CurrentPeriodEnd:d}");
 }
@@ -83,7 +89,9 @@ var response = await client.Subscriptions.UpdateAsync("sub_100200300", new Updat
 });
 if (!response.IsSuccessStatusCode)
 {
-    throw new InvalidOperationException($"Subscription update failed: {response.Error?.Detail ?? "Unknown error"}");
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Subscription update failed ({StatusCode}): {Detail}", (int)response.StatusCode, response.Error?.Detail);
+    return;
 }
 
 var updated = response.Data;
@@ -99,7 +107,9 @@ Console.WriteLine($"Switched to product: {updated.ProductId}");
 var response = await client.Subscriptions.CancelAsync("sub_100200300");
 if (!response.IsSuccessStatusCode)
 {
-    throw new InvalidOperationException($"Subscription cancellation failed: {response.Error?.Detail ?? "Unknown error"}");
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Subscription cancellation failed ({StatusCode}): {Detail}", (int)response.StatusCode, response.Error?.Detail);
+    return;
 }
 
 var canceled = response.Data;

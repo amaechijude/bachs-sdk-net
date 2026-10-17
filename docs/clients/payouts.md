@@ -14,6 +14,8 @@ In `Bachs.Net`, payouts functionality is split into two specialized interfaces:
 - **Property**: `client.Payouts`
 - **DI Service**: `services.AddBachsClient(...)` registers `IPayoutsClient` as a transient service.
 
+> **Handling responses:** Every client method returns `BachsResponse<T>` and returns (rather than throws) on API errors (4xx/5xx). Always check `response.IsSuccessStatusCode` first: on **failure**, inspect `response.Error`/`response.StatusCode` and handle it (log it, retry, or surface it to the caller); on **success**, read the parsed payload from `response.Data`. Transport, timeout, circuit-breaker, and serialization failures still throw typed `Bachs.Net.Exceptions` — see [Response Handling](../README.md#response-handling).
+
 ### Methods Overview
 
 | Method | HTTP | Path | Description |
@@ -38,14 +40,16 @@ var response = await client.Payouts.CreateAsync(new CreatePayoutRequest
     Amount = 500.00m,
     Currency = BachsCurrency.USD, // Defaults to BachsCurrency.USD
     DestinationId = "dest_bank_998877",
-    Narration = "October 2026 Merchant Settlement"
-}, new RequestOptions
+    Reference = "October 2026 Merchant Settlement"
+}, new BachsRequestOptions
 {
     IdempotencyKey = "payout_batch_oct_01"
 });
 if (!response.IsSuccessStatusCode)
 {
-    throw new InvalidOperationException($"Payout creation failed: {response.Error?.Detail ?? "Unknown error"}");
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Payout creation failed ({StatusCode}): {Detail}", (int)response.StatusCode, response.Error?.Detail);
+    return;
 }
 
 var payout = response.Data;
@@ -65,7 +69,9 @@ var response = await client.Payouts.CreateQuoteAsync(new CreatePayoutQuoteReques
 });
 if (!response.IsSuccessStatusCode)
 {
-    throw new InvalidOperationException($"Payout quote request failed: {response.Error?.Detail ?? "Unknown error"}");
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Payout quote request failed ({StatusCode}): {Detail}", (int)response.StatusCode, response.Error?.Detail);
+    return;
 }
 
 var quote = response.Data;
@@ -81,7 +87,9 @@ Console.WriteLine($"Quote valid until: {quote.ExpiresAt}");
 var response = await client.Payouts.GetAsync("wd_100200300");
 if (!response.IsSuccessStatusCode)
 {
-    throw new InvalidOperationException($"Payout lookup failed: {response.Error?.Detail ?? "Unknown error"}");
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Payout lookup failed ({StatusCode}): {Detail}", (int)response.StatusCode, response.Error?.Detail);
+    return;
 }
 
 var withdrawal = response.Data;
@@ -99,12 +107,14 @@ var response = await client.Payouts.ListAsync(new ListPayoutsOptions
 });
 if (!response.IsSuccessStatusCode)
 {
-    throw new InvalidOperationException($"Payout list request failed: {response.Error?.Detail ?? "Unknown error"}");
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Payout list request failed ({StatusCode}): {Detail}", (int)response.StatusCode, response.Error?.Detail);
+    return;
 }
 
 var page = response.Data;
 
-foreach (var item in page.Data)
+foreach (var item in page.Items)
 {
     Console.WriteLine($"Payout {item.Id}: {item.Amount} {item.Currency} ({item.Status})");
 }
@@ -114,7 +124,7 @@ foreach (var item in page.Data)
 
 ## Payout Destinations Client
 
-- **Interface**: [`IPayoutDestinationsClient`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Clients/IPayoutsClient.cs#L47)
+- **Interface**: [`IPayoutDestinationsClient`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Clients/IPayoutsClient.cs#L51)
 - **Property**: `client.PayoutDestinations`
 - **DI Service**: `services.AddBachsClient(...)` registers `IPayoutDestinationsClient` as a transient service.
 
@@ -146,7 +156,9 @@ var response = await client.PayoutDestinations.CreateAsync(new CreatePayoutDesti
 });
 if (!response.IsSuccessStatusCode)
 {
-    throw new InvalidOperationException($"Payout destination creation failed: {response.Error?.Detail ?? "Unknown error"}");
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Payout destination creation failed ({StatusCode}): {Detail}", (int)response.StatusCode, response.Error?.Detail);
+    return;
 }
 
 var destination = response.Data;
@@ -160,7 +172,9 @@ Console.WriteLine($"Destination Registered: {destination.Id}");
 var response = await client.PayoutDestinations.DeleteAsync("dest_bank_998877");
 if (!response.IsSuccessStatusCode)
 {
-    throw new InvalidOperationException($"Payout destination deletion failed: {response.Error?.Detail ?? "Unknown error"}");
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Payout destination deletion failed ({StatusCode}): {Detail}", (int)response.StatusCode, response.Error?.Detail);
+    return;
 }
 
 Console.WriteLine("Payout destination removed.");
@@ -176,7 +190,9 @@ Console.WriteLine("Payout destination removed.");
 - `Currency` (`BachsCurrency`): Currency code (defaults to `BachsCurrency.USD` on creation).
 - `Status` (`string`): `pending`, `processing`, `completed`, `failed`.
 - `DestinationId` (`string`): Target payout destination identifier.
-- `Narration` (`string?`): Transfer description shown on bank statements.
+- `Reference` (`string?`): Transfer description shown on bank statements.
+- `FromCurrency` / `ToCurrency` (`BachsCurrency?`), `ExchangeRate` (`decimal?`), `ToAmount` (`BachsPrice?`): Cross-currency payout details.
+- `WithdrawalFee` / `NetFromAmount` (`BachsPrice?`): Fee and net amount debited.
 - `CreatedAt` (`DateTimeOffset`): Timestamp of payout initiation.
 
 ### [`PayoutDestination`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Payouts/Payout.cs)

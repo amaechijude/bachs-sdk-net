@@ -7,6 +7,8 @@ The Refunds client handles issuing full and partial refunds against previously c
 - **Property**: `client.Refunds`
 - **DI Service**: `services.AddBachsClient(...)` registers `IRefundsClient` as a transient service.
 
+> **Handling responses:** Every client method returns `BachsResponse<T>` and returns (rather than throws) on API errors (4xx/5xx). Always check `response.IsSuccessStatusCode` first: on **failure**, inspect `response.Error`/`response.StatusCode` and handle it (log it, retry, or surface it to the caller); on **success**, read the parsed payload from `response.Data`. Transport, timeout, circuit-breaker, and serialization failures still throw typed `Bachs.Net.Exceptions` — see [Response Handling](../README.md#response-handling).
+
 ---
 
 ## Methods Overview
@@ -33,21 +35,23 @@ using Bachs.Net.Models.Refunds;
 
 var response = await client.Refunds.CreateAsync(new CreateRefundRequest
 {
-    PaymentId = "ch_100200300",
+    ChargeId = "ch_100200300",
     Reason = "Customer requested cancellation before delivery"
-}, new RequestOptions
+}, new BachsRequestOptions
 {
     IdempotencyKey = "ref_order_100200300"
 });
 if (!response.IsSuccessStatusCode)
 {
-    throw new InvalidOperationException($"Refund creation failed: {response.Error?.Detail ?? "Unknown error"}");
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Refund creation failed ({StatusCode}): {Detail}", (int)response.StatusCode, response.Error?.Detail);
+    return;
 }
 
 var refund = response.Data;
 
 Console.WriteLine($"Refund ID: {refund.Id}");
-Console.WriteLine($"Status: {refund.Status}"); // 'pending', 'succeeded', 'failed'
+Console.WriteLine($"Status: {refund.Status}"); // 'succeeded', 'processing', 'failed'
 ```
 
 #### Example B: Partial Refund with Explicit Amount
@@ -55,13 +59,15 @@ Console.WriteLine($"Status: {refund.Status}"); // 'pending', 'succeeded', 'faile
 ```csharp
 var response = await client.Refunds.CreateAsync(new CreateRefundRequest
 {
-    PaymentId = "ch_100200300",
+    ChargeId = "ch_100200300",
     Amount = 15.00m, // Partial amount in same currency as charge
     Reason = "Partial courtesy discount"
 });
 if (!response.IsSuccessStatusCode)
 {
-    throw new InvalidOperationException($"Partial refund creation failed: {response.Error?.Detail ?? "Unknown error"}");
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Partial refund creation failed ({StatusCode}): {Detail}", (int)response.StatusCode, response.Error?.Detail);
+    return;
 }
 
 var partialRefund = response.Data;
@@ -75,13 +81,15 @@ var partialRefund = response.Data;
 var response = await client.Refunds.GetAsync("ref_555666777");
 if (!response.IsSuccessStatusCode)
 {
-    throw new InvalidOperationException($"Refund lookup failed: {response.Error?.Detail ?? "Unknown error"}");
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Refund lookup failed ({StatusCode}): {Detail}", (int)response.StatusCode, response.Error?.Detail);
+    return;
 }
 
 var refund = response.Data;
 
 Console.WriteLine($"Refund Amount: {refund.Amount} {refund.Currency}");
-Console.WriteLine($"Charge ID: {refund.PaymentId}");
+Console.WriteLine($"Charge ID: {refund.ChargeId}");
 Console.WriteLine($"Status: {refund.Status}");
 ```
 
@@ -92,17 +100,19 @@ Console.WriteLine($"Status: {refund.Status}");
 ```csharp
 var response = await client.Refunds.ListAsync(new ListRefundsOptions
 {
-    PaymentId = "ch_100200300",
+    ChargeId = "ch_100200300",
     Limit = 10
 });
 if (!response.IsSuccessStatusCode)
 {
-    throw new InvalidOperationException($"Refund list request failed: {response.Error?.Detail ?? "Unknown error"}");
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Refund list request failed ({StatusCode}): {Detail}", (int)response.StatusCode, response.Error?.Detail);
+    return;
 }
 
 var page = response.Data;
 
-foreach (var refItem in page.Data)
+foreach (var refItem in page.Items)
 {
     Console.WriteLine($"Refund {refItem.Id}: {refItem.Amount} {refItem.Currency} ({refItem.Status})");
 }
@@ -118,12 +128,14 @@ A dedicated helper to retrieve all refunds attached to a charge:
 var response = await client.Refunds.GetByPaymentIdAsync("ch_100200300");
 if (!response.IsSuccessStatusCode)
 {
-    throw new InvalidOperationException($"Refund query failed: {response.Error?.Detail ?? "Unknown error"}");
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Refund query failed ({StatusCode}): {Detail}", (int)response.StatusCode, response.Error?.Detail);
+    return;
 }
 
 var refunds = response.Data;
 
-Console.WriteLine($"Total refunds issued for charge: {refunds.Data.Count}");
+Console.WriteLine($"Total refunds issued for charge: {refunds.Items.Count}");
 ```
 
 ---
@@ -131,18 +143,22 @@ Console.WriteLine($"Total refunds issued for charge: {refunds.Data.Count}");
 ## Models
 
 ### [`CreateRefundRequest`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Refunds/Refund.cs)
-- `PaymentId` (`string`): The payment identifier starting with `ch_`.
+- `ChargeId` (`string`): The payment identifier starting with `ch_`.
 - `Amount` (`BachsPrice?`): Amount to refund. If omitted, the entire remaining charge balance is refunded.
 - `Reason` (`string?`): Explanation for the refund for audit trails and customer receipts.
-- `Metadata` (`IDictionary<string, string>?`): Optional metadata key-value pairs.
+- `Reference` (`string`): Unique external reference for the refund.
+- `RefundAddress` (`string?`): Crypto wallet address to receive the refund, for crypto payments.
 
 ### [`Refund`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Refunds/Refund.cs)
-- `Id` (`string`): Starts with `ref_`.
-- `PaymentId` (`string`): Target charge identifier.
+- `Id` (`string`): Starts with `ref_`. Also exposed as `RefundId` (the `refund_id` webhook alias).
+- `ChargeId` (`string`): Target charge identifier.
 - `Amount` (`BachsPrice`): Monetary value refunded.
+- `RequestedAmount` / `RefundedAmount` (`BachsPrice?`): Requested and total refunded amounts (webhook events).
+- `RefundFeeAmount` (`BachsPrice?`) and `FeeBearer` (`string?`): Refund fee and who bears it.
 - `Currency` (`BachsCurrency`): Currency code matching the original payment (e.g. `BachsCurrency.USD`).
-- `Status` (`string`): `pending`, `succeeded`, or `failed`.
+- `Status` (`string`): `succeeded`, `processing`, or `failed`.
 - `Reason` (`string?`): Reason provided during initiation.
+- `Reference` (`string?`): External reference.
 - `CreatedAt` (`DateTimeOffset`): Timestamp of refund creation.
 
 ---

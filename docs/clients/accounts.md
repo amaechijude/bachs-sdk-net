@@ -7,6 +7,8 @@ The Accounts client manages multi-party marketplaces, platforms, and merchant on
 - **Property**: `client.Accounts`
 - **DI Service**: `services.AddBachsClient(...)` registers `IAccountsClient` as a transient service.
 
+> **Handling responses:** Every client method returns `BachsResponse<T>` and returns (rather than throws) on API errors (4xx/5xx). Always check `response.IsSuccessStatusCode` first: on **failure**, inspect `response.Error`/`response.StatusCode` and handle it (log it, retry, or surface it to the caller); on **success**, read the parsed payload from `response.Data`. Transport, timeout, circuit-breaker, and serialization failures still throw typed `Bachs.Net.Exceptions` — see [Response Handling](../README.md#response-handling).
+
 ---
 
 ## Methods Overview
@@ -40,13 +42,15 @@ var response = await client.Accounts.CreateAsync(new CreateAccountRequest
     Email = "vendor@shopmarketplace.com",
     BusinessName = "Lagos Artisan Roasters",
     Capabilities = new List<string> { "transfers", "payouts" }
-}, new RequestOptions
+}, new BachsRequestOptions
 {
     IdempotencyKey = "onboard_vendor_4819"
 });
 if (!response.IsSuccessStatusCode)
 {
-    throw new InvalidOperationException($"Connected account creation failed: {response.Error?.Detail ?? "Unknown error"}");
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Connected account creation failed ({StatusCode}): {Detail}", (int)response.StatusCode, response.Error?.Detail);
+    return;
 }
 
 var account = response.Data;
@@ -69,7 +73,9 @@ var response = await client.Accounts.CreateAccountLinkAsync(account.Id, new Crea
 });
 if (!response.IsSuccessStatusCode)
 {
-    throw new InvalidOperationException($"Account onboarding link creation failed: {response.Error?.Detail ?? "Unknown error"}");
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Account onboarding link creation failed ({StatusCode}): {Detail}", (int)response.StatusCode, response.Error?.Detail);
+    return;
 }
 
 var link = response.Data;
@@ -86,7 +92,9 @@ Console.WriteLine($"Link expires at: {link.ExpiresAt}");
 var response = await client.Accounts.GetAsync("acc_100200300");
 if (!response.IsSuccessStatusCode)
 {
-    throw new InvalidOperationException($"Connected account lookup failed: {response.Error?.Detail ?? "Unknown error"}");
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Connected account lookup failed ({StatusCode}): {Detail}", (int)response.StatusCode, response.Error?.Detail);
+    return;
 }
 
 var details = response.Data;
@@ -100,12 +108,11 @@ Console.WriteLine($"Country: {details.Country}");
 
 ### 4. Acting on Behalf of a Connected Account
 
-Once onboarded, execute operations (such as creating checkout sessions or requesting payouts) on their behalf using `RequestOptions.AccountId`:
+Once onboarded, execute operations (such as creating checkout sessions or requesting payouts) on their behalf using `BachsRequestOptions.AccountId`:
 
 ```csharp
 using Bachs.Net.Common;
 using Bachs.Net.Models.Checkout;
-using Bachs.Net.Models.Checkout.Request;
 using Bachs.Net.Models.Common;
 
 var response = await client.CheckoutSessions.CreateAsync(new CreateCheckoutSessionRequest
@@ -113,13 +120,15 @@ var response = await client.CheckoutSessions.CreateAsync(new CreateCheckoutSessi
     Pricing = new CheckoutPricingRequest { Currency = BachsCurrency.USD, Amount = 100.00m }, // Currency defaults to BachsCurrency.USD
     SuccessUrl = "https://shop.com/success",
     CancelUrl = "https://shop.com/cancel"
-}, new RequestOptions
+}, new BachsRequestOptions
 {
     AccountId = account.Id // Routes request to this sub-account
 });
 if (!response.IsSuccessStatusCode)
 {
-    throw new InvalidOperationException($"Merchant checkout session creation failed: {response.Error?.Detail ?? "Unknown error"}");
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Merchant checkout session creation failed ({StatusCode}): {Detail}", (int)response.StatusCode, response.Error?.Detail);
+    return;
 }
 
 var merchantSession = response.Data;
@@ -133,7 +142,9 @@ var merchantSession = response.Data;
 var response = await client.Accounts.GetMeAsync();
 if (!response.IsSuccessStatusCode)
 {
-    throw new InvalidOperationException($"Current account lookup failed: {response.Error?.Detail ?? "Unknown error"}");
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Current account lookup failed ({StatusCode}): {Detail}", (int)response.StatusCode, response.Error?.Detail);
+    return;
 }
 
 var me = response.Data;

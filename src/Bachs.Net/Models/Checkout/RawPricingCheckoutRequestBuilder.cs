@@ -13,15 +13,6 @@ public sealed class RawPricingCheckoutRequestBuilder
     private CheckoutPricingRequest? _pricing;
 
     /// <summary>
-    /// Sets the pricing configuration.
-    /// </summary>
-    public RawPricingCheckoutRequestBuilder WithPricing(CheckoutPricingRequest pricing)
-    {
-        _pricing = pricing;
-        return this;
-    }
-
-    /// <summary>
     /// Sets the charge amount and currency.
     /// </summary>
     public RawPricingCheckoutRequestBuilder WithPricing(BachsPrice amount, BachsCurrency currency)

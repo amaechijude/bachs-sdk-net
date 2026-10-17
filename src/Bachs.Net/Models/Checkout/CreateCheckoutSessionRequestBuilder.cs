@@ -29,19 +29,11 @@ public static class CreateCheckoutSessionRequestBuilder
     /// <summary>
     /// Starts building a checkout session using raw ad-hoc pricing without catalog products.
     /// </summary>
-    /// <param name="pricing">The pricing configuration.</param>
-    /// <returns>A configured <see cref="RawPricingCheckoutRequestBuilder"/>.</returns>
-    public static RawPricingCheckoutRequestBuilder WithPricing(CheckoutPricingRequest pricing) =>
-        new RawPricingCheckoutRequestBuilder().WithPricing(pricing);
-
-    /// <summary>
-    /// Starts building a checkout session using raw ad-hoc pricing without catalog products.
-    /// </summary>
     /// <param name="amount">The base charge amount.</param>
     /// <param name="currency">The base currency code. Defaults to <see cref="BachsCurrency.USD"/>.</param>
     /// <returns>A configured <see cref="RawPricingCheckoutRequestBuilder"/>.</returns>
     public static RawPricingCheckoutRequestBuilder WithPricing(
         BachsPrice amount,
-        BachsCurrency currency = BachsCurrency.USD
+        BachsCurrency currency
     ) => new RawPricingCheckoutRequestBuilder().WithPricing(amount, currency);
 }

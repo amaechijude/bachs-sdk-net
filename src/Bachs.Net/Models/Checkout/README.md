@@ -8,17 +8,13 @@ This module provides strongly-typed models, builders, and differentiated respons
 
 ```
 Models/Checkout/
-├── Request/
-│   └── CreateCheckoutSessionRequest.cs      // Request, cart item, pricing, customer & transfer records
-├── RequestBuilders/
-│   ├── CreateCheckoutSessionRequestBuilder.cs   // Static entry point
-│   ├── CheckoutSessionRequestBuilder.cs         // Shared fluent options (abstract base)
-│   ├── ProductCartCheckoutRequestBuilder.cs     // Catalog product cart builder
-│   └── RawPricingCheckoutRequestBuilder.cs      // Raw ad-hoc pricing builder
-├── Responses/
-│   ├── CreateCheckoutSessionResponse.cs         // Returned by POST /v1/checkout-sessions
-│   └── GetCheckoutSessionResponse.cs            // Returned by GET  /v1/checkout-sessions/{id}
-└── doc/                                          // Bachs API reference dumps
+├── CreateCheckoutSessionRequest.cs          // Request, cart item, pricing, customer & transfer records
+├── CheckoutSessionRequestBuilder.cs         // Shared fluent options (abstract base)
+├── CreateCheckoutSessionRequestBuilder.cs   // Static entry point
+├── ProductCartCheckoutRequestBuilder.cs     // Catalog product cart builder
+├── RawPricingCheckoutRequestBuilder.cs      // Raw ad-hoc pricing builder
+├── CreateCheckoutSessionResponse.cs         // Returned by POST /v1/checkout-sessions
+└── GetCheckoutSessionResponse.cs            // Returned by GET  /v1/checkout-sessions/{id}
 ```
 
 All request and response models are **`sealed record`** types with **`init` setters** for thread safety, immutability, and value semantics. Monetary fields use [`BachsPrice`](../Common/BachsPrice.cs) (implicitly convertible from/to `decimal`) and currency fields use the [`BachsCurrency`](../Common/BachsCurrency.cs) enum.
@@ -46,7 +42,6 @@ Use `CreateCheckoutSessionRequestBuilder.WithProductCart(...)` (an `IList<Checko
 
 ```csharp
 using Bachs.Net.Models.Checkout;
-using Bachs.Net.Models.Checkout.Request;
 using Bachs.Net.Models.Common;
 
 // Using the static entry point:
@@ -114,7 +109,6 @@ Use `CreateCheckoutSessionRequestBuilder.WithPricing(...)` (a `CheckoutPricingRe
 
 ```csharp
 using Bachs.Net.Models.Checkout;
-using Bachs.Net.Models.Checkout.Request;
 using Bachs.Net.Models.Common;
 
 // Using the static entry point with a full pricing record:
@@ -202,26 +196,40 @@ The Bachs API returns distinct response schemas when creating versus retrieving 
 
 | Operation | Response Type | Key Properties |
 |---|---|---|
-| **Create** (`POST /v1/checkout-sessions`) | [`CreateCheckoutSessionResponse`](Responses/CreateCheckoutSessionResponse.cs) | `CheckoutId`, `CheckoutUrl`, `Status`, `ExpiresAt`, `CreatedAt`, `Reference`, `PlatformFee`, `DestinationAmount` |
-| **Get** (`GET /v1/checkout-sessions/{id}`) | [`GetCheckoutSessionResponse`](Responses/GetCheckoutSessionResponse.cs) | `CheckoutId`, `Status`, `Recurring`, `PaymentStatus`, `SourceType`, `Amount`, `Currency`, `Charge`, `Customer`, `CustomerDetails`, `Products`, `SessionMode`, `CompletedAt`, `UpdatedAt` |
+| **Create** (`POST /v1/checkout-sessions`) | [`CreateCheckoutSessionResponse`](CreateCheckoutSessionResponse.cs) | `CheckoutId`, `CheckoutUrl`, `Status`, `ExpiresAt`, `CreatedAt`, `Reference`, `PlatformFee`, `DestinationAmount` |
+| **Get** (`GET /v1/checkout-sessions/{id}`) | [`GetCheckoutSessionResponse`](GetCheckoutSessionResponse.cs) | `CheckoutId`, `Status`, `Recurring`, `PaymentStatus`, `SourceType`, `Amount`, `Currency`, `Charge`, `Customer`, `CustomerDetails`, `Products`, `SessionMode`, `CompletedAt`, `UpdatedAt` |
 
 ### `CreateCheckoutSessionResponse` (Creation)
 Returned immediately upon session creation. Focuses on the checkout URL to redirect the buyer:
 
 ```csharp
-CreateCheckoutSessionResponse response = await client.CheckoutSessions.CreateAsync(request);
+var response = await client.CheckoutSessions.CreateAsync(request);
+if (!response.IsSuccessStatusCode)
+{
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Checkout session creation failed ({StatusCode}): {Detail}", (int)response.StatusCode, response.Error?.Detail);
+    return;
+}
 
-Console.WriteLine($"Session ID: {response.CheckoutId}");
-Console.WriteLine($"Payment URL: {response.CheckoutUrl}");
-Console.WriteLine($"Status: {response.Status}"); // 'open'
+var created = response.Data;
+Console.WriteLine($"Session ID: {created.CheckoutId}");
+Console.WriteLine($"Payment URL: {created.CheckoutUrl}");
+Console.WriteLine($"Status: {created.Status}"); // 'open'
 ```
 
 ### `GetCheckoutSessionResponse` (Retrieval)
 Returned when fetching an existing session by ID. Provides comprehensive fulfillment and lifecycle details:
 
 ```csharp
-GetCheckoutSessionResponse session = await client.CheckoutSessions.GetAsync("chk_1M2N3o4P5q6R7s8T");
+var response = await client.CheckoutSessions.GetAsync("chk_1M2N3o4P5q6R7s8T");
+if (!response.IsSuccessStatusCode)
+{
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Checkout session lookup failed ({StatusCode}): {Detail}", (int)response.StatusCode, response.Error?.Detail);
+    return;
+}
 
+var session = response.Data;
 Console.WriteLine($"Status: {session.Status}");
 Console.WriteLine($"Payment Status: {session.PaymentStatus}"); // 'succeeded', 'requires_payment_method', etc.
 Console.WriteLine($"Settled Amount: {session.Amount} {session.Currency}");

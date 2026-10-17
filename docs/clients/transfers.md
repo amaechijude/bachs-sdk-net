@@ -7,6 +7,8 @@ The Transfers client enables platforms to move funds internally between the plat
 - **Property**: `client.Transfers`
 - **DI Service**: `services.AddBachsClient(...)` registers `ITransfersClient` as a transient service.
 
+> **Handling responses:** Every client method returns `BachsResponse<T>` and returns (rather than throws) on API errors (4xx/5xx). Always check `response.IsSuccessStatusCode` first: on **failure**, inspect `response.Error`/`response.StatusCode` and handle it (log it, retry, or surface it to the caller); on **success**, read the parsed payload from `response.Data`. Transport, timeout, circuit-breaker, and serialization failures still throw typed `Bachs.Net.Exceptions` — see [Response Handling](../README.md#response-handling).
+
 ---
 
 ## Methods Overview
@@ -36,13 +38,15 @@ var response = await client.Transfers.CreateAsync(new CreateTransferRequest
     Amount = 250.00m,
     Currency = BachsCurrency.USD, // Defaults to BachsCurrency.USD
     Destination = "acc_merchant_12345" // Target connected account ID
-}, new RequestOptions
+}, new BachsRequestOptions
 {
     IdempotencyKey = "transfer_batch_item_99"
 });
 if (!response.IsSuccessStatusCode)
 {
-    throw new InvalidOperationException($"Transfer creation failed: {response.Error?.Detail ?? "Unknown error"}");
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Transfer creation failed ({StatusCode}): {Detail}", (int)response.StatusCode, response.Error?.Detail);
+    return;
 }
 
 var transfer = response.Data;
@@ -59,7 +63,9 @@ Console.WriteLine($"Status: {transfer.Status}"); // 'succeeded', 'pending', 'fai
 var response = await client.Transfers.GetAsync("tr_100200300");
 if (!response.IsSuccessStatusCode)
 {
-    throw new InvalidOperationException($"Transfer lookup failed: {response.Error?.Detail ?? "Unknown error"}");
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Transfer lookup failed ({StatusCode}): {Detail}", (int)response.StatusCode, response.Error?.Detail);
+    return;
 }
 
 var record = response.Data;
@@ -79,12 +85,14 @@ var response = await client.Transfers.ListAsync(new ListTransfersOptions
 });
 if (!response.IsSuccessStatusCode)
 {
-    throw new InvalidOperationException($"Transfer list request failed: {response.Error?.Detail ?? "Unknown error"}");
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Transfer list request failed ({StatusCode}): {Detail}", (int)response.StatusCode, response.Error?.Detail);
+    return;
 }
 
 var page = response.Data;
 
-foreach (var item in page.Data)
+foreach (var item in page.Items)
 {
     Console.WriteLine($"Transfer {item.Id}: {item.Amount} {item.Currency} => {item.Destination} ({item.Status})");
 }

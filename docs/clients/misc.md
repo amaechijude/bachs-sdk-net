@@ -7,6 +7,8 @@ The Misc client provides reference and lookup utilities, such as listing support
 - **Property**: `client.Misc`
 - **DI Service**: `services.AddBachsClient(...)` registers `IMiscClient` as a transient service.
 
+> **Handling responses:** Every client method returns `BachsResponse<T>` and returns (rather than throws) on API errors (4xx/5xx). Always check `response.IsSuccessStatusCode` first: on **failure**, inspect `response.Error`/`response.StatusCode` and handle it (log it, retry, or surface it to the caller); on **success**, read the parsed payload from `response.Data`. Transport, timeout, circuit-breaker, and serialization failures still throw typed `Bachs.Net.Exceptions` — see [Response Handling](../README.md#response-handling).
+
 ---
 
 ## Methods Overview
@@ -29,7 +31,9 @@ using Bachs.Net.Clients;
 var response = await client.Misc.GetSupportedCurrenciesAsync();
 if (!response.IsSuccessStatusCode)
 {
-    throw new InvalidOperationException($"Currency lookup failed: {response.Error?.Detail ?? "Unknown error"}");
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Currency lookup failed ({StatusCode}): {Detail}", (int)response.StatusCode, response.Error?.Detail);
+    return;
 }
 
 var currencies = response.Data;
@@ -51,7 +55,9 @@ Look up bank routing codes (default country is `"NG"`):
 var response = await client.Misc.GetBanksAsync("NG");
 if (!response.IsSuccessStatusCode)
 {
-    throw new InvalidOperationException($"Bank lookup failed: {response.Error?.Detail ?? "Unknown error"}");
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Bank lookup failed ({StatusCode}): {Detail}", (int)response.StatusCode, response.Error?.Detail);
+    return;
 }
 
 var banks = response.Data;
@@ -78,7 +84,9 @@ var response = await client.Misc.ResolveBankAccountAsync(new ResolveBankAccountR
 });
 if (!response.IsSuccessStatusCode)
 {
-    throw new InvalidOperationException($"Bank account resolution failed: {response.Error?.Detail ?? "Unknown error"}");
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Bank account resolution failed ({StatusCode}): {Detail}", (int)response.StatusCode, response.Error?.Detail);
+    return;
 }
 
 var resolution = response.Data;

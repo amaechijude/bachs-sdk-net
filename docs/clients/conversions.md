@@ -7,6 +7,8 @@ The Conversions client provides real-time foreign exchange (FX) quotes and balan
 - **Property**: `client.Conversions`
 - **DI Service**: `services.AddBachsClient(...)` registers `IConversionsClient` as a transient service.
 
+> **Handling responses:** Every client method returns `BachsResponse<T>` and returns (rather than throws) on API errors (4xx/5xx). Always check `response.IsSuccessStatusCode` first: on **failure**, inspect `response.Error`/`response.StatusCode` and handle it (log it, retry, or surface it to the caller); on **success**, read the parsed payload from `response.Data`. Transport, timeout, circuit-breaker, and serialization failures still throw typed `Bachs.Net.Exceptions` — see [Response Handling](../README.md#response-handling).
+
 ---
 
 ## Methods Overview
@@ -39,7 +41,9 @@ var response = await client.Conversions.CreateQuoteAsync(new CreateConversionQuo
 });
 if (!response.IsSuccessStatusCode)
 {
-    throw new InvalidOperationException($"Conversion quote request failed: {response.Error?.Detail ?? "Unknown error"}");
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Conversion quote request failed ({StatusCode}): {Detail}", (int)response.StatusCode, response.Error?.Detail);
+    return;
 }
 
 var quote = response.Data;
@@ -62,13 +66,15 @@ using Bachs.Net.Common;
 var response = await client.Conversions.ExecuteAsync(new ExecuteConversionRequest
 {
     QuoteId = quote.QuoteId
-}, new RequestOptions
+}, new BachsRequestOptions
 {
     IdempotencyKey = $"conv_exec_{quote.QuoteId}"
 });
 if (!response.IsSuccessStatusCode)
 {
-    throw new InvalidOperationException($"Conversion execution failed: {response.Error?.Detail ?? "Unknown error"}");
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Conversion execution failed ({StatusCode}): {Detail}", (int)response.StatusCode, response.Error?.Detail);
+    return;
 }
 
 var conversion = response.Data;
@@ -86,7 +92,9 @@ Console.WriteLine($"Converted: {conversion.SourceAmount} {conversion.SourceCurre
 var response = await client.Conversions.GetAsync("conv_100200300");
 if (!response.IsSuccessStatusCode)
 {
-    throw new InvalidOperationException($"Conversion lookup failed: {response.Error?.Detail ?? "Unknown error"}");
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Conversion lookup failed ({StatusCode}): {Detail}", (int)response.StatusCode, response.Error?.Detail);
+    return;
 }
 
 var record = response.Data;
@@ -106,12 +114,14 @@ var response = await client.Conversions.ListAsync(new ListConversionsOptions
 });
 if (!response.IsSuccessStatusCode)
 {
-    throw new InvalidOperationException($"Conversion history request failed: {response.Error?.Detail ?? "Unknown error"}");
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Conversion history request failed ({StatusCode}): {Detail}", (int)response.StatusCode, response.Error?.Detail);
+    return;
 }
 
 var history = response.Data;
 
-foreach (var item in history.Data)
+foreach (var item in history.Items)
 {
     Console.WriteLine($"{item.CreatedAt:d}: {item.SourceAmount} {item.SourceCurrency} => {item.TargetAmount} {item.TargetCurrency} (Rate: {item.Rate})");
 }

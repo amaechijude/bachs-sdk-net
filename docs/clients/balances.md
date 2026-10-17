@@ -7,6 +7,8 @@ The Balances client allows you to inspect account funds across all supported cur
 - **Property**: `client.Balances`
 - **DI Service**: `services.AddBachsClient(...)` registers `IBalancesClient` as a transient service.
 
+> **Handling responses:** Every client method returns `BachsResponse<T>` and returns (rather than throws) on API errors (4xx/5xx). Always check `response.IsSuccessStatusCode` first: on **failure**, inspect `response.Error`/`response.StatusCode` and handle it (log it, retry, or surface it to the caller); on **success**, read the parsed payload from `response.Data`. Transport, timeout, circuit-breaker, and serialization failures still throw typed `Bachs.Net.Exceptions` — see [Response Handling](../README.md#response-handling).
+
 ---
 
 ## Methods Overview
@@ -29,12 +31,14 @@ using Bachs.Net.Clients;
 var response = await client.Balances.GetBalancesAsync();
 if (!response.IsSuccessStatusCode)
 {
-    throw new InvalidOperationException($"Balance lookup failed: {response.Error?.Detail ?? "Unknown error"}");
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Balance lookup failed ({StatusCode}): {Detail}", (int)response.StatusCode, response.Error?.Detail);
+    return;
 }
 
 var balance = response.Data;
 
-Console.WriteLine($"Total Consolidated (USD): ${balance.TotalUsd:F2}");
+Console.WriteLine($"Total Consolidated (USD): ${balance.TotalUsd}");
 
 foreach (var (currency, bucket) in balance.Currencies)
 {
@@ -50,13 +54,15 @@ foreach (var (currency, bucket) in balance.Currencies)
 using Bachs.Net.Common;
 
 // Check balance of a connected merchant
-var response = await client.Balances.GetBalancesAsync(new RequestOptions
+var response = await client.Balances.GetBalancesAsync(new BachsRequestOptions
 {
     AccountId = "acc_merchant_456"
 });
 if (!response.IsSuccessStatusCode)
 {
-    throw new InvalidOperationException($"Merchant balance lookup failed: {response.Error?.Detail ?? "Unknown error"}");
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Merchant balance lookup failed ({StatusCode}): {Detail}", (int)response.StatusCode, response.Error?.Detail);
+    return;
 }
 
 var merchantBalance = response.Data;
@@ -70,7 +76,9 @@ var merchantBalance = response.Data;
 var response = await client.Balances.GetSettingsAsync();
 if (!response.IsSuccessStatusCode)
 {
-    throw new InvalidOperationException($"Balance settings lookup failed: {response.Error?.Detail ?? "Unknown error"}");
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Balance settings lookup failed ({StatusCode}): {Detail}", (int)response.StatusCode, response.Error?.Detail);
+    return;
 }
 
 var settings = response.Data;
@@ -93,7 +101,9 @@ var response = await client.Balances.UpdateSettingsAsync(new BalanceSettings
 });
 if (!response.IsSuccessStatusCode)
 {
-    throw new InvalidOperationException($"Balance settings update failed: {response.Error?.Detail ?? "Unknown error"}");
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Balance settings update failed ({StatusCode}): {Detail}", (int)response.StatusCode, response.Error?.Detail);
+    return;
 }
 
 var updated = response.Data;

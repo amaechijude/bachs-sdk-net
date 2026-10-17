@@ -7,6 +7,8 @@ The Virtual Accounts client provides fixed, permanent virtual bank accounts (e.g
 - **Property**: `client.VirtualAccounts`
 - **DI Service**: `services.AddBachsClient(...)` registers `IVirtualAccountsClient` as a transient service.
 
+> **Handling responses:** Every client method returns `BachsResponse<T>` and returns (rather than throws) on API errors (4xx/5xx). Always check `response.IsSuccessStatusCode` first: on **failure**, inspect `response.Error`/`response.StatusCode` and handle it (log it, retry, or surface it to the caller); on **success**, read the parsed payload from `response.Data`. Transport, timeout, circuit-breaker, and serialization failures still throw typed `Bachs.Net.Exceptions` — see [Response Handling](../README.md#response-handling).
+
 ---
 
 ## Methods Overview
@@ -33,13 +35,15 @@ using Bachs.Net.Models.VirtualAccounts;
 var response = await client.VirtualAccounts.CreateAsync(new CreateVirtualAccountRequest
 {
     Currency = BachsCurrency.NGN // Defaults to BachsCurrency.USD
-}, new RequestOptions
+}, new BachsRequestOptions
 {
     IdempotencyKey = "va_provision_ngn_01"
 });
 if (!response.IsSuccessStatusCode)
 {
-    throw new InvalidOperationException($"Virtual account creation failed: {response.Error?.Detail ?? "Unknown error"}");
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Virtual account creation failed ({StatusCode}): {Detail}", (int)response.StatusCode, response.Error?.Detail);
+    return;
 }
 
 var account = response.Data;
@@ -54,11 +58,13 @@ Console.WriteLine($"Status: {account.Status}"); // 'active'
 ```csharp
 var accountResponse = await client.VirtualAccounts.CreateAsync(
     new CreateVirtualAccountRequest { Currency = BachsCurrency.NGN },
-    new RequestOptions { AccountId = "acc_merchant_123" }
+    new BachsRequestOptions { AccountId = "acc_merchant_123" }
 );
 if (!accountResponse.IsSuccessStatusCode)
 {
-    throw new InvalidOperationException($"Customer virtual account creation failed: {accountResponse.Error?.Detail ?? "Unknown error"}");
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Customer virtual account creation failed ({StatusCode}): {Detail}", (int)accountResponse.StatusCode, accountResponse.Error?.Detail);
+    return;
 }
 
 var customerAccount = accountResponse.Data;
@@ -72,7 +78,9 @@ var customerAccount = accountResponse.Data;
 var response = await client.VirtualAccounts.GetAsync(currency: BachsCurrency.NGN);
 if (!response.IsSuccessStatusCode)
 {
-    throw new InvalidOperationException($"Virtual account lookup failed: {response.Error?.Detail ?? "Unknown error"}");
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Virtual account lookup failed ({StatusCode}): {Detail}", (int)response.StatusCode, response.Error?.Detail);
+    return;
 }
 
 var existing = response.Data;

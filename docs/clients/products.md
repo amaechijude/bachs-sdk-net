@@ -7,6 +7,8 @@ The Products client allows you to manage catalog items in Bachs, defining one-ti
 - **Property**: `client.Products`
 - **DI Service**: `services.AddBachsClient(...)` registers `IProductsClient` as a transient service.
 
+> **Handling responses:** Every client method returns `BachsResponse<T>` and returns (rather than throws) on API errors (4xx/5xx). Always check `response.IsSuccessStatusCode` first: on **failure**, inspect `response.Error`/`response.StatusCode` and handle it (log it, retry, or surface it to the caller); on **success**, read the parsed payload from `response.Data`. Transport, timeout, circuit-breaker, and serialization failures still throw typed `Bachs.Net.Exceptions` — see [Response Handling](../README.md#response-handling).
+
 ---
 
 ## Methods Overview
@@ -46,7 +48,9 @@ var response = await client.Products.CreateAsync(new CreateProductRequest
 });
 if (!response.IsSuccessStatusCode)
 {
-    throw new InvalidOperationException($"Product creation failed: {response.Error?.Detail ?? "Unknown error"}");
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Product creation failed ({StatusCode}): {Detail}", (int)response.StatusCode, response.Error?.Detail);
+    return;
 }
 
 var product = response.Data;
@@ -80,7 +84,9 @@ var response = await client.Products.CreateAsync(new CreateProductRequest
 });
 if (!response.IsSuccessStatusCode)
 {
-    throw new InvalidOperationException($"Subscription plan creation failed: {response.Error?.Detail ?? "Unknown error"}");
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Subscription plan creation failed ({StatusCode}): {Detail}", (int)response.StatusCode, response.Error?.Detail);
+    return;
 }
 
 var subscriptionPlan = response.Data;
@@ -94,14 +100,16 @@ var subscriptionPlan = response.Data;
 var response = await client.Products.GetAsync("prod_pro_plan");
 if (!response.IsSuccessStatusCode)
 {
-    throw new InvalidOperationException($"Product lookup failed: {response.Error?.Detail ?? "Unknown error"}");
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Product lookup failed ({StatusCode}): {Detail}", (int)response.StatusCode, response.Error?.Detail);
+    return;
 }
 
 var product = response.Data;
 
 Console.WriteLine($"Name: {product.Name}");
 Console.WriteLine($"Price: {product.Price?.Amount} {product.Price?.Currency}");
-Console.WriteLine($"Archived: {product.Archived}");
+Console.WriteLine($"Archived: {product.IsArchived}");
 ```
 
 ---
@@ -116,12 +124,14 @@ var response = await client.Products.ListAsync(new ListProductsOptions
 });
 if (!response.IsSuccessStatusCode)
 {
-    throw new InvalidOperationException($"Product list request failed: {response.Error?.Detail ?? "Unknown error"}");
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Product list request failed ({StatusCode}): {Detail}", (int)response.StatusCode, response.Error?.Detail);
+    return;
 }
 
 var page = response.Data;
 
-foreach (var item in page.Data)
+foreach (var item in page.Items)
 {
     Console.WriteLine($"Product: {item.Id} - {item.Name} ({item.Price?.Amount} {item.Price?.Currency})");
 }
@@ -139,7 +149,9 @@ var response = await client.Products.UpdateAsync("prod_pro_plan", new UpdateProd
 });
 if (!response.IsSuccessStatusCode)
 {
-    throw new InvalidOperationException($"Product update failed: {response.Error?.Detail ?? "Unknown error"}");
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Product update failed ({StatusCode}): {Detail}", (int)response.StatusCode, response.Error?.Detail);
+    return;
 }
 
 var updated = response.Data;
@@ -154,21 +166,25 @@ var updated = response.Data;
 var archiveResponse = await client.Products.ArchiveAsync("prod_legacy_tier");
 if (!archiveResponse.IsSuccessStatusCode)
 {
-    throw new InvalidOperationException($"Archive request failed: {archiveResponse.Error?.Detail ?? "Unknown error"}");
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Archive request failed ({StatusCode}): {Detail}", (int)archiveResponse.StatusCode, archiveResponse.Error?.Detail);
+    return;
 }
 
 var archived = archiveResponse.Data;
-Console.WriteLine($"Is Archived: {archived.Archived}"); // true
+Console.WriteLine($"Is Archived: {archived.IsArchived}"); // true
 
 // Reactivate when needed
 var restoreResponse = await client.Products.UnarchiveAsync("prod_legacy_tier");
 if (!restoreResponse.IsSuccessStatusCode)
 {
-    throw new InvalidOperationException($"Unarchive request failed: {restoreResponse.Error?.Detail ?? "Unknown error"}");
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Unarchive request failed ({StatusCode}): {Detail}", (int)restoreResponse.StatusCode, restoreResponse.Error?.Detail);
+    return;
 }
 
 var restored = restoreResponse.Data;
-Console.WriteLine($"Is Archived: {restored.Archived}"); // false
+Console.WriteLine($"Is Archived: {restored.IsArchived}"); // false
 ```
 
 ---
@@ -181,12 +197,16 @@ Console.WriteLine($"Is Archived: {restored.Archived}"); // false
 - `Price` (`ProductPriceRequest`): Amount, currency, and pricing model (`fixed`, `free`, `custom`).
 - `BillingCycle` (`ProductBillingCycleRequest?`): Recurring interval (`day`, `week`, `month`, `year`) and frequency.
 - `TrialPeriod` (`ProductTrialPeriodRequest?`): Trial duration cadence and frequency.
-- `Images` (`IList<string>?`): Image URLs for hosted checkout rendering.
+- `Metadata` (`IDictionary<string, string>?`): Arbitrary key-value pairs stored on the product.
 
 ### [`Product`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Products/Product.cs)
 - `Id` (`string`): Starts with `prod_`.
 - `Name` (`string`): Display name.
-- `Price` (`ProductPrice?`): Configured pricing breakdown.
+- `Description` (`string?`): Product details or marketing summary.
+- `Price` (`ProductPrice`): Configured pricing breakdown.
 - `BillingCycle` (`ProductBillingCycle?`): Recurring billing rules.
 - `TrialPeriod` (`ProductTrialPeriod?`): Trial duration configuration.
-- `Archived` (`bool`): Active vs retired flag.
+- `IsArchived` (`bool`): Active vs retired flag.
+- `Metadata` (`IReadOnlyDictionary<string, string>?`): Stored key-value pairs.
+- `CreatedAt` (`DateTimeOffset`): Timestamp of creation.
+- `UpdatedAt` (`DateTimeOffset?`): Timestamp of last update.

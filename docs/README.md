@@ -11,12 +11,16 @@ This guide details all 16 specialized sub-clients available through [`IBachsClie
 `Bachs.Net` organizes operations into domain-specific clients. You can interact with these clients either:
 1. **Directly via the root client instance**:
    ```csharp
-   var client = new BachsClient("sk_test_...");
+   using Bachs.Net.Clients;
+
+   var client = new BachsClient("sk_sandbox_...", "whsec_...");
    var response = await client.CheckoutSessions.CreateAsync(request);
 
    if (!response.IsSuccessStatusCode)
    {
-       throw new InvalidOperationException($"Checkout session creation failed: {response.Error?.Detail ?? "Unknown error"}");
+       // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+       // e.g. logger.LogError("Checkout session creation failed ({StatusCode}): {Detail}", (int)response.StatusCode, response.Error?.Detail);
+       return;
    }
 
    var session = response.Data;
@@ -69,10 +73,10 @@ All sub-clients inherit from [`BaseClient`](https://github.com/amaechijude/Bachs
 
 ## Common Features Across All Clients
 
-### 1. Per-Request Options ([`RequestOptions`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Common/RequestOptions.cs))
-All write and read operations accept an optional `RequestOptions` parameter:
+### 1. Per-Request Options ([`BachsRequestOptions`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Common/BachsRequestOptions.cs))
+All write and read operations accept an optional `BachsRequestOptions` parameter:
 ```csharp
-var options = new RequestOptions
+var options = new BachsRequestOptions
 {
     IdempotencyKey = "order_tx_9841284", // Prevents double-charging or duplicate resource creation
     AccountId = "acc_connected_12345",    // Execute on behalf of a Bachs Connect account
@@ -82,14 +86,15 @@ var options = new RequestOptions
 var response = await client.Payments.GetAsync("ch_123", options);
 if (!response.IsSuccessStatusCode)
 {
+    // Handle the error: log it (response.Error has the parsed details) and take the appropriate action.
     return;
 }
 
 var payment = response.Data;
 ```
 
-### 2. Pagination Options ([`ListRequestOptions`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Common/ListRequestOptions.cs))
-All list operations accept specialized options derived from `ListRequestOptions`:
+### 2. Pagination Options ([`BachsListRequestOptions`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Common/BachsListRequestOptions.cs))
+All list operations accept specialized options derived from `BachsListRequestOptions`:
 ```csharp
 var listOptions = new ListPaymentsOptions
 {
@@ -101,18 +106,69 @@ var listOptions = new ListPaymentsOptions
 var pageResponse = await client.Payments.ListAsync(listOptions);
 if (!pageResponse.IsSuccessStatusCode)
 {
+    // Handle the error: log it (pageResponse.Error has the parsed details) and take the appropriate action.
     return;
 }
 
 var page = pageResponse.Data;
-Console.WriteLine($"Retrieved {page.Data.Count} items. HasMore: {page.Pagination?.HasMore}");
+Console.WriteLine($"Retrieved {page.Items.Count} items. HasMore: {page.Pagination?.HasMore}");
 ```
 
 ### 3. Error Handling
-The SDK provides typed exceptions inheriting from [`BachsApiException`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Exceptions/BachsApiException.cs):
+API errors (4xx/5xx) are returned in `BachsResponse<T>.Error`; check `IsSuccessStatusCode` before using `.Data`. When you prefer exception-style handling, the SDK also provides typed exceptions inheriting from [`BachsApiException`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Exceptions/BachsApiException.cs) (produced via `BachsApiException.Create(...)`):
 - [`BachsValidationException`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Exceptions/BachsValidationException.cs) — HTTP 400 / 422 with `ValidationErrors` list.
 - [`BachsAuthenticationException`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Exceptions/BachsAuthenticationException.cs) — HTTP 401 Unauthorized.
 - [`BachsForbiddenException`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Exceptions/BachsForbiddenException.cs) — HTTP 403 Forbidden.
 - [`BachsNotFoundException`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Exceptions/BachsNotFoundException.cs) — HTTP 404 Not Found.
 - [`BachsConflictException`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Exceptions/BachsConflictException.cs) — HTTP 409 Conflict.
 - [`BachsRateLimitException`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Exceptions/BachsRateLimitException.cs) — HTTP 429 Too Many Requests with `RetryAfter` parsed from header.
+
+---
+
+## Response Handling
+
+Every public method returns a `BachsResponse<T>` and, on API errors (4xx/5xx), **returns instead of throwing**. Always branch on the result before touching the payload:
+
+```csharp
+var response = await client.Payments.GetAsync("ch_123456789");
+
+if (!response.IsSuccessStatusCode)
+{
+    // Failure — response.Error holds the parsed BachsError (error code, detail, field errors).
+    // Log it and take the appropriate action (return, retry, or surface it to the caller).
+    logger.LogError(
+        "Payment lookup failed ({StatusCode}): {Detail}",
+        (int)response.StatusCode,
+        response.Error?.Detail);
+    return;
+}
+
+// Success — use the strongly-typed payload.
+var payment = response.Data;
+Console.WriteLine($"Payment {payment.Id} is {payment.Status}");
+```
+
+| Member | Meaning |
+|---|---|
+| `IsSuccessStatusCode` | `true` for 2xx responses — the fast check to branch on. |
+| `Data` | The deserialized payload (`T`); valid on success. |
+| `Error` | The parsed [`BachsError`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Common/BachsError.cs) (error code, message, and field-level errors); populated on failure. |
+| `StatusCode` | The raw `System.Net.HttpStatusCode`. |
+
+> **Do not ignore the result.** Skipping the `IsSuccessStatusCode` check silently discards failed operations and leaves `response.Data` unusable.
+
+### Exceptions still thrown
+
+Transport and configuration failures are the only things that throw (every exception derives from `BachsException`):
+
+| Exception | When |
+|---|---|
+| `BachsNetworkException` | The underlying HTTP call failed (DNS, socket, or connection reset). |
+| `BachsTimeoutException` | The request exceeded the per-attempt or total timeout. |
+| `BachsServiceUnavailableException` | The resilience circuit breaker is open. |
+| `BachsSerializationException` | The response body could not be deserialized. |
+| `BachsInvalidOperationException` | Invalid configuration or builder usage (e.g. no webhook secret configured). |
+| `BachsArgumentNullException` | A required constructor argument was `null`. |
+| `ArgumentNullException` / `ArgumentException` | A required method argument (request body or identifier) was `null`, empty, or whitespace. |
+
+If you prefer exception-style handling for API failures, convert an unsuccessful response with `BachsApiException.Create(...)` — see [Error Handling](#3-error-handling).

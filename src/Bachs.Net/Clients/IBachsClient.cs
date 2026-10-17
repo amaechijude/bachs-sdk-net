@@ -1,4 +1,5 @@
 using Bachs.Net.Common;
+using Bachs.Net.Exceptions;
 
 namespace Bachs.Net.Clients;
 
@@ -101,6 +102,10 @@ public interface IBachsClient
     /// <summary>
     /// Sends a GET request and returns the parsed body and HTTP response metadata.
     /// </summary>
+    /// <exception cref="BachsTimeoutException">Thrown when the request exceeds the configured per-attempt or total timeout.</exception>
+    /// <exception cref="BachsServiceUnavailableException">Thrown when the resilience circuit breaker is open.</exception>
+    /// <exception cref="BachsNetworkException">Thrown when the underlying HTTP request fails (connection, DNS, or socket error).</exception>
+    /// <exception cref="BachsSerializationException">Thrown when the response body cannot be deserialized.</exception>
     Task<BachsResponse<TResponse>> GetAsync<TResponse>(
         string path,
         BachsRequestOptions? requestOptions = null,
@@ -110,6 +115,10 @@ public interface IBachsClient
     /// <summary>
     /// Sends a POST request with a JSON body and returns the parsed body and HTTP response metadata.
     /// </summary>
+    /// <exception cref="BachsTimeoutException">Thrown when the request exceeds the configured per-attempt or total timeout.</exception>
+    /// <exception cref="BachsServiceUnavailableException">Thrown when the resilience circuit breaker is open.</exception>
+    /// <exception cref="BachsNetworkException">Thrown when the underlying HTTP request fails (connection, DNS, or socket error).</exception>
+    /// <exception cref="BachsSerializationException">Thrown when the response body cannot be deserialized.</exception>
     Task<BachsResponse<TResponse>> PostAsync<TRequest, TResponse>(
         string path,
         TRequest body,
@@ -120,6 +129,10 @@ public interface IBachsClient
     /// <summary>
     /// Sends an empty POST request and returns the parsed body and HTTP response metadata.
     /// </summary>
+    /// <exception cref="BachsTimeoutException">Thrown when the request exceeds the configured per-attempt or total timeout.</exception>
+    /// <exception cref="BachsServiceUnavailableException">Thrown when the resilience circuit breaker is open.</exception>
+    /// <exception cref="BachsNetworkException">Thrown when the underlying HTTP request fails (connection, DNS, or socket error).</exception>
+    /// <exception cref="BachsSerializationException">Thrown when the response body cannot be deserialized.</exception>
     Task<BachsResponse<TResponse>> PostAsync<TResponse>(
         string path,
         BachsRequestOptions? requestOptions = null,
@@ -129,6 +142,10 @@ public interface IBachsClient
     /// <summary>
     /// Sends a PATCH request with a JSON body and returns the parsed body and HTTP response metadata.
     /// </summary>
+    /// <exception cref="BachsTimeoutException">Thrown when the request exceeds the configured per-attempt or total timeout.</exception>
+    /// <exception cref="BachsServiceUnavailableException">Thrown when the resilience circuit breaker is open.</exception>
+    /// <exception cref="BachsNetworkException">Thrown when the underlying HTTP request fails (connection, DNS, or socket error).</exception>
+    /// <exception cref="BachsSerializationException">Thrown when the response body cannot be deserialized.</exception>
     Task<BachsResponse<TResponse>> PatchAsync<TRequest, TResponse>(
         string path,
         TRequest body,
@@ -139,6 +156,10 @@ public interface IBachsClient
     /// <summary>
     /// Sends a PUT request with a JSON body and returns the parsed body and HTTP response metadata.
     /// </summary>
+    /// <exception cref="BachsTimeoutException">Thrown when the request exceeds the configured per-attempt or total timeout.</exception>
+    /// <exception cref="BachsServiceUnavailableException">Thrown when the resilience circuit breaker is open.</exception>
+    /// <exception cref="BachsNetworkException">Thrown when the underlying HTTP request fails (connection, DNS, or socket error).</exception>
+    /// <exception cref="BachsSerializationException">Thrown when the response body cannot be deserialized.</exception>
     Task<BachsResponse<TResponse>> PutAsync<TRequest, TResponse>(
         string path,
         TRequest body,
@@ -149,6 +170,10 @@ public interface IBachsClient
     /// <summary>
     /// Sends a DELETE request and returns the parsed body and HTTP response metadata.
     /// </summary>
+    /// <exception cref="BachsTimeoutException">Thrown when the request exceeds the configured per-attempt or total timeout.</exception>
+    /// <exception cref="BachsServiceUnavailableException">Thrown when the resilience circuit breaker is open.</exception>
+    /// <exception cref="BachsNetworkException">Thrown when the underlying HTTP request fails (connection, DNS, or socket error).</exception>
+    /// <exception cref="BachsSerializationException">Thrown when the response body cannot be deserialized.</exception>
     Task<BachsResponse<TResponse>> DeleteAsync<TResponse>(
         string path,
         BachsRequestOptions? requestOptions = null,
@@ -158,6 +183,10 @@ public interface IBachsClient
     /// <summary>
     /// Sends a DELETE request without expecting a response body and returns HTTP response metadata.
     /// </summary>
+    /// <exception cref="BachsTimeoutException">Thrown when the request exceeds the configured per-attempt or total timeout.</exception>
+    /// <exception cref="BachsServiceUnavailableException">Thrown when the resilience circuit breaker is open.</exception>
+    /// <exception cref="BachsNetworkException">Thrown when the underlying HTTP request fails (connection, DNS, or socket error).</exception>
+    /// <exception cref="BachsSerializationException">Thrown when the response body cannot be deserialized.</exception>
     Task<BachsResponse<object?>> DeleteAsync(
         string path,
         BachsRequestOptions? requestOptions = null,

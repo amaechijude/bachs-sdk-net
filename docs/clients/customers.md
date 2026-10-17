@@ -7,6 +7,8 @@ The Customers client manages customer records, contact information, billing addr
 - **Property**: `client.Customers`
 - **DI Service**: `services.AddBachsClient(...)` registers `ICustomersClient` as a transient service.
 
+> **Handling responses:** Every client method returns `BachsResponse<T>` and returns (rather than throws) on API errors (4xx/5xx). Always check `response.IsSuccessStatusCode` first: on **failure**, inspect `response.Error`/`response.StatusCode` and handle it (log it, retry, or surface it to the caller); on **success**, read the parsed payload from `response.Data`. Transport, timeout, circuit-breaker, and serialization failures still throw typed `Bachs.Net.Exceptions` — see [Response Handling](../README.md#response-handling).
+
 ---
 
 ## Methods Overview
@@ -34,7 +36,7 @@ var response = await client.Customers.CreateAsync(new CreateCustomerRequest
 {
     Email = "alex.rivera@example.com",
     Name = "Alex Rivera",
-    Phone = "+15551234567",
+    PhoneNumber = "+15551234567",
     BillingAddress = new Address
     {
         Line1 = "100 Market St",
@@ -50,7 +52,9 @@ var response = await client.Customers.CreateAsync(new CreateCustomerRequest
 });
 if (!response.IsSuccessStatusCode)
 {
-    throw new InvalidOperationException($"Customer creation failed: {response.Error?.Detail ?? "Unknown error"}");
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Customer creation failed ({StatusCode}): {Detail}", (int)response.StatusCode, response.Error?.Detail);
+    return;
 }
 
 var customer = response.Data;
@@ -66,14 +70,16 @@ Console.WriteLine($"Customer ID: {customer.Id}");
 var response = await client.Customers.GetAsync("cus_123456789");
 if (!response.IsSuccessStatusCode)
 {
-    throw new InvalidOperationException($"Customer lookup failed: {response.Error?.Detail ?? "Unknown error"}");
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Customer lookup failed ({StatusCode}): {Detail}", (int)response.StatusCode, response.Error?.Detail);
+    return;
 }
 
 var customer = response.Data;
 
 Console.WriteLine($"Name: {customer.Name}");
 Console.WriteLine($"Email: {customer.Email}");
-Console.WriteLine($"Phone: {customer.Phone}");
+Console.WriteLine($"Phone: {customer.PhoneNumber}");
 Console.WriteLine($"Registered: {customer.CreatedAt:yyyy-MM-dd}");
 ```
 
@@ -89,12 +95,14 @@ var response = await client.Customers.ListAsync(new ListCustomersOptions
 });
 if (!response.IsSuccessStatusCode)
 {
-    throw new InvalidOperationException($"Customer list request failed: {response.Error?.Detail ?? "Unknown error"}");
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Customer list request failed ({StatusCode}): {Detail}", (int)response.StatusCode, response.Error?.Detail);
+    return;
 }
 
 var results = response.Data;
 
-foreach (var c in results.Data)
+foreach (var c in results.Items)
 {
     Console.WriteLine($"Customer: {c.Id} - {c.Name} <{c.Email}>");
 }
@@ -108,7 +116,7 @@ foreach (var c in results.Data)
 var response = await client.Customers.UpdateAsync("cus_123456789", new UpdateCustomerRequest
 {
     Name = "Alex Rivera-Smith",
-    Phone = "+15559876543",
+    PhoneNumber = "+15559876543",
     BillingAddress = new Address
     {
         Line1 = "250 Montgomery St",
@@ -120,7 +128,9 @@ var response = await client.Customers.UpdateAsync("cus_123456789", new UpdateCus
 });
 if (!response.IsSuccessStatusCode)
 {
-    throw new InvalidOperationException($"Customer update failed: {response.Error?.Detail ?? "Unknown error"}");
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Customer update failed ({StatusCode}): {Detail}", (int)response.StatusCode, response.Error?.Detail);
+    return;
 }
 
 var updated = response.Data;
@@ -136,7 +146,9 @@ The Customer Portal allows users to update payment methods, view invoices, and m
 var response = await client.Customers.CreatePortalSessionAsync("cus_123456789");
 if (!response.IsSuccessStatusCode)
 {
-    throw new InvalidOperationException($"Customer portal session creation failed: {response.Error?.Detail ?? "Unknown error"}");
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Customer portal session creation failed ({StatusCode}): {Detail}", (int)response.StatusCode, response.Error?.Detail);
+    return;
 }
 
 var portal = response.Data;
@@ -150,14 +162,15 @@ Console.WriteLine($"Session expires at: {portal.ExpiresAt}");
 ## Models
 
 ### [`Customer`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Customers/Customer.cs)
-- `Id` (`string`): Starts with `cus_`.
+- `Id` (`string`): Starts with `cus_`. Also exposed as `CustomerId` (the `customer_id` webhook alias).
 - `Email` (`string`): Customer email address.
 - `Name` (`string?`): Full name or business entity.
-- `Phone` (`string?`): E.164 phone number.
+- `PhoneNumber` (`string?`): E.164 phone number.
 - `BillingAddress` (`Address?`): Street address, city, country, postal code.
+- `Metadata` (`IReadOnlyDictionary<string, string>?`): Stored key-value pairs.
 - `CreatedAt` (`DateTimeOffset`): Timestamp of creation.
+- `UpdatedAt` (`DateTimeOffset?`): Timestamp of last update.
 
 ### [`CustomerPortalSession`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Customers/Customer.cs)
-- `Id` (`string`): Portal session ID.
 - `Url` (`string`): Hosted URL to redirect the customer.
 - `ExpiresAt` (`DateTimeOffset?`): Expiration timestamp of the portal session link.

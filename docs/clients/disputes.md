@@ -7,6 +7,8 @@ The Disputes client allows you to manage payment disputes, query chargebacks, su
 - **Property**: `client.Disputes`
 - **DI Service**: `services.AddBachsClient(...)` registers `IDisputesClient` as a transient service.
 
+> **Handling responses:** Every client method returns `BachsResponse<T>` and returns (rather than throws) on API errors (4xx/5xx). Always check `response.IsSuccessStatusCode` first: on **failure**, inspect `response.Error`/`response.StatusCode` and handle it (log it, retry, or surface it to the caller); on **success**, read the parsed payload from `response.Data`. Transport, timeout, circuit-breaker, and serialization failures still throw typed `Bachs.Net.Exceptions` — see [Response Handling](../README.md#response-handling).
+
 ---
 
 ## Methods Overview
@@ -30,7 +32,9 @@ using Bachs.Net.Clients;
 var response = await client.Disputes.GetAsync("dp_100200300");
 if (!response.IsSuccessStatusCode)
 {
-    throw new InvalidOperationException($"Dispute lookup failed: {response.Error?.Detail ?? "Unknown error"}");
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Dispute lookup failed ({StatusCode}): {Detail}", (int)response.StatusCode, response.Error?.Detail);
+    return;
 }
 
 var dispute = response.Data;
@@ -56,12 +60,14 @@ var response = await client.Disputes.ListAsync(new ListDisputesOptions
 });
 if (!response.IsSuccessStatusCode)
 {
-    throw new InvalidOperationException($"Dispute list request failed: {response.Error?.Detail ?? "Unknown error"}");
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Dispute list request failed ({StatusCode}): {Detail}", (int)response.StatusCode, response.Error?.Detail);
+    return;
 }
 
 var page = response.Data;
 
-foreach (var d in page.Data)
+foreach (var d in page.Items)
 {
     Console.WriteLine($"Action Required: {d.Id} for {d.Amount} {d.Currency} (Due {d.EvidenceDueDate:d})");
 }
@@ -78,12 +84,14 @@ var response = await client.Disputes.UpdateEvidenceAsync("dp_100200300", new Upd
 {
     CustomerName = "John Doe",
     CustomerEmail = "john.doe@example.com",
-    Explanation = "Order was successfully delivered via FedEx with tracking number 99882233.",
-    DocumentIds = new List<string> { "doc_proof_of_delivery_1" }
+    ShippingDocumentation = "Delivered via FedEx, tracking 99882233, signed for on 2026-04-20.",
+    UncategorizedText = "Order was successfully delivered to the billing address on file."
 });
 if (!response.IsSuccessStatusCode)
 {
-    throw new InvalidOperationException($"Dispute evidence update failed: {response.Error?.Detail ?? "Unknown error"}");
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Dispute evidence update failed ({StatusCode}): {Detail}", (int)response.StatusCode, response.Error?.Detail);
+    return;
 }
 
 var updated = response.Data;
@@ -101,7 +109,9 @@ Once evidence is attached, submit the claim to the issuing bank:
 var response = await client.Disputes.SubmitAsync("dp_100200300");
 if (!response.IsSuccessStatusCode)
 {
-    throw new InvalidOperationException($"Dispute submission failed: {response.Error?.Detail ?? "Unknown error"}");
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Dispute submission failed ({StatusCode}): {Detail}", (int)response.StatusCode, response.Error?.Detail);
+    return;
 }
 
 var submitted = response.Data;
@@ -126,8 +136,9 @@ Console.WriteLine($"Dispute submitted! Status: {submitted.Status}"); // 'under_r
 ### [`UpdateDisputeEvidenceRequest`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Disputes/Dispute.cs)
 - `CustomerName` (`string?`): Name on customer file.
 - `CustomerEmail` (`string?`): Contact email.
-- `Explanation` (`string?`): Detailed written narrative refuting the dispute.
-- `DocumentIds` (`IList<string>?`): IDs of supporting receipt, delivery, or communication files.
+- `ServiceDocumentation` (`string?`): Description of the service or product provided.
+- `ShippingDocumentation` (`string?`): Proof of shipping/delivery details.
+- `UncategorizedText` (`string?`): Free-form narrative refuting the dispute.
 
 ---
 

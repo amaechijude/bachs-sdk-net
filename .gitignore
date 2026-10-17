@@ -491,3 +491,4 @@ src/Bachs.Net/tasks/**
 src/Bachs.Net/resume.sh
 src/Bachs.Net/Models/Checkout/doc/**
 CODE_ANALYSIS.md
+src/Bachs.Net/Common/errorcode.md

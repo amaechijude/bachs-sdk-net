@@ -7,6 +7,8 @@ The Payments client provides access to captured transactions, settled charges, c
 - **Property**: `client.Payments`
 - **DI Service**: `services.AddBachsClient(...)` registers `IPaymentsClient` as a transient service.
 
+> **Handling responses:** Every client method returns `BachsResponse<T>` and returns (rather than throws) on API errors (4xx/5xx). Always check `response.IsSuccessStatusCode` first: on **failure**, inspect `response.Error`/`response.StatusCode` and handle it (log it, retry, or surface it to the caller); on **success**, read the parsed payload from `response.Data`. Transport, timeout, circuit-breaker, and serialization failures still throw typed `Bachs.Net.Exceptions` — see [Response Handling](../README.md#response-handling).
+
 ---
 
 ## Methods Overview
@@ -28,7 +30,9 @@ using Bachs.Net.Clients;
 var response = await client.Payments.GetAsync("ch_100200300");
 if (!response.IsSuccessStatusCode)
 {
-    throw new InvalidOperationException($"Payment lookup failed: {response.Error?.Detail ?? "Unknown error"}");
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Payment lookup failed ({StatusCode}): {Detail}", (int)response.StatusCode, response.Error?.Detail);
+    return;
 }
 
 var payment = response.Data;
@@ -37,8 +41,8 @@ Console.WriteLine($"Payment ID: {payment.Id}");
 Console.WriteLine($"Status: {payment.Status}");             // 'succeeded', 'failed', 'pending'
 Console.WriteLine($"Amount: {payment.Amount} {payment.Currency}");
 Console.WriteLine($"Payment Method: {payment.PaymentMethod}"); // 'card', 'bank_transfer', etc.
-Console.WriteLine($"Gross Fee: {payment.Fees?.BachsFee} {payment.Currency}");
-Console.WriteLine($"Settled Net: {payment.Amount - (payment.Fees?.BachsFee ?? 0m)}");
+Console.WriteLine($"Gross Fee: {payment.Fees?.Amount} {payment.Currency}");
+Console.WriteLine($"Settled Net: {payment.Amount - (payment.Fees?.Amount ?? 0m)}");
 ```
 
 ---
@@ -56,12 +60,14 @@ var response = await client.Payments.ListAsync(new ListPaymentsOptions
 });
 if (!response.IsSuccessStatusCode)
 {
-    throw new InvalidOperationException($"Payment list request failed: {response.Error?.Detail ?? "Unknown error"}");
+    // Handle the error: log it and take the appropriate action (return, retry, or surface it).
+    // e.g. logger.LogError("Payment list request failed ({StatusCode}): {Detail}", (int)response.StatusCode, response.Error?.Detail);
+    return;
 }
 
 var payments = response.Data;
 
-foreach (var tx in payments.Data)
+foreach (var tx in payments.Items)
 {
     Console.WriteLine($"Charge {tx.Id}: {tx.Amount:C2} {tx.Currency} ({tx.Status}) at {tx.CreatedAt:g}");
 }
