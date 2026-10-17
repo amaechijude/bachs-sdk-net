@@ -80,6 +80,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddBachsClient(options =>
 {
     options.ApiKey = builder.Configuration["Bachs:ApiKey"]!;
+    options.WebhookSecret = builder.Configuration["Bachs:WebhookSecret"]!;
 });
 
 var app = builder.Build();
@@ -136,10 +137,14 @@ sampling window and remains open for 15 seconds. Retries can be disabled with
 builder.Services.AddBachsClient(options =>
 {
     options.ApiKey = builder.Configuration["Bachs:ApiKey"]!;
+    options.WebhookSecret = builder.Configuration["Bachs:WebhookSecret"]!;
+
     options.TotalRequestTimeout = TimeSpan.FromSeconds(45);
     options.AttemptTimeout = TimeSpan.FromSeconds(12);
+
     options.MaxRetries = 2;
-    options.RetryDelay = TimeSpan.FromSeconds(1);
+    options.RetryDelay = TimeSpan.FromSeconds(5); // Bachs official delay is 5 seconds
+
     options.CircuitBreakerFailureRatio = 0.2;
     options.CircuitBreakerMinimumThroughput = 20;
     options.CircuitBreakerSamplingDuration = TimeSpan.FromSeconds(30);
@@ -381,6 +386,72 @@ catch (BachsSerializationException)         // malformed JSON
 {
 }
 ```
+
+In ASP.NET Core, you can handle these exceptions centrally with `IExceptionHandler`.
+This example preserves the HTTP status from API exceptions and maps transport
+failures to appropriate gateway statuses:
+
+```csharp
+using Bachs.Net.Exceptions;
+using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Mvc;
+using System.Net;
+
+var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddExceptionHandler<BachsExceptionHandler>();
+builder.Services.AddProblemDetails();
+
+var app = builder.Build();
+app.UseExceptionHandler();
+
+public sealed class BachsExceptionHandler : IExceptionHandler
+{
+    public async ValueTask<bool> TryHandleAsync(
+        HttpContext httpContext,
+        Exception exception,
+        CancellationToken cancellationToken)
+    {
+        if (exception is not BachsException bachsException)
+        {
+            return false; // Allow other exception handler catch it;
+        }
+
+        var (statusCode, title, detail) = bachsException switch
+        {
+            BachsValidationException apiException =>
+                (apiException.StatusCode, "Bachs request validation failed", apiException.Detail),
+            BachsApiException apiException =>
+                (apiException.StatusCode, "Bachs API request failed", apiException.Detail),
+            BachsTimeoutException =>
+                (HttpStatusCode.GatewayTimeout, "Bachs request timed out", "The Bachs request timed out."),
+            BachsServiceUnavailableException =>
+                (HttpStatusCode.ServiceUnavailable, "Bachs is temporarily unavailable", "Please try again later."),
+            BachsNetworkException =>
+                (HttpStatusCode.BadGateway, "Could not reach Bachs", "The upstream request failed."),
+            BachsSerializationException =>
+                (HttpStatusCode.BadGateway, "Invalid response from Bachs", "The upstream response could not be read."),
+            _ =>
+                (HttpStatusCode.InternalServerError, "Bachs SDK error", "The request could not be completed.")
+        };
+
+        httpContext.Response.StatusCode = (int)statusCode;
+        await httpContext.Response.WriteAsJsonAsync(
+            new ProblemDetails
+            {
+                Status = (int)statusCode,
+                Title = title,
+                Detail = detail
+            },
+            cancellationToken);
+
+        return true;
+    }
+}
+```
+
+This handles only thrown `BachsException` instances. API errors returned in
+`BachsResponse<T>` still need to be checked and handled by your endpoint unless
+you convert them to exceptions with `BachsApiException.Create(...)`.
 
 The typed HTTP-error exceptions (`BachsValidationException`, `BachsNotFoundException`,
 `BachsRateLimitException`, …) live in the same namespace and are produced by

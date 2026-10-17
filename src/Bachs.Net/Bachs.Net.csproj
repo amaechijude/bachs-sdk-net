@@ -1,17 +1,19 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
+    <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
 
     <!-- NuGet Package Properties -->
     <PackageId>Bachs.Sdk</PackageId>
     <Version>1.0.0</Version>
-    <Title>Bachs SDK for .NET (Unofficial)</Title>
+    <Title>Bachs SDK for .NET</Title>
     <Authors>Amaechi Ugwu</Authors>
-    <Description>Modern, Developer-first C# / .NET 8+ SDK for Bachs (https://docs.bachs.io/) payments, billing, hosted checkout, subscriptions, and webhooks.</Description>
+    <Copyright>Copyright (c) Amaechi Ugwu 2026</Copyright>
+    <Description>Developer-first .NET 8+ SDK for the Bachs payments and billing API: hosted checkout, subscriptions, and webhooks. Not affiliated with Bachs. API docs: https://docs.bachs.io/</Description>
     <PackageTags>bachs;payments;billing;checkout;subscriptions;fintech;sdk;webhooks;dotnet;csharp</PackageTags>
-    <PackageProjectUrl>https://docs.bachs.io/</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/amaechijude/bachs-sdk-net</PackageProjectUrl>
     <RepositoryUrl>https://github.com/amaechijude/bachs-sdk-net</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -29,7 +31,16 @@
     />
   </ItemGroup>
 
-  <ItemGroup>
+  <!-- One Http.Resilience major version per target framework -->
+  <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
+    <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="8.10.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
+    <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="9.10.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
     <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="10.11.0" />
   </ItemGroup>
 </Project>
