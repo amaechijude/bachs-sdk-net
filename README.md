@@ -12,6 +12,17 @@ Issues related to the SDK should be reported in this repository, not to Bachs su
 
 ---
 
+## Table of Contents
+
+- [Features](#features)
+- [Installation](#installation)
+- [Getting Started](#getting-started)
+- [Request Flow](#request-flow)
+- [Result Pattern & Error Handling](#result-pattern--error-handling)
+- [Sub API Clients & Documentation](#sub-api-clients--documentation)
+- [Usage Examples](#usage-examples)
+- [License](#license)
+
 ## Features
 
 - ⚡ **Full API Coverage**: Checkout sessions, products, customers, subscriptions, payments, refunds, payouts, balances, conversions, transfers, disputes, connected accounts (Connect), and virtual accounts.
@@ -155,6 +166,29 @@ builder.Services.AddBachsClient(options =>
 Standalone clients created with `new BachsClient(...)` use a shared `HttpClient`
 without this resilience pipeline. The timeout, retry, and circuit-breaker options
 are applied to clients registered with `AddBachsClient`.
+
+---
+
+## Request Flow
+
+```mermaid
+flowchart TD
+    A[Caller] --> B[Domain Client Method]
+    B --> C[IBachsClient verb]
+    C --> D[Build request URI]
+    D --> E[Apply headers]
+    E --> F{Transport mode}
+    F -->|Standalone| G[Shared HttpClient]
+    F -->|DI| H[Polly resilience pipeline]
+    G --> I[HTTP response]
+    H --> I
+    I --> J{Status code}
+    J -->|2xx| K[BachsResponse.Success]
+    J -->|4xx/5xx| L[BachsResponse.Failure]
+    J -->|transport failure| M[Throw BachsException subtype]
+```
+
+See [CODE_DESIGN.md](CODE_DESIGN.md) for the detailed pipeline and resilience diagrams.
 
 ---
 
@@ -452,6 +486,9 @@ public sealed class BachsExceptionHandler : IExceptionHandler
 This handles only thrown `BachsException` instances. API errors returned in
 `BachsResponse<T>` still need to be checked and handled by your endpoint unless
 you convert them to exceptions with `BachsApiException.Create(...)`.
+
+See the [Exception reference](docs/exceptions.md) for the full hierarchy and when each
+exception is thrown.
 
 The typed HTTP-error exceptions (`BachsValidationException`, `BachsNotFoundException`,
 `BachsRateLimitException`, …) live in the same namespace and are produced by
