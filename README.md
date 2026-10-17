@@ -1,4 +1,4 @@
-# BachsSDK.Net
+# Bachs SDK For .Net
 
 > Modern, Developer-first C# / .NET 8+ SDK for [Bachs](https://docs.bachs.io/) payments, billing, hosted checkout, subscriptions, and webhooks.
 
@@ -6,7 +6,7 @@
 
 ## Disclaimer
 
-This project is independently developed and maintained by the community. It is not an official Bachs product and is not supported by the Bachs team.
+This project is independently developed and maintained by Amaechi Ugwu. It is not an official Bachs product and is not supported by the Bachs team.
 
 Issues related to the SDK should be reported in this repository, not to Bachs support.
 

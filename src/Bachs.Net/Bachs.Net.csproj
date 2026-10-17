@@ -7,7 +7,7 @@
     <!-- NuGet Package Properties -->
     <PackageId>Bachs.Sdk</PackageId>
     <Version>1.0.0</Version>
-    <Title>Bachs .NET SDK</Title>
+    <Title>Bachs SDK for .NET (Unofficial)</Title>
     <Authors>Amaechi Ugwu</Authors>
     <Description>Modern, Developer-first C# / .NET 8+ SDK for Bachs (https://docs.bachs.io/) payments, billing, hosted checkout, subscriptions, and webhooks.</Description>
     <PackageTags>bachs;payments;billing;checkout;subscriptions;fintech;sdk;webhooks;dotnet;csharp</PackageTags>

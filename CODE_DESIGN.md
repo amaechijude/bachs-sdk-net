@@ -1,4 +1,4 @@
-# Bachs.Net — Code Design & Contributor Reading Guide
+# Bachs SDK For .Net — Code Design & Contributor Reading Guide
 
 This document explains the **design patterns** used in the Bachs.Net SDK and gives
 contributors a **reading map** for finding their way around the code.
