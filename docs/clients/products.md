@@ -2,8 +2,8 @@
 
 The Products client allows you to manage catalog items in Bachs, defining one-time pricing, recurring subscriptions (with custom frequencies and trial periods), and lifecycle status.
 
-- **Interface**: [`IProductsClient`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Clients/IProductsClient.cs)
-- **Implementation**: [`ProductsClient`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Clients/ProductsClient.cs)
+- **Interface**: [`IProductsClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Clients/IProductsClient.cs)
+- **Implementation**: [`ProductsClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Clients/ProductsClient.cs)
 - **Property**: `client.Products`
 - **DI Service**: `services.AddBachsClient(...)` registers `IProductsClient` as a transient service.
 
@@ -191,7 +191,7 @@ Console.WriteLine($"Is Archived: {restored.IsArchived}"); // false
 
 ## Models
 
-### [`CreateProductRequest`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Products/CreateProductRequest.cs)
+### [`CreateProductRequest`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Models/Products/CreateProductRequest.cs)
 - `Name` (`string`): The name shown at checkout.
 - `Description` (`string?`): Product details or marketing summary.
 - `Price` (`ProductPriceRequest`): Amount, currency, and pricing model (`fixed`, `free`, `custom`).
@@ -199,7 +199,7 @@ Console.WriteLine($"Is Archived: {restored.IsArchived}"); // false
 - `TrialPeriod` (`ProductTrialPeriodRequest?`): Trial duration cadence and frequency.
 - `Metadata` (`IDictionary<string, string>?`): Arbitrary key-value pairs stored on the product.
 
-### [`Product`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Products/Product.cs)
+### [`Product`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Models/Products/Product.cs)
 - `Id` (`string`): Starts with `prod_`.
 - `Name` (`string`): Display name.
 - `Description` (`string?`): Product details or marketing summary.

@@ -12,7 +12,7 @@
     <Description>Modern, Developer-first C# / .NET 8+ SDK for Bachs (https://docs.bachs.io/) payments, billing, hosted checkout, subscriptions, and webhooks.</Description>
     <PackageTags>bachs;payments;billing;checkout;subscriptions;fintech;sdk;webhooks;dotnet;csharp</PackageTags>
     <PackageProjectUrl>https://docs.bachs.io/</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/amaechijude/Bachs.Net</RepositoryUrl>
+    <RepositoryUrl>https://github.com/amaechijude/bachs-sdk-net</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>

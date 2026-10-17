@@ -2,8 +2,8 @@
 
 The Subscriptions client manages recurring billing lifecycles, plan updates, status inquiries, and subscription cancellations in Bachs.
 
-- **Interface**: [`ISubscriptionsClient`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Clients/ISubscriptionsClient.cs)
-- **Implementation**: [`SubscriptionsClient`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Clients/SubscriptionsClient.cs)
+- **Interface**: [`ISubscriptionsClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Clients/ISubscriptionsClient.cs)
+- **Implementation**: [`SubscriptionsClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Clients/SubscriptionsClient.cs)
 - **Property**: `client.Subscriptions`
 - **DI Service**: `services.AddBachsClient(...)` registers `ISubscriptionsClient` as a transient service.
 
@@ -122,7 +122,7 @@ Console.WriteLine($"Canceled at: {canceled.CanceledAt}");
 
 ## Models
 
-### [`Subscription`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Subscriptions/Subscription.cs)
+### [`Subscription`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Models/Subscriptions/Subscription.cs)
 - `Id` (`string`): Starts with `sub_`.
 - `CustomerId` (`string`): Associated customer identifier (`cus_...`).
 - `ProductId` (`string`): Current plan product identifier (`prod_...`).

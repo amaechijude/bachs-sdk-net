@@ -2,8 +2,8 @@
 
 The Refunds client handles issuing full and partial refunds against previously captured payments, inspecting refund statuses, and looking up all refunds tied to a specific transaction.
 
-- **Interface**: [`IRefundsClient`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Clients/IRefundsClient.cs)
-- **Implementation**: [`RefundsClient`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Clients/RefundsClient.cs)
+- **Interface**: [`IRefundsClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Clients/IRefundsClient.cs)
+- **Implementation**: [`RefundsClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Clients/RefundsClient.cs)
 - **Property**: `client.Refunds`
 - **DI Service**: `services.AddBachsClient(...)` registers `IRefundsClient` as a transient service.
 
@@ -142,14 +142,14 @@ Console.WriteLine($"Total refunds issued for charge: {refunds.Items.Count}");
 
 ## Models
 
-### [`CreateRefundRequest`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Refunds/Refund.cs)
+### [`CreateRefundRequest`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Models/Refunds/Refund.cs)
 - `ChargeId` (`string`): The payment identifier starting with `ch_`.
 - `Amount` (`BachsPrice?`): Amount to refund. If omitted, the entire remaining charge balance is refunded.
 - `Reason` (`string?`): Explanation for the refund for audit trails and customer receipts.
 - `Reference` (`string`): Unique external reference for the refund.
 - `RefundAddress` (`string?`): Crypto wallet address to receive the refund, for crypto payments.
 
-### [`Refund`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Refunds/Refund.cs)
+### [`Refund`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Models/Refunds/Refund.cs)
 - `Id` (`string`): Starts with `ref_`. Also exposed as `RefundId` (the `refund_id` webhook alias).
 - `ChargeId` (`string`): Target charge identifier.
 - `Amount` (`BachsPrice`): Monetary value refunded.

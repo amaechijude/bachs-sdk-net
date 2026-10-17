@@ -2,8 +2,8 @@
 
 The Accounts client manages multi-party marketplaces, platforms, and merchant onboarding via Bachs Connect. Create connected accounts, generate hosted onboarding links, query sub-account status, and inspect self-profile information.
 
-- **Interface**: [`IAccountsClient`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Clients/IAccountsClient.cs)
-- **Implementation**: [`AccountsClient`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Clients/AccountsClient.cs)
+- **Interface**: [`IAccountsClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Clients/IAccountsClient.cs)
+- **Implementation**: [`AccountsClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Clients/AccountsClient.cs)
 - **Property**: `client.Accounts`
 - **DI Service**: `services.AddBachsClient(...)` registers `IAccountsClient` as a transient service.
 
@@ -156,7 +156,7 @@ Console.WriteLine($"Current platform account: {me.Id} ({me.BusinessName})");
 
 ## Models
 
-### [`Account`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Accounts/Account.cs)
+### [`Account`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Models/Accounts/Account.cs)
 - `Id` (`string`): Starts with `acc_`.
 - `Type` (`string`): `standard`, `custom`, `express`.
 - `Country` (`string`): Two-letter ISO country code.
@@ -164,6 +164,6 @@ Console.WriteLine($"Current platform account: {me.Id} ({me.BusinessName})");
 - `BusinessName` (`string?`): Commercial or legal name.
 - `CreatedAt` (`DateTimeOffset`): Timestamp of creation.
 
-### [`AccountLink`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Accounts/Account.cs)
+### [`AccountLink`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Models/Accounts/Account.cs)
 - `Url` (`string`): Hosted Bachs onboarding / identity verification web page.
 - `ExpiresAt` (`DateTimeOffset`): Expiration of the one-time link.

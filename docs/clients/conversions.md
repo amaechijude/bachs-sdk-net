@@ -2,8 +2,8 @@
 
 The Conversions client provides real-time foreign exchange (FX) quotes and balance conversion execution between supported currencies within your Bachs multi-currency account.
 
-- **Interface**: [`IConversionsClient`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Clients/IConversionsClient.cs)
-- **Implementation**: [`ConversionsClient`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Clients/ConversionsClient.cs)
+- **Interface**: [`IConversionsClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Clients/IConversionsClient.cs)
+- **Implementation**: [`ConversionsClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Clients/ConversionsClient.cs)
 - **Property**: `client.Conversions`
 - **DI Service**: `services.AddBachsClient(...)` registers `IConversionsClient` as a transient service.
 
@@ -131,7 +131,7 @@ foreach (var item in history.Items)
 
 ## Models
 
-### [`ConversionQuote`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Conversions/Conversion.cs)
+### [`ConversionQuote`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Models/Conversions/Conversion.cs)
 - `QuoteId` (`string`): Unique quote identifier to pass to `ExecuteAsync`.
 - `SourceCurrency` (`BachsCurrency`): Currency debited.
 - `SourceAmount` (`BachsPrice`): Debit amount.
@@ -140,7 +140,7 @@ foreach (var item in history.Items)
 - `Rate` (`decimal`): Conversion multiplier.
 - `ExpiresAt` (`DateTimeOffset`): Expiration timestamp of the guaranteed rate.
 
-### [`Conversion`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Conversions/Conversion.cs)
+### [`Conversion`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Models/Conversions/Conversion.cs)
 - `Id` (`string`): Starts with `conv_`.
 - `QuoteId` (`string`): Quote utilized for the conversion.
 - `SourceCurrency` (`BachsCurrency`): Origin currency code.

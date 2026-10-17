@@ -2,8 +2,8 @@
 
 The Customers client manages customer records, contact information, billing addresses, and self-service Customer Portal sessions in Bachs.
 
-- **Interface**: [`ICustomersClient`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Clients/ICustomersClient.cs)
-- **Implementation**: [`CustomersClient`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Clients/CustomersClient.cs)
+- **Interface**: [`ICustomersClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Clients/ICustomersClient.cs)
+- **Implementation**: [`CustomersClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Clients/CustomersClient.cs)
 - **Property**: `client.Customers`
 - **DI Service**: `services.AddBachsClient(...)` registers `ICustomersClient` as a transient service.
 
@@ -161,7 +161,7 @@ Console.WriteLine($"Session expires at: {portal.ExpiresAt}");
 
 ## Models
 
-### [`Customer`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Customers/Customer.cs)
+### [`Customer`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Models/Customers/Customer.cs)
 - `Id` (`string`): Starts with `cus_`. Also exposed as `CustomerId` (the `customer_id` webhook alias).
 - `Email` (`string`): Customer email address.
 - `Name` (`string?`): Full name or business entity.
@@ -171,6 +171,6 @@ Console.WriteLine($"Session expires at: {portal.ExpiresAt}");
 - `CreatedAt` (`DateTimeOffset`): Timestamp of creation.
 - `UpdatedAt` (`DateTimeOffset?`): Timestamp of last update.
 
-### [`CustomerPortalSession`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Customers/Customer.cs)
+### [`CustomerPortalSession`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Models/Customers/Customer.cs)
 - `Url` (`string`): Hosted URL to redirect the customer.
 - `ExpiresAt` (`DateTimeOffset?`): Expiration timestamp of the portal session link.

@@ -2,8 +2,8 @@
 
 The Balances client allows you to inspect account funds across all supported currencies, checking available, pending, and locked reserve funds, as well as configuring automated payout schedule preferences.
 
-- **Interface**: [`IBalancesClient`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Clients/IBalancesClient.cs)
-- **Implementation**: [`BalancesClient`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Clients/BalancesClient.cs)
+- **Interface**: [`IBalancesClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Clients/IBalancesClient.cs)
+- **Implementation**: [`BalancesClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Clients/BalancesClient.cs)
 - **Property**: `client.Balances`
 - **DI Service**: `services.AddBachsClient(...)` registers `IBalancesClient` as a transient service.
 
@@ -115,16 +115,16 @@ Console.WriteLine($"Updated Schedule to: {updated.PayoutSchedule}");
 
 ## Models
 
-### [`Balance`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Balances/Balance.cs)
+### [`Balance`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Models/Balances/Balance.cs)
 - `Currencies` (`IReadOnlyDictionary<string, BalanceBucket>`): Dictionary mapping currency codes (e.g. `USD`, `NGN`, `EUR`) to their balance breakdown.
 - `TotalUsd` (`BachsPrice?`): Consolidated portfolio balance converted to USD.
 
-### [`BalanceBucket`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Balances/Balance.cs)
+### [`BalanceBucket`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Models/Balances/Balance.cs)
 - `Available` (`BachsPrice`): Liquid funds available immediately for payouts or conversions.
 - `Pending` (`BachsPrice`): In-transit settlements from recent customer charges.
 - `Locked` (`BachsPrice`): Funds held for ongoing dispute resolutions or collateral reserves.
 - `Currency` (`BachsCurrency`): ISO currency code (e.g. `BachsCurrency.USD`).
 
-### [`BalanceSettings`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Balances/Balance.cs)
+### [`BalanceSettings`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Models/Balances/Balance.cs)
 - `PayoutSchedule` (`string?`): Automation cadence (`manual`, `daily`, `weekly`, `monthly`).
 - `DefaultDestinationId` (`string?`): The target [`PayoutDestination`](payouts.md#payout-destinations-client) ID for automatic sweep withdrawals.

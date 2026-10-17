@@ -2,8 +2,8 @@
 
 The Virtual Accounts client provides fixed, permanent virtual bank accounts (e.g., Nigerian NUBAN accounts) that your users or customers can transfer funds into at any time for continuous automated payment collections.
 
-- **Interface**: [`IVirtualAccountsClient`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Clients/IVirtualAccountsClient.cs)
-- **Implementation**: [`VirtualAccountsClient`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Clients/VirtualAccountsClient.cs)
+- **Interface**: [`IVirtualAccountsClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Clients/IVirtualAccountsClient.cs)
+- **Implementation**: [`VirtualAccountsClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Clients/VirtualAccountsClient.cs)
 - **Property**: `client.VirtualAccounts`
 - **DI Service**: `services.AddBachsClient(...)` registers `IVirtualAccountsClient` as a transient service.
 
@@ -92,10 +92,10 @@ Console.WriteLine($"Account: {existing.AccountNumber} ({existing.BankName})");
 
 ## Models
 
-### [`CreateVirtualAccountRequest`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/VirtualAccounts/VirtualAccount.cs)
+### [`CreateVirtualAccountRequest`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Models/VirtualAccounts/VirtualAccount.cs)
 - `Currency` (`BachsCurrency`): Target currency code (defaults to `BachsCurrency.USD`).
 
-### [`VirtualAccount`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/VirtualAccounts/VirtualAccount.cs)
+### [`VirtualAccount`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Models/VirtualAccounts/VirtualAccount.cs)
 - `AccountNumber` (`string`): The 10-digit NUBAN account number.
 - `AccountName` (`string`): Beneficiary name returned upon bank lookup.
 - `BankName` (`string`): Financial institution name (e.g., Wema Bank, Sterling Bank).

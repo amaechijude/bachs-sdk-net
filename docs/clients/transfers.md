@@ -2,8 +2,8 @@
 
 The Transfers client enables platforms to move funds internally between the platform balance and connected accounts (or between connected accounts) in Bachs.
 
-- **Interface**: [`ITransfersClient`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Clients/ITransfersClient.cs)
-- **Implementation**: [`TransfersClient`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Clients/TransfersClient.cs)
+- **Interface**: [`ITransfersClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Clients/ITransfersClient.cs)
+- **Implementation**: [`TransfersClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Clients/TransfersClient.cs)
 - **Property**: `client.Transfers`
 - **DI Service**: `services.AddBachsClient(...)` registers `ITransfersClient` as a transient service.
 
@@ -102,12 +102,12 @@ foreach (var item in page.Items)
 
 ## Models
 
-### [`CreateTransferRequest`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Transfers/Transfer.cs)
+### [`CreateTransferRequest`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Models/Transfers/Transfer.cs)
 - `Amount` (`BachsPrice`): Monetary value to transfer.
 - `Currency` (`BachsCurrency`): Currency code (defaults to `BachsCurrency.USD`; must match source and destination account currency capability).
 - `Destination` (`string`): Connected account identifier starting with `acc_`.
 
-### [`Transfer`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Transfers/Transfer.cs)
+### [`Transfer`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Models/Transfers/Transfer.cs)
 - `Id` (`string`): Starts with `tr_`.
 - `Amount` (`BachsPrice`): Transferred amount.
 - `Currency` (`BachsCurrency`): Three-letter currency code (e.g. `BachsCurrency.USD`).

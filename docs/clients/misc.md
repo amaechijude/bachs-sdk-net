@@ -2,8 +2,8 @@
 
 The Misc client provides reference and lookup utilities, such as listing supported currencies, querying financial institution / bank codes, and resolving recipient bank account names before initiating payouts.
 
-- **Interface**: [`IMiscClient`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Clients/IMiscClient.cs)
-- **Implementation**: [`MiscClient`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Clients/MiscClient.cs)
+- **Interface**: [`IMiscClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Clients/IMiscClient.cs)
+- **Implementation**: [`MiscClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Clients/MiscClient.cs)
 - **Property**: `client.Misc`
 - **DI Service**: `services.AddBachsClient(...)` registers `IMiscClient` as a transient service.
 
@@ -100,15 +100,15 @@ Console.WriteLine($"Bank Code:      {resolution.BankCode}");
 
 ## Models
 
-### [`BankInfo`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Misc/MiscModels.cs)
+### [`BankInfo`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Models/Misc/MiscModels.cs)
 - `Code` (`string`): Institutional sorting/routing code.
 - `Name` (`string`): Commercial bank or financial institution name.
 
-### [`ResolveBankAccountRequest`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Misc/MiscModels.cs)
+### [`ResolveBankAccountRequest`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Models/Misc/MiscModels.cs)
 - `AccountNumber` (`string`): Account number to resolve.
 - `BankCode` (`string`): Target bank's clearing code.
 
-### [`ResolveBankAccountResponse`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Misc/MiscModels.cs)
+### [`ResolveBankAccountResponse`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Models/Misc/MiscModels.cs)
 - `AccountNumber` (`string`): Account number verified.
 - `AccountName` (`string`): Legal name registered to the account.
 - `BankCode` (`string`): Bank code.

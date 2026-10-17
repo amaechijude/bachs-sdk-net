@@ -10,7 +10,7 @@ In `Bachs.Net`, payouts functionality is split into two specialized interfaces:
 
 ## Payouts Client
 
-- **Interface**: [`IPayoutsClient`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Clients/IPayoutsClient.cs)
+- **Interface**: [`IPayoutsClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Clients/IPayoutsClient.cs)
 - **Property**: `client.Payouts`
 - **DI Service**: `services.AddBachsClient(...)` registers `IPayoutsClient` as a transient service.
 
@@ -124,7 +124,7 @@ foreach (var item in page.Items)
 
 ## Payout Destinations Client
 
-- **Interface**: [`IPayoutDestinationsClient`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Clients/IPayoutsClient.cs#L51)
+- **Interface**: [`IPayoutDestinationsClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Clients/IPayoutsClient.cs#L51)
 - **Property**: `client.PayoutDestinations`
 - **DI Service**: `services.AddBachsClient(...)` registers `IPayoutDestinationsClient` as a transient service.
 
@@ -184,7 +184,7 @@ Console.WriteLine("Payout destination removed.");
 
 ## Models
 
-### [`Payout`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Payouts/Payout.cs)
+### [`Payout`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Models/Payouts/Payout.cs)
 - `Id` (`string`): Starts with `wd_`.
 - `Amount` (`BachsPrice`): Monetary withdrawal value.
 - `Currency` (`BachsCurrency`): Currency code (defaults to `BachsCurrency.USD` on creation).
@@ -195,7 +195,7 @@ Console.WriteLine("Payout destination removed.");
 - `WithdrawalFee` / `NetFromAmount` (`BachsPrice?`): Fee and net amount debited.
 - `CreatedAt` (`DateTimeOffset`): Timestamp of payout initiation.
 
-### [`PayoutDestination`](https://github.com/amaechijude/Bachs.Net/blob/main/src/Bachs.Net/Models/Payouts/Payout.cs)
+### [`PayoutDestination`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Models/Payouts/Payout.cs)
 - `Id` (`string`): Starts with `dest_`.
 - `Type` (`string`): Destination category (`bank_account`, `mobile_money`, `crypto`).
 - `Currency` (`BachsCurrency`): Settlement currency code.
