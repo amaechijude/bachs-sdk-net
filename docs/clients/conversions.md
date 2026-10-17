@@ -2,12 +2,12 @@
 
 The Conversions client provides real-time foreign exchange (FX) quotes and balance conversion execution between supported currencies within your Bachs multi-currency account.
 
-- **Interface**: [`IConversionsClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Clients/IConversionsClient.cs)
-- **Implementation**: [`ConversionsClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Clients/ConversionsClient.cs)
+- **Interface**: [`IConversionsClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/Clients/IConversionsClient.cs)
+- **Implementation**: [`ConversionsClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/Clients/ConversionsClient.cs)
 - **Property**: `client.Conversions`
 - **DI Service**: `services.AddBachsClient(...)` registers `IConversionsClient` as a transient service.
 
-> **Handling responses:** Every client method returns `BachsResponse<T>` and returns (rather than throws) on API errors (4xx/5xx). Always check `response.IsSuccessStatusCode` first: on **failure**, inspect `response.Error`/`response.StatusCode` and handle it (log it, retry, or surface it to the caller); on **success**, read the parsed payload from `response.Data`. Transport, timeout, circuit-breaker, and serialization failures still throw typed `Bachs.Net.Exceptions` — see [Response Handling](../README.md#response-handling).
+> **Handling responses:** Every client method returns `BachsResponse<T>` and returns (rather than throws) on API errors (4xx/5xx). Always check `response.IsSuccessStatusCode` first: on **failure**, inspect `response.Error`/`response.StatusCode` and handle it (log it, retry, or surface it to the caller); on **success**, read the parsed payload from `response.Data`. Transport, timeout, circuit-breaker, and serialization failures still throw typed `Bachs.Exceptions` — see [Response Handling](../README.md#response-handling).
 
 ---
 
@@ -29,9 +29,9 @@ The Conversions client provides real-time foreign exchange (FX) quotes and balan
 Request a locked exchange rate before committing to a currency swap:
 
 ```csharp
-using Bachs.Net.Clients;
-using Bachs.Net.Models.Common;
-using Bachs.Net.Models.Conversions;
+using Bachs.Clients;
+using Bachs.Models.Common;
+using Bachs.Models.Conversions;
 
 var response = await client.Conversions.CreateQuoteAsync(new CreateConversionQuoteRequest
 {
@@ -61,7 +61,7 @@ Console.WriteLine($"Rate guaranteed until: {quote.ExpiresAt:T}");
 Submit the `QuoteId` before the quote expires to execute the ledger balance swap:
 
 ```csharp
-using Bachs.Net.Common;
+using Bachs.Common;
 
 var response = await client.Conversions.ExecuteAsync(new ExecuteConversionRequest
 {
@@ -131,7 +131,7 @@ foreach (var item in history.Items)
 
 ## Models
 
-### [`ConversionQuote`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Models/Conversions/Conversion.cs)
+### [`ConversionQuote`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/Models/Conversions/Conversion.cs)
 - `QuoteId` (`string`): Unique quote identifier to pass to `ExecuteAsync`.
 - `SourceCurrency` (`BachsCurrency`): Currency debited.
 - `SourceAmount` (`BachsPrice`): Debit amount.
@@ -140,7 +140,7 @@ foreach (var item in history.Items)
 - `Rate` (`decimal`): Conversion multiplier.
 - `ExpiresAt` (`DateTimeOffset`): Expiration timestamp of the guaranteed rate.
 
-### [`Conversion`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Models/Conversions/Conversion.cs)
+### [`Conversion`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/Models/Conversions/Conversion.cs)
 - `Id` (`string`): Starts with `conv_`.
 - `QuoteId` (`string`): Quote utilized for the conversion.
 - `SourceCurrency` (`BachsCurrency`): Origin currency code.

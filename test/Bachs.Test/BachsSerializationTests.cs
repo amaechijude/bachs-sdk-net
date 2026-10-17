@@ -1,9 +1,9 @@
-using Bachs.Net.Common;
-using Bachs.Net.Models.Common;
-using Bachs.Net.Models.Products;
-using Bachs.Net.Models.Refunds;
-using Bachs.Net.Models.Transfers;
-using Bachs.Net.Serialization;
+using Bachs.Common;
+using Bachs.Models.Common;
+using Bachs.Models.Products;
+using Bachs.Models.Refunds;
+using Bachs.Models.Transfers;
+using Bachs.Serialization;
 
 namespace Bachs.Test;
 

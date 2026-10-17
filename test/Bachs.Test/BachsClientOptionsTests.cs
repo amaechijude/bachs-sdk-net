@@ -1,5 +1,5 @@
-using Bachs.Net.Common;
-using Bachs.Net.Exceptions;
+using Bachs.Common;
+using Bachs.Exceptions;
 
 namespace Bachs.Test;
 

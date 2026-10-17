@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Bachs.Net\Bachs.Net.csproj" />
+    <ProjectReference Include="..\..\src\Bachs\Bachs.csproj" />
   </ItemGroup>
 
   <ItemGroup>

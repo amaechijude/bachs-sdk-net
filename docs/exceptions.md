@@ -48,7 +48,7 @@ Standard `ArgumentNullException` / `ArgumentException` may also be thrown for `n
 Transport/config failures should be handled with `try/catch` around SDK calls:
 
 ```csharp
-using Bachs.Net.Exceptions;
+using Bachs.Exceptions;
 
 try
 {

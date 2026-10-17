@@ -2,7 +2,7 @@
 
 Welcome to the comprehensive reference documentation for the **Bachs .NET SDK** (`Bachs.Net`).
 
-This guide details all 16 specialized sub-clients available through [`IBachsClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Clients/IBachsClient.cs), enabling seamless integration with Bachs payment infrastructure, hosted checkout, product catalog, customer management, subscriptions, payouts, Connect accounts, and webhooks.
+This guide details all 16 specialized sub-clients available through [`IBachsClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/Clients/IBachsClient.cs), enabling seamless integration with Bachs payment infrastructure, hosted checkout, product catalog, customer management, subscriptions, payouts, Connect accounts, and webhooks.
 
 ## Disclaimer
 
@@ -17,7 +17,7 @@ Issues related to the SDK should be reported in this repository, not to Bachs su
 `Bachs.Net` organizes operations into domain-specific clients. You can interact with these clients either:
 1. **Directly via the root client instance**:
    ```csharp
-   using Bachs.Net.Clients;
+   using Bachs.Clients;
 
    var client = new BachsClient("sk_sandbox_...", "whsec_...");
    var response = await client.CheckoutSessions.CreateAsync(request);
@@ -50,7 +50,7 @@ Issues related to the SDK should be reported in this repository, not to Bachs su
    app.MapPost("/checkout", async (ICheckoutSessionsClient checkoutClient) => { ... });
    ```
 
-All sub-clients inherit from [`BaseClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Clients/BaseClient.cs), execute resilient HTTP requests with built-in retries, exponential backoff, and a configurable circuit breaker when registered through dependency injection, and deserialize responses directly into strongly-typed C# models.
+All sub-clients inherit from [`BaseClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/Clients/BaseClient.cs), execute resilient HTTP requests with built-in retries, exponential backoff, and a configurable circuit breaker when registered through dependency injection, and deserialize responses directly into strongly-typed C# models.
 
 ---
 
@@ -79,7 +79,7 @@ All sub-clients inherit from [`BaseClient`](https://github.com/amaechijude/bachs
 
 ## Common Features Across All Clients
 
-### 1. Per-Request Options ([`BachsRequestOptions`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Common/BachsRequestOptions.cs))
+### 1. Per-Request Options ([`BachsRequestOptions`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/Common/BachsRequestOptions.cs))
 All write and read operations accept an optional `BachsRequestOptions` parameter:
 ```csharp
 var options = new BachsRequestOptions
@@ -99,7 +99,7 @@ if (!response.IsSuccessStatusCode)
 var payment = response.Data;
 ```
 
-### 2. Pagination Options ([`BachsListRequestOptions`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Common/BachsListRequestOptions.cs))
+### 2. Pagination Options ([`BachsListRequestOptions`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/Common/BachsListRequestOptions.cs))
 All list operations accept specialized options derived from `BachsListRequestOptions`:
 ```csharp
 var listOptions = new ListPaymentsOptions
@@ -121,13 +121,13 @@ Console.WriteLine($"Retrieved {page.Items.Count} items. HasMore: {page.Paginatio
 ```
 
 ### 3. Error Handling
-API errors (4xx/5xx) are returned in `BachsResponse<T>.Error`; check `IsSuccessStatusCode` before using `.Data`. When you prefer exception-style handling, the SDK also provides typed exceptions inheriting from [`BachsApiException`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Exceptions/BachsApiException.cs) (produced via `BachsApiException.Create(...)`):
-- [`BachsValidationException`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Exceptions/BachsValidationException.cs) — HTTP 400 / 422 with `ValidationErrors` list.
-- [`BachsAuthenticationException`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Exceptions/BachsAuthenticationException.cs) — HTTP 401 Unauthorized.
-- [`BachsForbiddenException`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Exceptions/BachsForbiddenException.cs) — HTTP 403 Forbidden.
-- [`BachsNotFoundException`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Exceptions/BachsNotFoundException.cs) — HTTP 404 Not Found.
-- [`BachsConflictException`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Exceptions/BachsConflictException.cs) — HTTP 409 Conflict.
-- [`BachsRateLimitException`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Exceptions/BachsRateLimitException.cs) — HTTP 429 Too Many Requests with `RetryAfter` parsed from header.
+API errors (4xx/5xx) are returned in `BachsResponse<T>.Error`; check `IsSuccessStatusCode` before using `.Data`. When you prefer exception-style handling, the SDK also provides typed exceptions inheriting from [`BachsApiException`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/Exceptions/BachsApiException.cs) (produced via `BachsApiException.Create(...)`):
+- [`BachsValidationException`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/Exceptions/BachsValidationException.cs) — HTTP 400 / 422 with `ValidationErrors` list.
+- [`BachsAuthenticationException`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/Exceptions/BachsAuthenticationException.cs) — HTTP 401 Unauthorized.
+- [`BachsForbiddenException`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/Exceptions/BachsForbiddenException.cs) — HTTP 403 Forbidden.
+- [`BachsNotFoundException`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/Exceptions/BachsNotFoundException.cs) — HTTP 404 Not Found.
+- [`BachsConflictException`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/Exceptions/BachsConflictException.cs) — HTTP 409 Conflict.
+- [`BachsRateLimitException`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/Exceptions/BachsRateLimitException.cs) — HTTP 429 Too Many Requests with `RetryAfter` parsed from header.
 
 ---
 
@@ -158,7 +158,7 @@ Console.WriteLine($"Payment {payment.Id} is {payment.Status}");
 |---|---|
 | `IsSuccessStatusCode` | `true` for 2xx responses — the fast check to branch on. |
 | `Data` | The deserialized payload (`T`); valid on success. |
-| `Error` | The parsed [`BachsError`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Common/BachsError.cs) (error code, message, and field-level errors); populated on failure. |
+| `Error` | The parsed [`BachsError`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/Common/BachsError.cs) (error code, message, and field-level errors); populated on failure. |
 | `StatusCode` | The raw `System.Net.HttpStatusCode`. |
 
 > **Do not ignore the result.** Skipping the `IsSuccessStatusCode` check silently discards failed operations and leaves `response.Data` unusable.

@@ -56,8 +56,8 @@ Install-Package Bachs.Sdk
 ### 1. Standalone Client Usage
 
 ```csharp
-using Bachs.Net.Clients;
-using Bachs.Net.Common;
+using Bachs.Clients;
+using Bachs.Common;
 
 // Initializes automatically against the sandbox based on the key prefix.
 // The second argument is the webhook signing secret (optional for pure API usage).
@@ -83,7 +83,7 @@ uses it as the default secret during verification.
 In `Program.cs`:
 
 ```csharp
-using Bachs.Net.Extensions;
+using Bachs.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -100,9 +100,9 @@ var app = builder.Build();
 You can now inject either the root `IBachsClient` or specific sub-clients into your endpoints and services:
 
 ```csharp
-using Bachs.Net.Clients;
-using Bachs.Net.Models.Checkout;
-using Bachs.Net.Models.Common;
+using Bachs.Clients;
+using Bachs.Models.Checkout;
+using Bachs.Models.Common;
 
 app.MapPost("/create-checkout", async (ICheckoutSessionsClient checkoutClient) =>
 {
@@ -209,7 +209,7 @@ var session = response.Data;
 
 API errors (4xx/5xx) are returned in `BachsResponse<T>.Error`; the HTTP status is on
 `StatusCode` and the success check is `IsSuccessStatusCode`. Genuine transport and
-serialization failures still throw typed exceptions from the `Bachs.Net.Exceptions`
+serialization failures still throw typed exceptions from the `Bachs.Exceptions`
 namespace — see [Error Handling](#error-handling) below.
 
 ## Sub API Clients & Documentation
@@ -244,9 +244,9 @@ namespace — see [Error Handling](#error-handling) below.
 ### Hosted Checkout Sessions
 
 ```csharp
-using Bachs.Net.Clients;
-using Bachs.Net.Common;
-using Bachs.Net.Models.Checkout;
+using Bachs.Clients;
+using Bachs.Common;
+using Bachs.Models.Checkout;
 
 // Create a checkout session with product catalog items using the builder
 var request = CreateCheckoutSessionRequestBuilder
@@ -284,8 +284,8 @@ Console.WriteLine($"Redirect customer to: {session.CheckoutUrl}");
 ### Products and Recurring Pricing
 
 ```csharp
-using Bachs.Net.Models.Common;
-using Bachs.Net.Models.Products;
+using Bachs.Models.Common;
+using Bachs.Models.Products;
 
 // Create a recurring subscription product (Pro Plan, $29/month, 14-day trial)
 var response = await client.Products.CreateAsync(new CreateProductRequest
@@ -327,8 +327,8 @@ Console.WriteLine($"Created product: {product.Id}");
 In your ASP.NET Core Web API:
 
 ```csharp
-using Bachs.Net.Clients;
-using Bachs.Net.WebHooks;
+using Bachs.Clients;
+using Bachs.WebHooks;
 
 app.MapPost("/api/webhooks/bachs", async (HttpRequest request, IWebhooksClient webhooks) =>
 {
@@ -398,10 +398,10 @@ if (!response.IsSuccessStatusCode)
 ```
 
 Transport and serialization failures throw typed exceptions instead. Every exception
-derives from `BachsException` in the `Bachs.Net.Exceptions` namespace:
+derives from `BachsException` in the `Bachs.Exceptions` namespace:
 
 ```csharp
-using Bachs.Net.Exceptions;
+using Bachs.Exceptions;
 
 try
 {
@@ -426,7 +426,7 @@ This example preserves the HTTP status from API exceptions and maps transport
 failures to appropriate gateway statuses:
 
 ```csharp
-using Bachs.Net.Exceptions;
+using Bachs.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;

@@ -39,14 +39,14 @@ understand those two pieces, you understand the whole library.**
 | Step | File | What you'll learn |
 |---|---|---|
 | 1 | `README.md` | Public surface and intended usage |
-| 2 | `src/Bachs.Net/Clients/IBachsClient.cs` | The HTTP verb contract and the 16 resource properties every client shares |
-| 3 | `src/Bachs.Net/Clients/BachsClient.cs` | `SendAsync`: URI building, header application, content handling, success/failure mapping |
-| 4 | `src/Bachs.Net/Clients/BaseClient.cs` + one domain client (e.g. `CheckoutSessionsClient.cs`) | How sub-clients delegate to the root client |
-| 5 | `src/Bachs.Net/Common/BachsResponse.cs` + `BachsError.cs` + `BachsErrorCode.cs` | The result type returned to callers and the error contract |
-| 6 | `src/Bachs.Net/Common/BachsClientOptions.cs` | Configuration, validation, environment inference |
-| 7 | `src/Bachs.Net/Extensions/BachsServiceExtensions.cs` | Where retries / circuit breaker / timeouts actually live |
-| 8 | `src/Bachs.Net/Serialization/BachsJsonSerializer.cs` + `BachsPriceJsonConverter.cs` | Wire-format conventions |
-| 9 | `src/Bachs.Net/WebHooks/BachsWebhook.cs` | Signature verification (V1/V2), anti-replay |
+| 2 | `src/Bachs/Clients/IBachsClient.cs` | The HTTP verb contract and the 16 resource properties every client shares |
+| 3 | `src/Bachs/Clients/BachsClient.cs` | `SendAsync`: URI building, header application, content handling, success/failure mapping |
+| 4 | `src/Bachs/Clients/BaseClient.cs` + one domain client (e.g. `CheckoutSessionsClient.cs`) | How sub-clients delegate to the root client |
+| 5 | `src/Bachs/Common/BachsResponse.cs` + `BachsError.cs` + `BachsErrorCode.cs` | The result type returned to callers and the error contract |
+| 6 | `src/Bachs/Common/BachsClientOptions.cs` | Configuration, validation, environment inference |
+| 7 | `src/Bachs/Extensions/BachsServiceExtensions.cs` | Where retries / circuit breaker / timeouts actually live |
+| 8 | `src/Bachs/Serialization/BachsJsonSerializer.cs` + `BachsPriceJsonConverter.cs` | Wire-format conventions |
+| 9 | `src/Bachs/WebHooks/BachsWebhook.cs` | Signature verification (V1/V2), anti-replay |
 | 10 | `test/Bachs.Test/BachsClientTests.cs` | How tests intercept HTTP without a network |
 
 ### 1.3 Following a request end-to-end
@@ -323,7 +323,7 @@ requires a minimum of one attempt.
 ### 3.7 Adapter — translating Polly failures into SDK exceptions
 
 Polly throws its own types; `BachsClient.SendAsync` adapts them at the boundary so
-callers only ever see `Bachs.Net.Exceptions` types:
+callers only ever see `Bachs.Exceptions` types:
 
 | Thrown by pipeline | Surfaced as |
 |---|---|
@@ -500,7 +500,7 @@ Rules that keep the code decoupled:
   catch blocks in `BachsClient` — no Polly types leak into the public surface.
 
 ```
-src/Bachs.Net/
+src/Bachs/
 ├── Clients/        Facade (BachsClient) + 16 thin domain clients + interfaces + BaseClient
 ├── Common/         Options, response/error/list wrappers, query builder, error codes
 ├── Exceptions/     Typed exception hierarchy
@@ -587,7 +587,7 @@ consistent with the existing subtypes.
 - **Validation:** `ArgumentNullException.ThrowIfNull` /
   `ArgumentException.ThrowIfNullOrWhiteSpace` guards at public boundaries;
   `BachsClientOptions.Validate()` on construction.
-- **Errors:** typed `Bachs.Net.Exceptions` types only — never leak Polly or
+- **Errors:** typed `Bachs.Exceptions` types only — never leak Polly or
   `System.Text.Json` exceptions.
 - **URLs:** always `Uri.EscapeDataString` for path segments and `BachsQueryBuilder`
   for query strings.

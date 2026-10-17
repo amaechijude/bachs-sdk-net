@@ -2,12 +2,12 @@
 
 The Subscriptions client manages recurring billing lifecycles, plan updates, status inquiries, and subscription cancellations in Bachs.
 
-- **Interface**: [`ISubscriptionsClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Clients/ISubscriptionsClient.cs)
-- **Implementation**: [`SubscriptionsClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Clients/SubscriptionsClient.cs)
+- **Interface**: [`ISubscriptionsClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/Clients/ISubscriptionsClient.cs)
+- **Implementation**: [`SubscriptionsClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/Clients/SubscriptionsClient.cs)
 - **Property**: `client.Subscriptions`
 - **DI Service**: `services.AddBachsClient(...)` registers `ISubscriptionsClient` as a transient service.
 
-> **Handling responses:** Every client method returns `BachsResponse<T>` and returns (rather than throws) on API errors (4xx/5xx). Always check `response.IsSuccessStatusCode` first: on **failure**, inspect `response.Error`/`response.StatusCode` and handle it (log it, retry, or surface it to the caller); on **success**, read the parsed payload from `response.Data`. Transport, timeout, circuit-breaker, and serialization failures still throw typed `Bachs.Net.Exceptions` — see [Response Handling](../README.md#response-handling).
+> **Handling responses:** Every client method returns `BachsResponse<T>` and returns (rather than throws) on API errors (4xx/5xx). Always check `response.IsSuccessStatusCode` first: on **failure**, inspect `response.Error`/`response.StatusCode` and handle it (log it, retry, or surface it to the caller); on **success**, read the parsed payload from `response.Data`. Transport, timeout, circuit-breaker, and serialization failures still throw typed `Bachs.Exceptions` — see [Response Handling](../README.md#response-handling).
 
 ---
 
@@ -27,7 +27,7 @@ The Subscriptions client manages recurring billing lifecycles, plan updates, sta
 ### 1. Retrieve a Subscription
 
 ```csharp
-using Bachs.Net.Clients;
+using Bachs.Clients;
 
 var response = await client.Subscriptions.GetAsync("sub_100200300");
 if (!response.IsSuccessStatusCode)
@@ -50,7 +50,7 @@ Console.WriteLine($"Current Period End: {subscription.CurrentPeriodEnd:yyyy-MM-d
 ### 2. List Subscriptions
 
 ```csharp
-using Bachs.Net.Models.Subscriptions;
+using Bachs.Models.Subscriptions;
 
 var response = await client.Subscriptions.ListAsync(new ListSubscriptionsOptions
 {
@@ -122,7 +122,7 @@ Console.WriteLine($"Canceled at: {canceled.CanceledAt}");
 
 ## Models
 
-### [`Subscription`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Models/Subscriptions/Subscription.cs)
+### [`Subscription`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/Models/Subscriptions/Subscription.cs)
 - `Id` (`string`): Starts with `sub_`.
 - `CustomerId` (`string`): Associated customer identifier (`cus_...`).
 - `ProductId` (`string`): Current plan product identifier (`prod_...`).

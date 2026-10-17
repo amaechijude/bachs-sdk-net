@@ -1,10 +1,10 @@
 using System.Net;
 using System.Text;
-using Bachs.Net.Clients;
-using Bachs.Net.Common;
-using Bachs.Net.Models.Checkout;
-using Bachs.Net.Models.Common;
-using Bachs.Net.Serialization;
+using Bachs.Clients;
+using Bachs.Common;
+using Bachs.Models.Checkout;
+using Bachs.Models.Common;
+using Bachs.Serialization;
 
 namespace Bachs.Test;
 

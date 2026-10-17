@@ -2,12 +2,12 @@
 
 The Checkout Sessions client enables you to create and inspect hosted checkout pages on Bachs. Customers are redirected to the secure hosted URL to complete payments via cards, bank transfers, mobile money, and alternative payment methods.
 
-- **Interface**: [`ICheckoutSessionsClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Clients/ICheckoutSessionsClient.cs)
-- **Implementation**: [`CheckoutSessionsClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Clients/CheckoutSessionsClient.cs)
+- **Interface**: [`ICheckoutSessionsClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/Clients/ICheckoutSessionsClient.cs)
+- **Implementation**: [`CheckoutSessionsClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/Clients/CheckoutSessionsClient.cs)
 - **Property**: `client.CheckoutSessions`
 - **DI Service**: `services.AddBachsClient(...)` registers `ICheckoutSessionsClient` as a transient service.
 
-> **Handling responses:** Every client method returns `BachsResponse<T>` and returns (rather than throws) on API errors (4xx/5xx). Always check `response.IsSuccessStatusCode` first: on **failure**, inspect `response.Error`/`response.StatusCode` and handle it (log it, retry, or surface it to the caller); on **success**, read the parsed payload from `response.Data`. Transport, timeout, circuit-breaker, and serialization failures still throw typed `Bachs.Net.Exceptions` — see [Response Handling](../README.md#response-handling).
+> **Handling responses:** Every client method returns `BachsResponse<T>` and returns (rather than throws) on API errors (4xx/5xx). Always check `response.IsSuccessStatusCode` first: on **failure**, inspect `response.Error`/`response.StatusCode` and handle it (log it, retry, or surface it to the caller); on **success**, read the parsed payload from `response.Data`. Transport, timeout, circuit-breaker, and serialization failures still throw typed `Bachs.Exceptions` — see [Response Handling](../README.md#response-handling).
 
 ---
 
@@ -28,21 +28,21 @@ There are two main ways to construct a checkout request:
 1. **Catalog Product Cart**: Purchase items from your product catalog.
 2. **Raw Ad-Hoc Pricing**: Dynamic amount and currency without catalog products.
 
-A third option is to instantiate [`CreateCheckoutSessionRequest`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Models/Checkout/CreateCheckoutSessionRequest.cs) directly (see "Direct construction" below) — useful when binding from JSON/DTOs — though the builder is recommended because it enforces mutual exclusivity and validates on `Build()`.
+A third option is to instantiate [`CreateCheckoutSessionRequest`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/Models/Checkout/CreateCheckoutSessionRequest.cs) directly (see "Direct construction" below) — useful when binding from JSON/DTOs — though the builder is recommended because it enforces mutual exclusivity and validates on `Build()`.
 
-All models are **sealed records with init setters**. Use [`CreateCheckoutSessionRequestBuilder`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Models/Checkout/CreateCheckoutSessionRequestBuilder.cs) to ensure compile-time mutual exclusivity: its `WithProductCart(...)` entry point returns a `ProductCartCheckoutRequestBuilder`, and its `WithPricing(...)` entry point returns a `RawPricingCheckoutRequestBuilder`. Both inherit the shared fluent options (customer, URLs, billing currency, payment methods, reference, platform fee, transfer data, customer creation, expiry, metadata) from `CheckoutSessionRequestBuilder<TBuilder>`.
+All models are **sealed records with init setters**. Use [`CreateCheckoutSessionRequestBuilder`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/Models/Checkout/CreateCheckoutSessionRequestBuilder.cs) to ensure compile-time mutual exclusivity: its `WithProductCart(...)` entry point returns a `ProductCartCheckoutRequestBuilder`, and its `WithPricing(...)` entry point returns a `RawPricingCheckoutRequestBuilder`. Both inherit the shared fluent options (customer, URLs, billing currency, payment methods, reference, platform fee, transfer data, customer creation, expiry, metadata) from `CheckoutSessionRequestBuilder<TBuilder>`.
 
 Both builders validate on `Build()` and throw `BachsInvalidOperationException` before any HTTP call when a constraint is violated (cart must hold 1–20 items with a non-empty `ProductId` and `Quantity >= 1`; raw pricing must be seeded via `WithPricing(...)` first).
 
 #### Direct construction (without the builder)
 
-The builder is the recommended path because it enforces mutual exclusivity (cart **or** pricing) and validates on `Build()`. You can also construct a [`CreateCheckoutSessionRequest`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Models/Checkout/CreateCheckoutSessionRequest.cs) directly and set its `init` properties — handy when binding from JSON/DTOs or composing requests programmatically:
+The builder is the recommended path because it enforces mutual exclusivity (cart **or** pricing) and validates on `Build()`. You can also construct a [`CreateCheckoutSessionRequest`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/Models/Checkout/CreateCheckoutSessionRequest.cs) directly and set its `init` properties — handy when binding from JSON/DTOs or composing requests programmatically:
 
 ```csharp
-using Bachs.Net.Clients;
-using Bachs.Net.Common;
-using Bachs.Net.Models.Checkout;
-using Bachs.Net.Models.Common;
+using Bachs.Clients;
+using Bachs.Common;
+using Bachs.Models.Checkout;
+using Bachs.Models.Common;
 
 var request = new CreateCheckoutSessionRequest
 {
@@ -78,9 +78,9 @@ When constructing directly you are responsible for the constraints the builder e
 #### Example A: Catalog Product Cart Builder
 
 ```csharp
-using Bachs.Net.Clients;
-using Bachs.Net.Common;
-using Bachs.Net.Models.Checkout;
+using Bachs.Clients;
+using Bachs.Common;
+using Bachs.Models.Checkout;
 
 var request = CreateCheckoutSessionRequestBuilder
     .WithProductCart(new List<CheckoutCartItemRequest>
@@ -117,10 +117,10 @@ Console.WriteLine($"Redirect Customer to: {session.CheckoutUrl}");
 #### Example B: Raw Pricing Builder
 
 ```csharp
-using Bachs.Net.Clients;
-using Bachs.Net.Common;
-using Bachs.Net.Models.Checkout;
-using Bachs.Net.Models.Common;
+using Bachs.Clients;
+using Bachs.Common;
+using Bachs.Models.Checkout;
+using Bachs.Models.Common;
 
 var request = CreateCheckoutSessionRequestBuilder
     .WithPricing(new CheckoutPricingRequest
@@ -195,7 +195,7 @@ if (session.Products is not null)
 
 ## Request & Response Models
 
-### [`CreateCheckoutSessionRequest`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Models/Checkout/CreateCheckoutSessionRequest.cs)
+### [`CreateCheckoutSessionRequest`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/Models/Checkout/CreateCheckoutSessionRequest.cs)
 - `ProductCart` (`IList<CheckoutCartItemRequest>?`): Catalog items purchased (mutually exclusive with `Pricing`).
 - `Pricing` (`CheckoutPricingRequest?`): Direct ad-hoc pricing (mutually exclusive with `ProductCart`).
 - `Customer` (`CheckoutCustomerRequest?`): Customer ID or contact details.
@@ -214,7 +214,7 @@ if (session.Products is not null)
 
 Supporting request records live in the same file: `CheckoutCartItemRequest` (`ProductId` is `required`, `Quantity` defaults to 1), `CheckoutItemPricingOverrideRequest`, `CheckoutPricingRequest` (`Currency` is `required` and defaults to `BachsCurrency.USD`), `CheckoutTransferDataRequest` (`Destination` is `required`), and `CheckoutCustomerRequest`.
 
-### [`CreateCheckoutSessionResponse`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Models/Checkout/CreateCheckoutSessionResponse.cs)
+### [`CreateCheckoutSessionResponse`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/Models/Checkout/CreateCheckoutSessionResponse.cs)
 - `CheckoutId` (`string`): Unique session ID starting with `chk_`.
 - `CheckoutUrl` (`string`): Hosted Bachs checkout page URL.
 - `Status` (`string`): `open`, `completed`, `expired`, or `cancelled`.
@@ -224,7 +224,7 @@ Supporting request records live in the same file: `CheckoutCartItemRequest` (`Pr
 - `PlatformFee` (`BachsPrice?`): Echoed platform cut.
 - `DestinationAmount` (`BachsPrice?`): Echoed destination account share.
 
-### [`GetCheckoutSessionResponse`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Models/Checkout/GetCheckoutSessionResponse.cs)
+### [`GetCheckoutSessionResponse`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/Models/Checkout/GetCheckoutSessionResponse.cs)
 - `CheckoutId` (`string`): Unique session ID starting with `chk_`.
 - `Status` (`string`): Lifecycle status.
 - `Recurring` (`CheckoutRecurring?`): Subscription recurrence cadence.
@@ -246,12 +246,12 @@ Supporting request records live in the same file: `CheckoutCartItemRequest` (`Pr
 
 | Type | Location | Purpose |
 |---|---|---|
-| `CreateCheckoutSessionRequestBuilder` | [`CreateCheckoutSessionRequestBuilder.cs`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Models/Checkout/CreateCheckoutSessionRequestBuilder.cs) | Static entry point: `WithProductCart(...)` and `WithPricing(...)` overloads. |
-| `CheckoutSessionRequestBuilder<TBuilder>` | [`CheckoutSessionRequestBuilder.cs`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Models/Checkout/CheckoutSessionRequestBuilder.cs) | Abstract base holding the shared fluent options and `Build()` contract. |
-| `ProductCartCheckoutRequestBuilder` | [`ProductCartCheckoutRequestBuilder.cs`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Models/Checkout/ProductCartCheckoutRequestBuilder.cs) | Cart seeding (`WithProductCart`, `AddProduct`) plus cart validation. |
-| `RawPricingCheckoutRequestBuilder` | [`RawPricingCheckoutRequestBuilder.cs`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Models/Checkout/RawPricingCheckoutRequestBuilder.cs) | Pricing seeding (`WithPricing`) and tuning (`WithPriceType`, `WithPresetAmount`, `WithPriceBounds`, `WithCurrencyOption(s)`). |
+| `CreateCheckoutSessionRequestBuilder` | [`CreateCheckoutSessionRequestBuilder.cs`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/Models/Checkout/CreateCheckoutSessionRequestBuilder.cs) | Static entry point: `WithProductCart(...)` and `WithPricing(...)` overloads. |
+| `CheckoutSessionRequestBuilder<TBuilder>` | [`CheckoutSessionRequestBuilder.cs`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/Models/Checkout/CheckoutSessionRequestBuilder.cs) | Abstract base holding the shared fluent options and `Build()` contract. |
+| `ProductCartCheckoutRequestBuilder` | [`ProductCartCheckoutRequestBuilder.cs`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/Models/Checkout/ProductCartCheckoutRequestBuilder.cs) | Cart seeding (`WithProductCart`, `AddProduct`) plus cart validation. |
+| `RawPricingCheckoutRequestBuilder` | [`RawPricingCheckoutRequestBuilder.cs`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/Models/Checkout/RawPricingCheckoutRequestBuilder.cs) | Pricing seeding (`WithPricing`) and tuning (`WithPriceType`, `WithPresetAmount`, `WithPriceBounds`, `WithCurrencyOption(s)`). |
 
-See the module [README](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Models/Checkout/README.md) for the full builder reference.
+See the module [README](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/Models/Checkout/README.md) for the full builder reference.
 
 ---
 

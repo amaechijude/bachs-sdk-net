@@ -2,12 +2,12 @@
 
 The Payments client provides access to captured transactions, settled charges, customer payment methods, and processing fees across all rails supported by Bachs.
 
-- **Interface**: [`IPaymentsClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Clients/IPaymentsClient.cs)
-- **Implementation**: [`PaymentsClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Clients/PaymentsClient.cs)
+- **Interface**: [`IPaymentsClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/Clients/IPaymentsClient.cs)
+- **Implementation**: [`PaymentsClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/Clients/PaymentsClient.cs)
 - **Property**: `client.Payments`
 - **DI Service**: `services.AddBachsClient(...)` registers `IPaymentsClient` as a transient service.
 
-> **Handling responses:** Every client method returns `BachsResponse<T>` and returns (rather than throws) on API errors (4xx/5xx). Always check `response.IsSuccessStatusCode` first: on **failure**, inspect `response.Error`/`response.StatusCode` and handle it (log it, retry, or surface it to the caller); on **success**, read the parsed payload from `response.Data`. Transport, timeout, circuit-breaker, and serialization failures still throw typed `Bachs.Net.Exceptions` — see [Response Handling](../README.md#response-handling).
+> **Handling responses:** Every client method returns `BachsResponse<T>` and returns (rather than throws) on API errors (4xx/5xx). Always check `response.IsSuccessStatusCode` first: on **failure**, inspect `response.Error`/`response.StatusCode` and handle it (log it, retry, or surface it to the caller); on **success**, read the parsed payload from `response.Data`. Transport, timeout, circuit-breaker, and serialization failures still throw typed `Bachs.Exceptions` — see [Response Handling](../README.md#response-handling).
 
 ---
 
@@ -25,7 +25,7 @@ The Payments client provides access to captured transactions, settled charges, c
 ### 1. Retrieve a Payment
 
 ```csharp
-using Bachs.Net.Clients;
+using Bachs.Clients;
 
 var response = await client.Payments.GetAsync("ch_100200300");
 if (!response.IsSuccessStatusCode)
@@ -50,7 +50,7 @@ Console.WriteLine($"Settled Net: {payment.Amount - (payment.Fees?.Amount ?? 0m)}
 ### 2. List Payments with Filtering
 
 ```csharp
-using Bachs.Net.Models.Payments;
+using Bachs.Models.Payments;
 
 var response = await client.Payments.ListAsync(new ListPaymentsOptions
 {
@@ -77,7 +77,7 @@ foreach (var tx in payments.Items)
 
 ## Models
 
-### [`Payment`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Models/Payments/Payment.cs)
+### [`Payment`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/Models/Payments/Payment.cs)
 - `Id` (`string`): Starts with `ch_`.
 - `Amount` (`BachsPrice`): Transaction monetary amount parsed with high precision.
 - `Currency` (`BachsCurrency`): Three-letter ISO currency code (e.g., `BachsCurrency.USD`, `BachsCurrency.NGN`).
@@ -87,7 +87,7 @@ foreach (var tx in payments.Items)
 - `Fees` (`PaymentFees?`): Breakdown of processing fees.
 - `CreatedAt` (`DateTimeOffset`): Timestamp of transaction execution.
 
-### [`PaymentFees`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Models/Payments/Payment.cs)
+### [`PaymentFees`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/Models/Payments/Payment.cs)
 - `Amount` (`BachsPrice`): Processing fee deduction.
 - `Currency` (`BachsCurrency`): Fee currency code.
 

@@ -1,8 +1,8 @@
 using System.Security.Cryptography;
 using System.Text;
-using Bachs.Net.Common;
-using Bachs.Net.Exceptions;
-using Bachs.Net.WebHooks;
+using Bachs.Common;
+using Bachs.Exceptions;
+using Bachs.WebHooks;
 
 namespace Bachs.Test;
 
@@ -162,12 +162,12 @@ public sealed class BachsWebhookTests
     [Fact]
     public void WebhooksClient_ValidateEvent_Uses_Configured_WebhookSecret()
     {
-        var options = new Bachs.Net.Common.BachsClientOptions
+        var options = new Bachs.Common.BachsClientOptions
         {
             ApiKey = "sk_sandbox_test123",
             WebhookSecret = Secret,
         };
-        using var client = new Bachs.Net.Clients.BachsClient(options);
+        using var client = new Bachs.Clients.BachsClient(options);
 
         var payload = """{"id":"evt_client_123","type":"collection.succeeded"}""";
         var timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
@@ -185,12 +185,12 @@ public sealed class BachsWebhookTests
     [Fact]
     public void WebhooksClient_ValidateEvent_Prefers_Explicit_Secret()
     {
-        var options = new Bachs.Net.Common.BachsClientOptions
+        var options = new Bachs.Common.BachsClientOptions
         {
             ApiKey = "sk_sandbox_test123",
             WebhookSecret = "whsec_other_secret",
         };
-        using var client = new Bachs.Net.Clients.BachsClient(options);
+        using var client = new Bachs.Clients.BachsClient(options);
 
         var payload = """{"id":"evt_client_custom","type":"payment.captured"}""";
         var timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
@@ -207,12 +207,12 @@ public sealed class BachsWebhookTests
     [Fact]
     public void WebhooksClient_ValidateEvent_Throws_When_No_Secret_Provided_Or_Configured()
     {
-        var options = new Bachs.Net.Common.BachsClientOptions
+        var options = new Bachs.Common.BachsClientOptions
         {
             ApiKey = "sk_sandbox_test123",
             WebhookSecret = null,
         };
-        using var client = new Bachs.Net.Clients.BachsClient(options);
+        using var client = new Bachs.Clients.BachsClient(options);
 
         var payload = """{"id":"evt_client_123","type":"collection.succeeded"}""";
         var header = "t=123,v1=abc";
@@ -225,12 +225,12 @@ public sealed class BachsWebhookTests
     [Fact]
     public void WebhooksClient_Supports_BytePayload_And_TryValidateEvent()
     {
-        var options = new Bachs.Net.Common.BachsClientOptions
+        var options = new Bachs.Common.BachsClientOptions
         {
             ApiKey = "sk_sandbox_test123",
             WebhookSecret = Secret,
         };
-        using var client = new Bachs.Net.Clients.BachsClient(options);
+        using var client = new Bachs.Clients.BachsClient(options);
 
         var payload = """{"id":"evt_bytes_client","type":"invoice.paid"}""";
         var payloadBytes = Encoding.UTF8.GetBytes(payload);
@@ -325,7 +325,7 @@ public sealed class BachsWebhookTests
         Assert.Equal("chk_sess123", collEvent.Data.CheckoutId);
         Assert.Equal("ORD-1234", collEvent.Data.Reference);
         Assert.Equal(75000.00m, (decimal)collEvent.Data.Amount);
-        Assert.Equal(Bachs.Net.Models.Common.BachsCurrency.NGN, collEvent.Data.Currency);
+        Assert.Equal(Bachs.Models.Common.BachsCurrency.NGN, collEvent.Data.Currency);
         Assert.Equal(73875.00m, (decimal)collEvent.Data.SettlementAmount!.Value);
         Assert.Equal("merchant", collEvent.Data.FeeBearer);
     }

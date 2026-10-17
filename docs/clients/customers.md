@@ -2,12 +2,12 @@
 
 The Customers client manages customer records, contact information, billing addresses, and self-service Customer Portal sessions in Bachs.
 
-- **Interface**: [`ICustomersClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Clients/ICustomersClient.cs)
-- **Implementation**: [`CustomersClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Clients/CustomersClient.cs)
+- **Interface**: [`ICustomersClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/Clients/ICustomersClient.cs)
+- **Implementation**: [`CustomersClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/Clients/CustomersClient.cs)
 - **Property**: `client.Customers`
 - **DI Service**: `services.AddBachsClient(...)` registers `ICustomersClient` as a transient service.
 
-> **Handling responses:** Every client method returns `BachsResponse<T>` and returns (rather than throws) on API errors (4xx/5xx). Always check `response.IsSuccessStatusCode` first: on **failure**, inspect `response.Error`/`response.StatusCode` and handle it (log it, retry, or surface it to the caller); on **success**, read the parsed payload from `response.Data`. Transport, timeout, circuit-breaker, and serialization failures still throw typed `Bachs.Net.Exceptions` — see [Response Handling](../README.md#response-handling).
+> **Handling responses:** Every client method returns `BachsResponse<T>` and returns (rather than throws) on API errors (4xx/5xx). Always check `response.IsSuccessStatusCode` first: on **failure**, inspect `response.Error`/`response.StatusCode` and handle it (log it, retry, or surface it to the caller); on **success**, read the parsed payload from `response.Data`. Transport, timeout, circuit-breaker, and serialization failures still throw typed `Bachs.Exceptions` — see [Response Handling](../README.md#response-handling).
 
 ---
 
@@ -28,9 +28,9 @@ The Customers client manages customer records, contact information, billing addr
 ### 1. Create a Customer
 
 ```csharp
-using Bachs.Net.Clients;
-using Bachs.Net.Models.Common;
-using Bachs.Net.Models.Customers;
+using Bachs.Clients;
+using Bachs.Models.Common;
+using Bachs.Models.Customers;
 
 var response = await client.Customers.CreateAsync(new CreateCustomerRequest
 {
@@ -161,7 +161,7 @@ Console.WriteLine($"Session expires at: {portal.ExpiresAt}");
 
 ## Models
 
-### [`Customer`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Models/Customers/Customer.cs)
+### [`Customer`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/Models/Customers/Customer.cs)
 - `Id` (`string`): Starts with `cus_`. Also exposed as `CustomerId` (the `customer_id` webhook alias).
 - `Email` (`string`): Customer email address.
 - `Name` (`string?`): Full name or business entity.
@@ -171,6 +171,6 @@ Console.WriteLine($"Session expires at: {portal.ExpiresAt}");
 - `CreatedAt` (`DateTimeOffset`): Timestamp of creation.
 - `UpdatedAt` (`DateTimeOffset?`): Timestamp of last update.
 
-### [`CustomerPortalSession`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Models/Customers/Customer.cs)
+### [`CustomerPortalSession`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/Models/Customers/Customer.cs)
 - `Url` (`string`): Hosted URL to redirect the customer.
 - `ExpiresAt` (`DateTimeOffset?`): Expiration timestamp of the portal session link.

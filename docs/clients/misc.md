@@ -2,12 +2,12 @@
 
 The Misc client provides reference and lookup utilities, such as listing supported currencies, querying financial institution / bank codes, and resolving recipient bank account names before initiating payouts.
 
-- **Interface**: [`IMiscClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Clients/IMiscClient.cs)
-- **Implementation**: [`MiscClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Clients/MiscClient.cs)
+- **Interface**: [`IMiscClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/Clients/IMiscClient.cs)
+- **Implementation**: [`MiscClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/Clients/MiscClient.cs)
 - **Property**: `client.Misc`
 - **DI Service**: `services.AddBachsClient(...)` registers `IMiscClient` as a transient service.
 
-> **Handling responses:** Every client method returns `BachsResponse<T>` and returns (rather than throws) on API errors (4xx/5xx). Always check `response.IsSuccessStatusCode` first: on **failure**, inspect `response.Error`/`response.StatusCode` and handle it (log it, retry, or surface it to the caller); on **success**, read the parsed payload from `response.Data`. Transport, timeout, circuit-breaker, and serialization failures still throw typed `Bachs.Net.Exceptions` — see [Response Handling](../README.md#response-handling).
+> **Handling responses:** Every client method returns `BachsResponse<T>` and returns (rather than throws) on API errors (4xx/5xx). Always check `response.IsSuccessStatusCode` first: on **failure**, inspect `response.Error`/`response.StatusCode` and handle it (log it, retry, or surface it to the caller); on **success**, read the parsed payload from `response.Data`. Transport, timeout, circuit-breaker, and serialization failures still throw typed `Bachs.Exceptions` — see [Response Handling](../README.md#response-handling).
 
 ---
 
@@ -26,7 +26,7 @@ The Misc client provides reference and lookup utilities, such as listing support
 ### 1. List Supported Currencies
 
 ```csharp
-using Bachs.Net.Clients;
+using Bachs.Clients;
 
 var response = await client.Misc.GetSupportedCurrenciesAsync();
 if (!response.IsSuccessStatusCode)
@@ -75,7 +75,7 @@ foreach (var bank in banks)
 Validate that an account number belongs to the expected recipient before initiating a payout or saving a destination:
 
 ```csharp
-using Bachs.Net.Models.Misc;
+using Bachs.Models.Misc;
 
 var response = await client.Misc.ResolveBankAccountAsync(new ResolveBankAccountRequest
 {
@@ -100,15 +100,15 @@ Console.WriteLine($"Bank Code:      {resolution.BankCode}");
 
 ## Models
 
-### [`BankInfo`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Models/Misc/MiscModels.cs)
+### [`BankInfo`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/Models/Misc/MiscModels.cs)
 - `Code` (`string`): Institutional sorting/routing code.
 - `Name` (`string`): Commercial bank or financial institution name.
 
-### [`ResolveBankAccountRequest`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Models/Misc/MiscModels.cs)
+### [`ResolveBankAccountRequest`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/Models/Misc/MiscModels.cs)
 - `AccountNumber` (`string`): Account number to resolve.
 - `BankCode` (`string`): Target bank's clearing code.
 
-### [`ResolveBankAccountResponse`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Models/Misc/MiscModels.cs)
+### [`ResolveBankAccountResponse`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/Models/Misc/MiscModels.cs)
 - `AccountNumber` (`string`): Account number verified.
 - `AccountName` (`string`): Legal name registered to the account.
 - `BankCode` (`string`): Bank code.

@@ -1,6 +1,6 @@
-using Bachs.Net.Clients;
-using Bachs.Net.Extensions;
-using Bachs.Net.WebHooks;
+using Bachs.Clients;
+using Bachs.Extensions;
+using Bachs.WebHooks;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Bachs.Test;

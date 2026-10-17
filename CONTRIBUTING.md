@@ -21,7 +21,7 @@ By participating, you agree to uphold it.
 3. Restore and build:
 
    ```bash
-   dotnet build Bachs.Net.slnx
+   dotnet build Bachs.slnx
    ```
 
 4. Run the tests:

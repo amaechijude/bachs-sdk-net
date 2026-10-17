@@ -2,12 +2,12 @@
 
 The Disputes client allows you to manage payment disputes, query chargebacks, submit defense evidence before deadlines, and formally challenge claims.
 
-- **Interface**: [`IDisputesClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Clients/IDisputesClient.cs)
-- **Implementation**: [`DisputesClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Clients/DisputesClient.cs)
+- **Interface**: [`IDisputesClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/Clients/IDisputesClient.cs)
+- **Implementation**: [`DisputesClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/Clients/DisputesClient.cs)
 - **Property**: `client.Disputes`
 - **DI Service**: `services.AddBachsClient(...)` registers `IDisputesClient` as a transient service.
 
-> **Handling responses:** Every client method returns `BachsResponse<T>` and returns (rather than throws) on API errors (4xx/5xx). Always check `response.IsSuccessStatusCode` first: on **failure**, inspect `response.Error`/`response.StatusCode` and handle it (log it, retry, or surface it to the caller); on **success**, read the parsed payload from `response.Data`. Transport, timeout, circuit-breaker, and serialization failures still throw typed `Bachs.Net.Exceptions` — see [Response Handling](../README.md#response-handling).
+> **Handling responses:** Every client method returns `BachsResponse<T>` and returns (rather than throws) on API errors (4xx/5xx). Always check `response.IsSuccessStatusCode` first: on **failure**, inspect `response.Error`/`response.StatusCode` and handle it (log it, retry, or surface it to the caller); on **success**, read the parsed payload from `response.Data`. Transport, timeout, circuit-breaker, and serialization failures still throw typed `Bachs.Exceptions` — see [Response Handling](../README.md#response-handling).
 
 ---
 
@@ -27,7 +27,7 @@ The Disputes client allows you to manage payment disputes, query chargebacks, su
 ### 1. Retrieve a Dispute
 
 ```csharp
-using Bachs.Net.Clients;
+using Bachs.Clients;
 
 var response = await client.Disputes.GetAsync("dp_100200300");
 if (!response.IsSuccessStatusCode)
@@ -51,7 +51,7 @@ Console.WriteLine($"Evidence Due: {dispute.EvidenceDueDate:yyyy-MM-dd}");
 ### 2. List Disputes
 
 ```csharp
-using Bachs.Net.Models.Disputes;
+using Bachs.Models.Disputes;
 
 var response = await client.Disputes.ListAsync(new ListDisputesOptions
 {
@@ -123,7 +123,7 @@ Console.WriteLine($"Dispute submitted! Status: {submitted.Status}"); // 'under_r
 
 ## Models
 
-### [`Dispute`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Models/Disputes/Dispute.cs)
+### [`Dispute`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/Models/Disputes/Dispute.cs)
 - `Id` (`string`): Starts with `dp_`.
 - `ChargeId` (`string`): Disputed transaction identifier (`ch_...`).
 - `Amount` (`BachsPrice`): Monetary value under dispute.
@@ -133,7 +133,7 @@ Console.WriteLine($"Dispute submitted! Status: {submitted.Status}"); // 'under_r
 - `EvidenceDueDate` (`DateTimeOffset?`): Final deadline to provide defense evidence.
 - `CreatedAt` (`DateTimeOffset`): Timestamp when dispute was opened.
 
-### [`UpdateDisputeEvidenceRequest`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Models/Disputes/Dispute.cs)
+### [`UpdateDisputeEvidenceRequest`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/Models/Disputes/Dispute.cs)
 - `CustomerName` (`string?`): Name on customer file.
 - `CustomerEmail` (`string?`): Contact email.
 - `ServiceDocumentation` (`string?`): Description of the service or product provided.

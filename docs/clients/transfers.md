@@ -2,12 +2,12 @@
 
 The Transfers client enables platforms to move funds internally between the platform balance and connected accounts (or between connected accounts) in Bachs.
 
-- **Interface**: [`ITransfersClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Clients/ITransfersClient.cs)
-- **Implementation**: [`TransfersClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Clients/TransfersClient.cs)
+- **Interface**: [`ITransfersClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/Clients/ITransfersClient.cs)
+- **Implementation**: [`TransfersClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/Clients/TransfersClient.cs)
 - **Property**: `client.Transfers`
 - **DI Service**: `services.AddBachsClient(...)` registers `ITransfersClient` as a transient service.
 
-> **Handling responses:** Every client method returns `BachsResponse<T>` and returns (rather than throws) on API errors (4xx/5xx). Always check `response.IsSuccessStatusCode` first: on **failure**, inspect `response.Error`/`response.StatusCode` and handle it (log it, retry, or surface it to the caller); on **success**, read the parsed payload from `response.Data`. Transport, timeout, circuit-breaker, and serialization failures still throw typed `Bachs.Net.Exceptions` — see [Response Handling](../README.md#response-handling).
+> **Handling responses:** Every client method returns `BachsResponse<T>` and returns (rather than throws) on API errors (4xx/5xx). Always check `response.IsSuccessStatusCode` first: on **failure**, inspect `response.Error`/`response.StatusCode` and handle it (log it, retry, or surface it to the caller); on **success**, read the parsed payload from `response.Data`. Transport, timeout, circuit-breaker, and serialization failures still throw typed `Bachs.Exceptions` — see [Response Handling](../README.md#response-handling).
 
 ---
 
@@ -28,10 +28,10 @@ The Transfers client enables platforms to move funds internally between the plat
 Transfer funds from your platform treasury to a merchant's connected account:
 
 ```csharp
-using Bachs.Net.Clients;
-using Bachs.Net.Common;
-using Bachs.Net.Models.Common;
-using Bachs.Net.Models.Transfers;
+using Bachs.Clients;
+using Bachs.Common;
+using Bachs.Models.Common;
+using Bachs.Models.Transfers;
 
 var response = await client.Transfers.CreateAsync(new CreateTransferRequest
 {
@@ -102,12 +102,12 @@ foreach (var item in page.Items)
 
 ## Models
 
-### [`CreateTransferRequest`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Models/Transfers/Transfer.cs)
+### [`CreateTransferRequest`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/Models/Transfers/Transfer.cs)
 - `Amount` (`BachsPrice`): Monetary value to transfer.
 - `Currency` (`BachsCurrency`): Currency code (defaults to `BachsCurrency.USD`; must match source and destination account currency capability).
 - `Destination` (`string`): Connected account identifier starting with `acc_`.
 
-### [`Transfer`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Models/Transfers/Transfer.cs)
+### [`Transfer`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/Models/Transfers/Transfer.cs)
 - `Id` (`string`): Starts with `tr_`.
 - `Amount` (`BachsPrice`): Transferred amount.
 - `Currency` (`BachsCurrency`): Three-letter currency code (e.g. `BachsCurrency.USD`).

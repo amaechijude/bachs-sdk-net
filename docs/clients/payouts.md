@@ -10,11 +10,11 @@ In `Bachs.Net`, payouts functionality is split into two specialized interfaces:
 
 ## Payouts Client
 
-- **Interface**: [`IPayoutsClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Clients/IPayoutsClient.cs)
+- **Interface**: [`IPayoutsClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/Clients/IPayoutsClient.cs)
 - **Property**: `client.Payouts`
 - **DI Service**: `services.AddBachsClient(...)` registers `IPayoutsClient` as a transient service.
 
-> **Handling responses:** Every client method returns `BachsResponse<T>` and returns (rather than throws) on API errors (4xx/5xx). Always check `response.IsSuccessStatusCode` first: on **failure**, inspect `response.Error`/`response.StatusCode` and handle it (log it, retry, or surface it to the caller); on **success**, read the parsed payload from `response.Data`. Transport, timeout, circuit-breaker, and serialization failures still throw typed `Bachs.Net.Exceptions` — see [Response Handling](../README.md#response-handling).
+> **Handling responses:** Every client method returns `BachsResponse<T>` and returns (rather than throws) on API errors (4xx/5xx). Always check `response.IsSuccessStatusCode` first: on **failure**, inspect `response.Error`/`response.StatusCode` and handle it (log it, retry, or surface it to the caller); on **success**, read the parsed payload from `response.Data`. Transport, timeout, circuit-breaker, and serialization failures still throw typed `Bachs.Exceptions` — see [Response Handling](../README.md#response-handling).
 
 ### Methods Overview
 
@@ -30,10 +30,10 @@ In `Bachs.Net`, payouts functionality is split into two specialized interfaces:
 #### 1. Initiate a Payout Withdrawal
 
 ```csharp
-using Bachs.Net.Clients;
-using Bachs.Net.Common;
-using Bachs.Net.Models.Common;
-using Bachs.Net.Models.Payouts;
+using Bachs.Clients;
+using Bachs.Common;
+using Bachs.Models.Common;
+using Bachs.Models.Payouts;
 
 var response = await client.Payouts.CreateAsync(new CreatePayoutRequest
 {
@@ -124,7 +124,7 @@ foreach (var item in page.Items)
 
 ## Payout Destinations Client
 
-- **Interface**: [`IPayoutDestinationsClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Clients/IPayoutsClient.cs#L51)
+- **Interface**: [`IPayoutDestinationsClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/Clients/IPayoutsClient.cs#L51)
 - **Property**: `client.PayoutDestinations`
 - **DI Service**: `services.AddBachsClient(...)` registers `IPayoutDestinationsClient` as a transient service.
 
@@ -184,7 +184,7 @@ Console.WriteLine("Payout destination removed.");
 
 ## Models
 
-### [`Payout`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Models/Payouts/Payout.cs)
+### [`Payout`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/Models/Payouts/Payout.cs)
 - `Id` (`string`): Starts with `wd_`.
 - `Amount` (`BachsPrice`): Monetary withdrawal value.
 - `Currency` (`BachsCurrency`): Currency code (defaults to `BachsCurrency.USD` on creation).
@@ -195,7 +195,7 @@ Console.WriteLine("Payout destination removed.");
 - `WithdrawalFee` / `NetFromAmount` (`BachsPrice?`): Fee and net amount debited.
 - `CreatedAt` (`DateTimeOffset`): Timestamp of payout initiation.
 
-### [`PayoutDestination`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Models/Payouts/Payout.cs)
+### [`PayoutDestination`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/Models/Payouts/Payout.cs)
 - `Id` (`string`): Starts with `dest_`.
 - `Type` (`string`): Destination category (`bank_account`, `mobile_money`, `crypto`).
 - `Currency` (`BachsCurrency`): Settlement currency code.

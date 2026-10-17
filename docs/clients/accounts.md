@@ -2,12 +2,12 @@
 
 The Accounts client manages multi-party marketplaces, platforms, and merchant onboarding via Bachs Connect. Create connected accounts, generate hosted onboarding links, query sub-account status, and inspect self-profile information.
 
-- **Interface**: [`IAccountsClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Clients/IAccountsClient.cs)
-- **Implementation**: [`AccountsClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Clients/AccountsClient.cs)
+- **Interface**: [`IAccountsClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/Clients/IAccountsClient.cs)
+- **Implementation**: [`AccountsClient`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/Clients/AccountsClient.cs)
 - **Property**: `client.Accounts`
 - **DI Service**: `services.AddBachsClient(...)` registers `IAccountsClient` as a transient service.
 
-> **Handling responses:** Every client method returns `BachsResponse<T>` and returns (rather than throws) on API errors (4xx/5xx). Always check `response.IsSuccessStatusCode` first: on **failure**, inspect `response.Error`/`response.StatusCode` and handle it (log it, retry, or surface it to the caller); on **success**, read the parsed payload from `response.Data`. Transport, timeout, circuit-breaker, and serialization failures still throw typed `Bachs.Net.Exceptions` — see [Response Handling](../README.md#response-handling).
+> **Handling responses:** Every client method returns `BachsResponse<T>` and returns (rather than throws) on API errors (4xx/5xx). Always check `response.IsSuccessStatusCode` first: on **failure**, inspect `response.Error`/`response.StatusCode` and handle it (log it, retry, or surface it to the caller); on **success**, read the parsed payload from `response.Data`. Transport, timeout, circuit-breaker, and serialization failures still throw typed `Bachs.Exceptions` — see [Response Handling](../README.md#response-handling).
 
 ---
 
@@ -31,9 +31,9 @@ The Accounts client manages multi-party marketplaces, platforms, and merchant on
 Create a merchant account for your marketplace:
 
 ```csharp
-using Bachs.Net.Clients;
-using Bachs.Net.Common;
-using Bachs.Net.Models.Accounts;
+using Bachs.Clients;
+using Bachs.Common;
+using Bachs.Models.Accounts;
 
 var response = await client.Accounts.CreateAsync(new CreateAccountRequest
 {
@@ -111,9 +111,9 @@ Console.WriteLine($"Country: {details.Country}");
 Once onboarded, execute operations (such as creating checkout sessions or requesting payouts) on their behalf using `BachsRequestOptions.AccountId`:
 
 ```csharp
-using Bachs.Net.Common;
-using Bachs.Net.Models.Checkout;
-using Bachs.Net.Models.Common;
+using Bachs.Common;
+using Bachs.Models.Checkout;
+using Bachs.Models.Common;
 
 var response = await client.CheckoutSessions.CreateAsync(new CreateCheckoutSessionRequest
 {
@@ -156,7 +156,7 @@ Console.WriteLine($"Current platform account: {me.Id} ({me.BusinessName})");
 
 ## Models
 
-### [`Account`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Models/Accounts/Account.cs)
+### [`Account`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/Models/Accounts/Account.cs)
 - `Id` (`string`): Starts with `acc_`.
 - `Type` (`string`): `standard`, `custom`, `express`.
 - `Country` (`string`): Two-letter ISO country code.
@@ -164,6 +164,6 @@ Console.WriteLine($"Current platform account: {me.Id} ({me.BusinessName})");
 - `BusinessName` (`string?`): Commercial or legal name.
 - `CreatedAt` (`DateTimeOffset`): Timestamp of creation.
 
-### [`AccountLink`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs.Net/Models/Accounts/Account.cs)
+### [`AccountLink`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/Models/Accounts/Account.cs)
 - `Url` (`string`): Hosted Bachs onboarding / identity verification web page.
 - `ExpiresAt` (`DateTimeOffset`): Expiration of the one-time link.
