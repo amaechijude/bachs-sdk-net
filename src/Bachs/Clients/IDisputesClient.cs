@@ -48,7 +48,7 @@ public interface IDisputesClient
     Task<BachsResponse<Dispute>> UpdateEvidenceAsync(
         string disputeId,
         UpdateDisputeEvidenceRequest request,
-        BachsRequestOptions? requestOptions = null,
+        BachsRequestOptions requestOptions,
         CancellationToken cancellationToken = default
     );
 

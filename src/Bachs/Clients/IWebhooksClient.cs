@@ -64,7 +64,7 @@ public interface IWebhooksClient : IWebhookEventValidator
     Task<BachsResponse<WebhookEndpoint>> UpdateEndpointAsync(
         string endpointId,
         UpdateWebhookEndpointRequest request,
-        BachsRequestOptions? requestOptions = null,
+        BachsRequestOptions requestOptions,
         CancellationToken cancellationToken = default
     );
 

@@ -42,7 +42,7 @@ public sealed class SubscriptionsClient(IBachsClient bachsClient)
     public Task<BachsResponse<Subscription>> UpdateAsync(
         string subscriptionId,
         UpdateSubscriptionRequest request,
-        BachsRequestOptions? requestOptions = null,
+        BachsRequestOptions requestOptions,
         CancellationToken cancellationToken = default
     )
     {

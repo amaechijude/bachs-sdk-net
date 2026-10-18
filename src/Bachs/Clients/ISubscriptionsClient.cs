@@ -48,7 +48,7 @@ public interface ISubscriptionsClient
     Task<BachsResponse<Subscription>> UpdateAsync(
         string subscriptionId,
         UpdateSubscriptionRequest request,
-        BachsRequestOptions? requestOptions = null,
+        BachsRequestOptions requestOptions,
         CancellationToken cancellationToken = default
     );
 

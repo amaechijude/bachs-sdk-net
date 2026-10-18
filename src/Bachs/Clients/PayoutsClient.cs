@@ -126,7 +126,7 @@ public sealed class PayoutDestinationsClient(IBachsClient bachsClient)
     public Task<BachsResponse<PayoutDestination>> UpdateAsync(
         string destinationId,
         UpdatePayoutDestinationRequest request,
-        BachsRequestOptions? requestOptions = null,
+        BachsRequestOptions requestOptions,
         CancellationToken cancellationToken = default
     )
     {

@@ -36,7 +36,7 @@ public interface IPayoutsClient
         BachsRequestOptions requestOptions,
         CancellationToken cancellationToken = default
     );
- 
+
     /// <summary>
     /// Retrieves a payout by its withdrawal ID.
     /// </summary>
@@ -123,7 +123,7 @@ public interface IPayoutDestinationsClient
     Task<BachsResponse<PayoutDestination>> UpdateAsync(
         string destinationId,
         UpdatePayoutDestinationRequest request,
-        BachsRequestOptions? requestOptions = null,
+        BachsRequestOptions requestOptions,
         CancellationToken cancellationToken = default
     );
 

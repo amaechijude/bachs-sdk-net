@@ -42,7 +42,7 @@ public sealed class DisputesClient(IBachsClient bachsClient)
     public Task<BachsResponse<Dispute>> UpdateEvidenceAsync(
         string disputeId,
         UpdateDisputeEvidenceRequest request,
-        BachsRequestOptions? requestOptions = null,
+        BachsRequestOptions requestOptions,
         CancellationToken cancellationToken = default
     )
     {

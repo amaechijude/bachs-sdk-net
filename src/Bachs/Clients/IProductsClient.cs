@@ -62,7 +62,7 @@ public interface IProductsClient
     Task<BachsResponse<Product>> UpdateAsync(
         string productId,
         UpdateProductRequest request,
-        BachsRequestOptions? requestOptions = null,
+        BachsRequestOptions requestOptions,
         CancellationToken cancellationToken = default
     );
 

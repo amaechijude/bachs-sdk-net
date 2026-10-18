@@ -63,7 +63,7 @@ public sealed class WebhooksClient(IBachsClient bachsClient)
     public Task<BachsResponse<WebhookEndpoint>> UpdateEndpointAsync(
         string endpointId,
         UpdateWebhookEndpointRequest request,
-        BachsRequestOptions? requestOptions = null,
+        BachsRequestOptions requestOptions,
         CancellationToken cancellationToken = default
     )
     {
