@@ -36,7 +36,6 @@ public sealed class BachsServiceExtensionsTests
         Assert.NotNull(serviceProvider.GetService<IVirtualAccountsClient>());
         Assert.NotNull(serviceProvider.GetService<IWebhooksClient>());
         Assert.NotNull(serviceProvider.GetService<IWebhookEventValidator>());
-        Assert.NotNull(serviceProvider.GetService<IWebhookValidator>());
         Assert.NotNull(serviceProvider.GetService<IMiscClient>());
     }
 

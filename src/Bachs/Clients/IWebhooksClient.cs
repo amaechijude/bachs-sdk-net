@@ -9,7 +9,7 @@ namespace Bachs.Clients;
 /// Client for managing webhook destination endpoints, inspecting/replaying webhook deliveries,
 /// and validating incoming webhook events.
 /// </summary>
-public interface IWebhooksClient : IWebhookEventValidator, IWebhookValidator
+public interface IWebhooksClient : IWebhookEventValidator
 {
     /// <summary>
     /// Creates a new webhook destination endpoint.

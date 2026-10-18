@@ -124,13 +124,10 @@ public static class BachsServiceExtensions
         services.TryAddTransient(sp => sp.GetRequiredService<IBachsClient>().Accounts);
         services.TryAddTransient(sp => sp.GetRequiredService<IBachsClient>().VirtualAccounts);
         services.TryAddTransient(sp => sp.GetRequiredService<IBachsClient>().Webhooks);
+        services.TryAddTransient(sp => sp.GetRequiredService<IBachsClient>().Misc);
         services.TryAddTransient<IWebhookEventValidator>(sp =>
             sp.GetRequiredService<IBachsClient>().Webhooks
         );
-        services.TryAddTransient<IWebhookValidator>(sp =>
-            sp.GetRequiredService<IBachsClient>().Webhooks
-        );
-        services.TryAddTransient(sp => sp.GetRequiredService<IBachsClient>().Misc);
 
         return services;
     }

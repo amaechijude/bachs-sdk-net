@@ -5,10 +5,10 @@ using Bachs.Exceptions;
 namespace Bachs.WebHooks;
 
 /// <summary>
-/// Standalone implementation of <see cref="IWebhookEventValidator"/> and <see cref="IWebhookValidator"/>
+/// Standalone implementation of <see cref="IWebhookEventValidator"/>
 /// for validating incoming Bachs webhook events.
 /// </summary>
-public sealed class WebhookEventValidator : IWebhookEventValidator, IWebhookValidator
+public sealed class WebhookEventValidator : IWebhookEventValidator
 {
     private readonly string? _defaultSecret;
 
@@ -171,24 +171,6 @@ public sealed class WebhookEventValidator : IWebhookEventValidator, IWebhookVali
         );
 
     /// <inheritdoc />
-    public BachsWebhookEvent ConstructEvent(
-        string payload,
-        string signatureHeader,
-        string? secret = null,
-        int toleranceSeconds = BachsWebhook.DefaultToleranceSeconds,
-        string? timestampHeader = null
-    ) => ValidateEvent(payload, signatureHeader, secret, toleranceSeconds, timestampHeader);
-
-    /// <inheritdoc />
-    public BachsWebhookEvent ConstructEvent(
-        byte[] payloadBytes,
-        string signatureHeader,
-        string? secret = null,
-        int toleranceSeconds = BachsWebhook.DefaultToleranceSeconds,
-        string? timestampHeader = null
-    ) => ValidateEvent(payloadBytes, signatureHeader, secret, toleranceSeconds, timestampHeader);
-
-    /// <inheritdoc />
     public BachsTypedEvent ValidateTypedEvent(
         string payload,
         string signatureHeader,
@@ -267,29 +249,4 @@ public sealed class WebhookEventValidator : IWebhookEventValidator, IWebhookVali
         typedEvent = null;
         return false;
     }
-
-    /// <inheritdoc />
-    public BachsTypedEvent ConstructTypedEvent(
-        string payload,
-        string signatureHeader,
-        string? secret = null,
-        int toleranceSeconds = BachsWebhook.DefaultToleranceSeconds,
-        string? timestampHeader = null
-    ) => ValidateTypedEvent(payload, signatureHeader, secret, toleranceSeconds, timestampHeader);
-
-    /// <inheritdoc />
-    public BachsTypedEvent ConstructTypedEvent(
-        byte[] payloadBytes,
-        string signatureHeader,
-        string? secret = null,
-        int toleranceSeconds = BachsWebhook.DefaultToleranceSeconds,
-        string? timestampHeader = null
-    ) =>
-        ValidateTypedEvent(
-            payloadBytes,
-            signatureHeader,
-            secret,
-            toleranceSeconds,
-            timestampHeader
-        );
 }

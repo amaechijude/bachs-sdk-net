@@ -129,34 +129,6 @@ public interface IWebhookEventValidator
     );
 
     /// <summary>
-    /// Verifies the webhook signature and deserializes the payload into a <see cref="BachsWebhookEvent"/>.
-    /// </summary>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="payload"/> or <paramref name="signatureHeader"/> is <see langword="null"/>.</exception>
-    /// <exception cref="BachsException">Thrown if signature verification fails or payload is invalid.</exception>
-    /// <exception cref="BachsInvalidOperationException">Thrown if secret is not provided and no default secret is configured.</exception>
-    BachsWebhookEvent ConstructEvent(
-        string payload,
-        string signatureHeader,
-        string? secret = null,
-        int toleranceSeconds = BachsWebhook.DefaultToleranceSeconds,
-        string? timestampHeader = null
-    );
-
-    /// <summary>
-    /// Verifies the webhook signature and deserializes the payload bytes into a <see cref="BachsWebhookEvent"/>.
-    /// </summary>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="payloadBytes"/> or <paramref name="signatureHeader"/> is <see langword="null"/>.</exception>
-    /// <exception cref="BachsException">Thrown if signature verification fails or payload is invalid.</exception>
-    /// <exception cref="BachsInvalidOperationException">Thrown if secret is not provided and no default secret is configured.</exception>
-    BachsWebhookEvent ConstructEvent(
-        byte[] payloadBytes,
-        string signatureHeader,
-        string? secret = null,
-        int toleranceSeconds = BachsWebhook.DefaultToleranceSeconds,
-        string? timestampHeader = null
-    );
-
-    /// <summary>
     /// Validates an incoming webhook event payload and signature, returning the parsed strongly-typed <see cref="BachsTypedEvent"/>.
     /// </summary>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="payload"/> or <paramref name="signatureHeader"/> is <see langword="null"/>.</exception>
@@ -209,37 +181,4 @@ public interface IWebhookEventValidator
         int toleranceSeconds = BachsWebhook.DefaultToleranceSeconds,
         string? timestampHeader = null
     );
-
-    /// <summary>
-    /// Verifies the webhook signature and deserializes the payload into a strongly-typed <see cref="BachsTypedEvent"/>.
-    /// </summary>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="payload"/> or <paramref name="signatureHeader"/> is <see langword="null"/>.</exception>
-    /// <exception cref="BachsException">Thrown if signature verification fails or payload is invalid.</exception>
-    /// <exception cref="BachsInvalidOperationException">Thrown if secret is not provided and no default secret is configured.</exception>
-    BachsTypedEvent ConstructTypedEvent(
-        string payload,
-        string signatureHeader,
-        string? secret = null,
-        int toleranceSeconds = BachsWebhook.DefaultToleranceSeconds,
-        string? timestampHeader = null
-    );
-
-    /// <summary>
-    /// Verifies the webhook signature and deserializes the payload bytes into a strongly-typed <see cref="BachsTypedEvent"/>.
-    /// </summary>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="payloadBytes"/> or <paramref name="signatureHeader"/> is <see langword="null"/>.</exception>
-    /// <exception cref="BachsException">Thrown if signature verification fails or payload is invalid.</exception>
-    /// <exception cref="BachsInvalidOperationException">Thrown if secret is not provided and no default secret is configured.</exception>
-    BachsTypedEvent ConstructTypedEvent(
-        byte[] payloadBytes,
-        string signatureHeader,
-        string? secret = null,
-        int toleranceSeconds = BachsWebhook.DefaultToleranceSeconds,
-        string? timestampHeader = null
-    );
 }
-
-/// <summary>
-/// Alias interface for <see cref="IWebhookEventValidator"/>.
-/// </summary>
-public interface IWebhookValidator : IWebhookEventValidator;
