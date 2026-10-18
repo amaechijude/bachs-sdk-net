@@ -8,6 +8,7 @@ using Bachs.Models.Payouts;
 using Bachs.Models.Refunds;
 using Bachs.Models.Subscriptions;
 using Bachs.Serialization;
+using Bachs.WebHooks.EventData;
 
 namespace Bachs.WebHooks;
 
@@ -59,23 +60,23 @@ public abstract record BachsTypedEvent<TData> : BachsTypedEvent
 // ---------------------------------------------------------
 
 /// <summary>Fired when a checkout session finishes successfully.</summary>
-public sealed record CheckoutCompletedEvent : BachsTypedEvent<GetCheckoutSessionResponse>;
+public sealed record CheckoutCompletedEvent : BachsTypedEvent<CheckoutEventData>;
 
 /// <summary>Fired when a checkout session lapses past its expiry.</summary>
-public sealed record CheckoutExpiredEvent : BachsTypedEvent<GetCheckoutSessionResponse>;
+public sealed record CheckoutExpiredEvent : BachsTypedEvent<CheckoutEventData>;
 
 // ---------------------------------------------------------
 // Payment / Collection Events
 // ---------------------------------------------------------
 
 /// <summary>Fired when a payment collection successfully completes.</summary>
-public sealed record CollectionSucceededEvent : BachsTypedEvent<Payment>;
+public sealed record CollectionSucceededEvent : BachsTypedEvent<CollectionEventData>;
 
 /// <summary>Fired when a payment collection attempt fails.</summary>
-public sealed record CollectionFailedEvent : BachsTypedEvent<Payment>;
+public sealed record CollectionFailedEvent : BachsTypedEvent<CollectionEventData>;
 
 /// <summary>Fired when a payment collection is received for less than requested.</summary>
-public sealed record CollectionUnderpaidEvent : BachsTypedEvent<Payment>;
+public sealed record CollectionUnderpaidEvent : BachsTypedEvent<CollectionEventData>;
 
 // ---------------------------------------------------------
 // Payment Method Events
@@ -89,13 +90,13 @@ public sealed record PaymentMethodSavedEvent : BachsTypedEvent<JsonElement>;
 // ---------------------------------------------------------
 
 /// <summary>Fired when a new customer subscription is created.</summary>
-public sealed record SubscriptionCreatedEvent : BachsTypedEvent<Subscription>;
+public sealed record SubscriptionCreatedEvent : BachsTypedEvent<SubscriptionEventData>;
 
 /// <summary>Fired when an existing subscription is modified or updated.</summary>
-public sealed record SubscriptionUpdatedEvent : BachsTypedEvent<Subscription>;
+public sealed record SubscriptionUpdatedEvent : BachsTypedEvent<SubscriptionEventData>;
 
 /// <summary>Fired when a subscription is canceled or expired.</summary>
-public sealed record SubscriptionDeletedEvent : BachsTypedEvent<Subscription>;
+public sealed record SubscriptionDeletedEvent : BachsTypedEvent<SubscriptionEventData>;
 
 // ---------------------------------------------------------
 // Invoice Events
@@ -115,56 +116,56 @@ public sealed record InvoicePaymentFailedEvent : BachsTypedEvent<InvoiceEventDat
 // ---------------------------------------------------------
 
 /// <summary>Fired when a payout/withdrawal is initiated.</summary>
-public sealed record PayoutCreatedEvent : BachsTypedEvent<Payout>;
+public sealed record PayoutCreatedEvent : BachsTypedEvent<PayoutEventData>;
 
 /// <summary>Fired when a payout/withdrawal successfully clears.</summary>
-public sealed record PayoutPaidEvent : BachsTypedEvent<Payout>;
+public sealed record PayoutPaidEvent : BachsTypedEvent<PayoutEventData>;
 
 /// <summary>Fired when a payout/withdrawal attempt fails.</summary>
-public sealed record PayoutFailedEvent : BachsTypedEvent<Payout>;
+public sealed record PayoutFailedEvent : BachsTypedEvent<PayoutEventData>;
 
 // ---------------------------------------------------------
 // Refund Events
 // ---------------------------------------------------------
 
 /// <summary>Fired when a refund is requested.</summary>
-public sealed record RefundCreatedEvent : BachsTypedEvent<Refund>;
+public sealed record RefundCreatedEvent : BachsTypedEvent<RefundEventData>;
 
 /// <summary>Fired when a refund is successfully processed.</summary>
-public sealed record RefundPaidEvent : BachsTypedEvent<Refund>;
+public sealed record RefundPaidEvent : BachsTypedEvent<RefundEventData>;
 
 /// <summary>Fired when a refund attempt fails.</summary>
-public sealed record RefundFailedEvent : BachsTypedEvent<Refund>;
+public sealed record RefundFailedEvent : BachsTypedEvent<RefundEventData>;
 
 // ---------------------------------------------------------
 // Dispute Events
 // ---------------------------------------------------------
 
 /// <summary>Fired when a chargeback or payment dispute is opened.</summary>
-public sealed record DisputeCreatedEvent : BachsTypedEvent<Dispute>;
+public sealed record DisputeCreatedEvent : BachsTypedEvent<DisputeEventData>;
 
 /// <summary>Fired when dispute status or evidence changes.</summary>
-public sealed record DisputeUpdatedEvent : BachsTypedEvent<Dispute>;
+public sealed record DisputeUpdatedEvent : BachsTypedEvent<DisputeEventData>;
 
 // ---------------------------------------------------------
 // Currency Conversion Events
 // ---------------------------------------------------------
 
 /// <summary>Fired when an FX currency conversion completes.</summary>
-public sealed record ConversionCompletedEvent : BachsTypedEvent<Conversion>;
+public sealed record ConversionCompletedEvent : BachsTypedEvent<ConversionEventData>;
 
 /// <summary>Fired when an FX currency conversion fails.</summary>
-public sealed record ConversionFailedEvent : BachsTypedEvent<Conversion>;
+public sealed record ConversionFailedEvent : BachsTypedEvent<ConversionEventData>;
 
 // ---------------------------------------------------------
 // Customer Events
 // ---------------------------------------------------------
 
 /// <summary>Fired when a customer record is created.</summary>
-public sealed record CustomerCreatedEvent : BachsTypedEvent<Customer>;
+public sealed record CustomerCreatedEvent : BachsTypedEvent<CustomerEventData>;
 
 /// <summary>Fired when a customer record is updated.</summary>
-public sealed record CustomerUpdatedEvent : BachsTypedEvent<Customer>;
+public sealed record CustomerUpdatedEvent : BachsTypedEvent<CustomerEventData>;
 
 // ---------------------------------------------------------
 // Connect & Platform Events
@@ -197,470 +198,4 @@ public sealed record UnknownBachsEvent : BachsTypedEvent
     /// Deserializes the raw event data element to a strongly-typed object.
     /// </summary>
     public T? GetData<T>() => BachsJsonSerializer.Deserialize<T>(RawData.GetRawText());
-}
-
-/// <summary>
-/// Parser helper that converts a <see cref="BachsWebhookEvent"/> into its strongly-typed <see cref="BachsTypedEvent"/> representation.
-/// </summary>
-public static class BachsTypedEventParser
-{
-    /// <summary>
-    /// Parses a raw <see cref="BachsWebhookEvent"/> into a strongly-typed <see cref="BachsTypedEvent"/>.
-    /// </summary>
-    public static BachsTypedEvent Parse(BachsWebhookEvent evt)
-    {
-        ArgumentNullException.ThrowIfNull(evt);
-
-        var id = evt.Id;
-        var type = evt.Type;
-        var createdAt = evt.CreatedAt;
-        var organizationId = evt.OrganizationId;
-        var account = evt.Account;
-
-        switch (type.ToLowerInvariant())
-        {
-            case BachsEventTypes.CheckoutCompleted:
-            {
-                var data = evt.GetData<GetCheckoutSessionResponse>();
-                return data is not null
-                    ? new CheckoutCompletedEvent
-                    {
-                        Id = id,
-                        Type = type,
-                        CreatedAt = createdAt,
-                        OrganizationId = organizationId,
-                        Account = account,
-                        Data = data,
-                    }
-                    : CreateUnknown(evt);
-            }
-
-            case BachsEventTypes.CheckoutExpired:
-            {
-                var data = evt.GetData<GetCheckoutSessionResponse>();
-                return data is not null
-                    ? new CheckoutExpiredEvent
-                    {
-                        Id = id,
-                        Type = type,
-                        CreatedAt = createdAt,
-                        OrganizationId = organizationId,
-                        Account = account,
-                        Data = data,
-                    }
-                    : CreateUnknown(evt);
-            }
-
-            case BachsEventTypes.CollectionSucceeded:
-            {
-                var data = evt.GetData<Payment>();
-                return data is not null
-                    ? new CollectionSucceededEvent
-                    {
-                        Id = id,
-                        Type = type,
-                        CreatedAt = createdAt,
-                        OrganizationId = organizationId,
-                        Account = account,
-                        Data = data,
-                    }
-                    : CreateUnknown(evt);
-            }
-
-            case BachsEventTypes.CollectionFailed:
-            {
-                var data = evt.GetData<Payment>();
-                return data is not null
-                    ? new CollectionFailedEvent
-                    {
-                        Id = id,
-                        Type = type,
-                        CreatedAt = createdAt,
-                        OrganizationId = organizationId,
-                        Account = account,
-                        Data = data,
-                    }
-                    : CreateUnknown(evt);
-            }
-
-            case BachsEventTypes.CollectionUnderpaid:
-            {
-                var data = evt.GetData<Payment>();
-                return data is not null
-                    ? new CollectionUnderpaidEvent
-                    {
-                        Id = id,
-                        Type = type,
-                        CreatedAt = createdAt,
-                        OrganizationId = organizationId,
-                        Account = account,
-                        Data = data,
-                    }
-                    : CreateUnknown(evt);
-            }
-
-            case BachsEventTypes.PaymentMethodSaved:
-            {
-                return new PaymentMethodSavedEvent
-                {
-                    Id = id,
-                    Type = type,
-                    CreatedAt = createdAt,
-                    OrganizationId = organizationId,
-                    Account = account,
-                    Data = evt.Data,
-                };
-            }
-
-            case BachsEventTypes.CustomerSubscriptionCreated:
-            {
-                var data = evt.GetData<Subscription>();
-                return data is not null
-                    ? new SubscriptionCreatedEvent
-                    {
-                        Id = id,
-                        Type = type,
-                        CreatedAt = createdAt,
-                        OrganizationId = organizationId,
-                        Account = account,
-                        Data = data,
-                    }
-                    : CreateUnknown(evt);
-            }
-
-            case BachsEventTypes.CustomerSubscriptionUpdated:
-            {
-                var data = evt.GetData<Subscription>();
-                return data is not null
-                    ? new SubscriptionUpdatedEvent
-                    {
-                        Id = id,
-                        Type = type,
-                        CreatedAt = createdAt,
-                        OrganizationId = organizationId,
-                        Account = account,
-                        Data = data,
-                    }
-                    : CreateUnknown(evt);
-            }
-
-            case BachsEventTypes.CustomerSubscriptionDeleted:
-            {
-                var data = evt.GetData<Subscription>();
-                return data is not null
-                    ? new SubscriptionDeletedEvent
-                    {
-                        Id = id,
-                        Type = type,
-                        CreatedAt = createdAt,
-                        OrganizationId = organizationId,
-                        Account = account,
-                        Data = data,
-                    }
-                    : CreateUnknown(evt);
-            }
-
-            case BachsEventTypes.InvoiceCreated:
-            {
-                var data = evt.GetData<InvoiceEventData>();
-                return data is not null
-                    ? new InvoiceCreatedEvent
-                    {
-                        Id = id,
-                        Type = type,
-                        CreatedAt = createdAt,
-                        OrganizationId = organizationId,
-                        Account = account,
-                        Data = data,
-                    }
-                    : CreateUnknown(evt);
-            }
-
-            case BachsEventTypes.InvoicePaid:
-            {
-                var data = evt.GetData<InvoiceEventData>();
-                return data is not null
-                    ? new InvoicePaidEvent
-                    {
-                        Id = id,
-                        Type = type,
-                        CreatedAt = createdAt,
-                        OrganizationId = organizationId,
-                        Account = account,
-                        Data = data,
-                    }
-                    : CreateUnknown(evt);
-            }
-
-            case BachsEventTypes.InvoicePaymentFailed:
-            {
-                var data = evt.GetData<InvoiceEventData>();
-                return data is not null
-                    ? new InvoicePaymentFailedEvent
-                    {
-                        Id = id,
-                        Type = type,
-                        CreatedAt = createdAt,
-                        OrganizationId = organizationId,
-                        Account = account,
-                        Data = data,
-                    }
-                    : CreateUnknown(evt);
-            }
-
-            case BachsEventTypes.PayoutCreated:
-            {
-                var data = evt.GetData<Payout>();
-                return data is not null
-                    ? new PayoutCreatedEvent
-                    {
-                        Id = id,
-                        Type = type,
-                        CreatedAt = createdAt,
-                        OrganizationId = organizationId,
-                        Account = account,
-                        Data = data,
-                    }
-                    : CreateUnknown(evt);
-            }
-
-            case BachsEventTypes.PayoutPaid:
-            {
-                var data = evt.GetData<Payout>();
-                return data is not null
-                    ? new PayoutPaidEvent
-                    {
-                        Id = id,
-                        Type = type,
-                        CreatedAt = createdAt,
-                        OrganizationId = organizationId,
-                        Account = account,
-                        Data = data,
-                    }
-                    : CreateUnknown(evt);
-            }
-
-            case BachsEventTypes.PayoutFailed:
-            {
-                var data = evt.GetData<Payout>();
-                return data is not null
-                    ? new PayoutFailedEvent
-                    {
-                        Id = id,
-                        Type = type,
-                        CreatedAt = createdAt,
-                        OrganizationId = organizationId,
-                        Account = account,
-                        Data = data,
-                    }
-                    : CreateUnknown(evt);
-            }
-
-            case BachsEventTypes.RefundCreated:
-            {
-                var data = evt.GetData<Refund>();
-                return data is not null
-                    ? new RefundCreatedEvent
-                    {
-                        Id = id,
-                        Type = type,
-                        CreatedAt = createdAt,
-                        OrganizationId = organizationId,
-                        Account = account,
-                        Data = data,
-                    }
-                    : CreateUnknown(evt);
-            }
-
-            case BachsEventTypes.RefundPaid:
-            {
-                var data = evt.GetData<Refund>();
-                return data is not null
-                    ? new RefundPaidEvent
-                    {
-                        Id = id,
-                        Type = type,
-                        CreatedAt = createdAt,
-                        OrganizationId = organizationId,
-                        Account = account,
-                        Data = data,
-                    }
-                    : CreateUnknown(evt);
-            }
-
-            case BachsEventTypes.RefundFailed:
-            {
-                var data = evt.GetData<Refund>();
-                return data is not null
-                    ? new RefundFailedEvent
-                    {
-                        Id = id,
-                        Type = type,
-                        CreatedAt = createdAt,
-                        OrganizationId = organizationId,
-                        Account = account,
-                        Data = data,
-                    }
-                    : CreateUnknown(evt);
-            }
-
-            case BachsEventTypes.DisputeCreated:
-            {
-                var data = evt.GetData<Dispute>();
-                return data is not null
-                    ? new DisputeCreatedEvent
-                    {
-                        Id = id,
-                        Type = type,
-                        CreatedAt = createdAt,
-                        OrganizationId = organizationId,
-                        Account = account,
-                        Data = data,
-                    }
-                    : CreateUnknown(evt);
-            }
-
-            case BachsEventTypes.DisputeUpdated:
-            {
-                var data = evt.GetData<Dispute>();
-                return data is not null
-                    ? new DisputeUpdatedEvent
-                    {
-                        Id = id,
-                        Type = type,
-                        CreatedAt = createdAt,
-                        OrganizationId = organizationId,
-                        Account = account,
-                        Data = data,
-                    }
-                    : CreateUnknown(evt);
-            }
-
-            case BachsEventTypes.ConversionCompleted:
-            {
-                var data = evt.GetData<Conversion>();
-                return data is not null
-                    ? new ConversionCompletedEvent
-                    {
-                        Id = id,
-                        Type = type,
-                        CreatedAt = createdAt,
-                        OrganizationId = organizationId,
-                        Account = account,
-                        Data = data,
-                    }
-                    : CreateUnknown(evt);
-            }
-
-            case BachsEventTypes.ConversionFailed:
-            {
-                var data = evt.GetData<Conversion>();
-                return data is not null
-                    ? new ConversionFailedEvent
-                    {
-                        Id = id,
-                        Type = type,
-                        CreatedAt = createdAt,
-                        OrganizationId = organizationId,
-                        Account = account,
-                        Data = data,
-                    }
-                    : CreateUnknown(evt);
-            }
-
-            case BachsEventTypes.CustomerCreated:
-            {
-                var data = evt.GetData<Customer>();
-                return data is not null
-                    ? new CustomerCreatedEvent
-                    {
-                        Id = id,
-                        Type = type,
-                        CreatedAt = createdAt,
-                        OrganizationId = organizationId,
-                        Account = account,
-                        Data = data,
-                    }
-                    : CreateUnknown(evt);
-            }
-
-            case BachsEventTypes.CustomerUpdated:
-            {
-                var data = evt.GetData<Customer>();
-                return data is not null
-                    ? new CustomerUpdatedEvent
-                    {
-                        Id = id,
-                        Type = type,
-                        CreatedAt = createdAt,
-                        OrganizationId = organizationId,
-                        Account = account,
-                        Data = data,
-                    }
-                    : CreateUnknown(evt);
-            }
-
-            case BachsEventTypes.AccountUpdated:
-            {
-                var data = evt.GetData<AccountUpdatedEventData>();
-                return data is not null
-                    ? new AccountUpdatedEvent
-                    {
-                        Id = id,
-                        Type = type,
-                        CreatedAt = createdAt,
-                        OrganizationId = organizationId,
-                        Account = account,
-                        Data = data,
-                    }
-                    : CreateUnknown(evt);
-            }
-
-            case BachsEventTypes.CapabilityUpdated:
-            {
-                var data = evt.GetData<CapabilityUpdatedEventData>();
-                return data is not null
-                    ? new CapabilityUpdatedEvent
-                    {
-                        Id = id,
-                        Type = type,
-                        CreatedAt = createdAt,
-                        OrganizationId = organizationId,
-                        Account = account,
-                        Data = data,
-                    }
-                    : CreateUnknown(evt);
-            }
-
-            case BachsEventTypes.TransferCreated:
-            {
-                var data = evt.GetData<TransferEventData>();
-                return data is not null
-                    ? new TransferCreatedEvent
-                    {
-                        Id = id,
-                        Type = type,
-                        CreatedAt = createdAt,
-                        OrganizationId = organizationId,
-                        Account = account,
-                        Data = data,
-                    }
-                    : CreateUnknown(evt);
-            }
-
-            default:
-                return CreateUnknown(evt);
-        }
-    }
-
-    private static UnknownBachsEvent CreateUnknown(BachsWebhookEvent evt) =>
-        new()
-        {
-            Id = evt.Id,
-            Type = evt.Type,
-            CreatedAt = evt.CreatedAt,
-            OrganizationId = evt.OrganizationId,
-            Account = evt.Account,
-            RawData = evt.Data,
-        };
 }

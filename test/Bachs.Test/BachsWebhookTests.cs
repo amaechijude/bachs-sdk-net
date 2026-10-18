@@ -324,7 +324,7 @@ public sealed class BachsWebhookTests
         Assert.Equal("ch_charge123", collEvent.Data.Id);
         Assert.Equal("chk_sess123", collEvent.Data.CheckoutId);
         Assert.Equal("ORD-1234", collEvent.Data.Reference);
-        Assert.Equal(75000.00m, (decimal)collEvent.Data.Amount);
+        Assert.Equal(75000.00m, collEvent.Data.Amount);
         Assert.Equal(Bachs.Models.Common.BachsCurrency.NGN, collEvent.Data.Currency);
         Assert.Equal(73875.00m, (decimal)collEvent.Data.SettlementAmount!.Value);
         Assert.Equal("merchant", collEvent.Data.FeeBearer);
@@ -430,7 +430,7 @@ public sealed class BachsWebhookTests
         Assert.Equal("ref_98765", refEvent.Data.RefundId);
         Assert.Equal("ref_98765", refEvent.Data.Id);
         Assert.Equal("ch_orig123", refEvent.Data.ChargeId);
-        Assert.Equal(10.00m, (decimal)refEvent.Data.Amount);
+        Assert.Equal(10.00m, refEvent.Data.Amount);
     }
 
     [Fact]
@@ -444,9 +444,11 @@ public sealed class BachsWebhookTests
                 "organization_id": "acct_org123",
                 "data": {
                     "subscription_id": "sub_premium_123",
-                    "customer_id": "cust_user123",
                     "product_id": "prod_monthly",
-                    "status": "active"
+                    "status": "active",
+                    "customer":{
+                    "customer_id": "cust_user123"
+                    }
                 }
             }
             """;
@@ -460,7 +462,7 @@ public sealed class BachsWebhookTests
         Assert.Equal("evt_sub_123", subEvent.Id);
         Assert.Equal("sub_premium_123", subEvent.Data.SubscriptionId);
         Assert.Equal("sub_premium_123", subEvent.Data.Id);
-        Assert.Equal("cust_user123", subEvent.Data.CustomerId);
+        Assert.Equal("cust_user123", subEvent.Data.Customer?.CustomerId);
         Assert.Equal("active", subEvent.Data.Status);
     }
 

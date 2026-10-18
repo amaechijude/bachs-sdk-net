@@ -73,4 +73,4 @@ public sealed record WebhookEventRecord
     public JsonElement Data { get; init; }
 }
 
-public sealed class ListWebhookEndpointsOptions : BachsListRequestOptions { }
+public sealed class ListWebhookEndpointsOptions : BachsListRequestOptions;
