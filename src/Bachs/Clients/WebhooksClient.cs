@@ -16,7 +16,7 @@ public sealed class WebhooksClient(IBachsClient bachsClient)
 {
     public Task<BachsResponse<WebhookEndpoint>> CreateEndpointAsync(
         CreateWebhookEndpointRequest request,
-        BachsRequestOptions? requestOptions = null,
+        BachsRequestOptions requestOptions,
         CancellationToken cancellationToken = default
     )
     {
@@ -93,7 +93,7 @@ public sealed class WebhooksClient(IBachsClient bachsClient)
 
     public Task<BachsResponse<SecretRotationResult>> RotateSecretAsync(
         string endpointId,
-        BachsRequestOptions? requestOptions = null,
+        BachsRequestOptions requestOptions,
         CancellationToken cancellationToken = default
     )
     {

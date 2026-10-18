@@ -62,7 +62,7 @@ public interface IDisputesClient
     /// <exception cref="BachsSerializationException">Thrown when the response body cannot be deserialized.</exception>
     Task<BachsResponse<Dispute>> SubmitAsync(
         string disputeId,
-        BachsRequestOptions? requestOptions = null,
+        BachsRequestOptions requestOptions,
         CancellationToken cancellationToken = default
     );
 }

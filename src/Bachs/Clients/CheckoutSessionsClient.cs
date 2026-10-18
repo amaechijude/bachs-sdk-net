@@ -12,7 +12,7 @@ public sealed class CheckoutSessionsClient(IBachsClient bachsClient)
 {
     public Task<BachsResponse<CreateCheckoutSessionResponse>> CreateAsync(
         CreateCheckoutSessionRequest request,
-        BachsRequestOptions? requestOptions = null,
+        BachsRequestOptions requestOptions,
         CancellationToken cancellationToken = default
     ) =>
         BachsClient.PostAsync<CreateCheckoutSessionRequest, CreateCheckoutSessionResponse>(

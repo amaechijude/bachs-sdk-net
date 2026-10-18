@@ -332,9 +332,10 @@ using Bachs.WebHooks;
 
 app.MapPost("/api/webhooks/bachs", async (HttpRequest request, IWebhooksClient webhooks) =>
 {
-    // Read the raw body
-    using var reader = new StreamReader(request.Body);
-    var rawBody = await reader.ReadToEndAsync();
+    // Prefer raw bytes so the signed body is never re-encoded.
+    using var ms = new MemoryStream();
+    await request.Body.CopyToAsync(ms);
+    var payloadBytes = ms.ToArray();
 
     // Prefer X-Bachs-Signature-V2 header
     var signature = request.Headers["X-Bachs-Signature-V2"].ToString();
@@ -347,7 +348,7 @@ app.MapPost("/api/webhooks/bachs", async (HttpRequest request, IWebhooksClient w
 
     // Validates the signature, enforces the 5-minute timestamp tolerance, and parses a typed event.
     // Uses the configured BachsClientOptions.WebhookSecret when secret is omitted.
-    if (!webhooks.TryValidateTypedEvent(rawBody, signature, out var webhookEvent, timestampHeader: timestamp))
+    if (!webhooks.TryValidateTypedEvent(payloadBytes, signature, out var webhookEvent, timestampHeader: timestamp))
     {
         return Results.BadRequest(new { error = "Invalid webhook signature or payload." });
     }

@@ -58,7 +58,7 @@ public sealed class DisputesClient(IBachsClient bachsClient)
 
     public Task<BachsResponse<Dispute>> SubmitAsync(
         string disputeId,
-        BachsRequestOptions? requestOptions = null,
+        BachsRequestOptions requestOptions,
         CancellationToken cancellationToken = default
     )
     {

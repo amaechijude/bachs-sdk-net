@@ -13,7 +13,7 @@ public sealed class TransfersClient(IBachsClient bachsClient)
 {
     public Task<BachsResponse<Transfer>> CreateAsync(
         CreateTransferRequest request,
-        BachsRequestOptions? requestOptions = null,
+        BachsRequestOptions requestOptions,
         CancellationToken cancellationToken = default
     )
     {

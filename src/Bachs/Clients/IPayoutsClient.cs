@@ -19,7 +19,7 @@ public interface IPayoutsClient
     /// <exception cref="BachsSerializationException">Thrown when the response body cannot be deserialized.</exception>
     Task<BachsResponse<Payout>> CreateAsync(
         CreatePayoutRequest request,
-        BachsRequestOptions? requestOptions = null,
+        BachsRequestOptions requestOptions,
         CancellationToken cancellationToken = default
     );
 
@@ -33,10 +33,10 @@ public interface IPayoutsClient
     /// <exception cref="BachsSerializationException">Thrown when the response body cannot be deserialized.</exception>
     Task<BachsResponse<PayoutQuote>> CreateQuoteAsync(
         CreatePayoutQuoteRequest request,
-        BachsRequestOptions? requestOptions = null,
+        BachsRequestOptions requestOptions,
         CancellationToken cancellationToken = default
     );
-
+ 
     /// <summary>
     /// Retrieves a payout by its withdrawal ID.
     /// </summary>
@@ -80,7 +80,7 @@ public interface IPayoutDestinationsClient
     /// <exception cref="BachsSerializationException">Thrown when the response body cannot be deserialized.</exception>
     Task<BachsResponse<PayoutDestination>> CreateAsync(
         CreatePayoutDestinationRequest request,
-        BachsRequestOptions? requestOptions = null,
+        BachsRequestOptions requestOptions,
         CancellationToken cancellationToken = default
     );
 

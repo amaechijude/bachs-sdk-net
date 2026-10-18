@@ -41,7 +41,7 @@ public sealed class MiscClient(IBachsClient bachsClient) : BaseClient(bachsClien
 
     public Task<BachsResponse<ResolveBankAccountResponse>> ResolveBankAccountAsync(
         ResolveBankAccountRequest request,
-        BachsRequestOptions? requestOptions = null,
+        BachsRequestOptions requestOptions,
         CancellationToken cancellationToken = default
     )
     {

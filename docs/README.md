@@ -80,7 +80,7 @@ All sub-clients inherit from [`BaseClient`](https://github.com/amaechijude/bachs
 ## Common Features Across All Clients
 
 ### 1. Per-Request Options ([`BachsRequestOptions`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/Common/BachsRequestOptions.cs))
-All write and read operations accept an optional `BachsRequestOptions` parameter:
+All write and read operations accept an optional `BachsRequestOptions` parameter. Pass a non-null instance (use `new BachsRequestOptions()` when no overrides are needed):
 ```csharp
 var options = new BachsRequestOptions
 {

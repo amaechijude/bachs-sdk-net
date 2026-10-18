@@ -13,7 +13,7 @@ public sealed class CustomersClient(IBachsClient bachsClient)
 {
     public Task<BachsResponse<Customer>> CreateAsync(
         CreateCustomerRequest request,
-        BachsRequestOptions? requestOptions = null,
+        BachsRequestOptions requestOptions,
         CancellationToken cancellationToken = default
     )
     {
@@ -57,7 +57,7 @@ public sealed class CustomersClient(IBachsClient bachsClient)
     public Task<BachsResponse<Customer>> UpdateAsync(
         string customerId,
         UpdateCustomerRequest request,
-        BachsRequestOptions? requestOptions = null,
+        BachsRequestOptions requestOptions,
         CancellationToken cancellationToken = default
     )
     {
@@ -73,7 +73,7 @@ public sealed class CustomersClient(IBachsClient bachsClient)
 
     public Task<BachsResponse<CustomerPortalSession>> CreatePortalSessionAsync(
         string customerId,
-        BachsRequestOptions? requestOptions = null,
+        BachsRequestOptions requestOptions,
         CancellationToken cancellationToken = default
     )
     {

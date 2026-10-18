@@ -14,7 +14,7 @@ public sealed class VirtualAccountsClient(IBachsClient bachsClient)
 {
     public Task<BachsResponse<VirtualAccount>> CreateAsync(
         CreateVirtualAccountRequest request,
-        BachsRequestOptions? requestOptions = null,
+        BachsRequestOptions requestOptions,
         CancellationToken cancellationToken = default
     )
     {

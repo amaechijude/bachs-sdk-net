@@ -19,7 +19,7 @@ public interface ITransfersClient
     /// <exception cref="BachsSerializationException">Thrown when the response body cannot be deserialized.</exception>
     Task<BachsResponse<Transfer>> CreateAsync(
         CreateTransferRequest request,
-        BachsRequestOptions? requestOptions = null,
+        BachsRequestOptions requestOptions,
         CancellationToken cancellationToken = default
     );
 

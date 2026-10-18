@@ -44,7 +44,7 @@ public interface IMiscClient
     /// <exception cref="BachsSerializationException">Thrown when the response body cannot be deserialized.</exception>
     Task<BachsResponse<ResolveBankAccountResponse>> ResolveBankAccountAsync(
         ResolveBankAccountRequest request,
-        BachsRequestOptions? requestOptions = null,
+        BachsRequestOptions requestOptions,
         CancellationToken cancellationToken = default
     );
 }

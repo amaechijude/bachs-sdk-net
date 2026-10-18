@@ -13,7 +13,7 @@ public sealed class ProductsClient(IBachsClient bachsClient)
 {
     public Task<BachsResponse<Product>> CreateAsync(
         CreateProductRequest request,
-        BachsRequestOptions? requestOptions = null,
+        BachsRequestOptions requestOptions,
         CancellationToken cancellationToken = default
     )
     {
@@ -73,7 +73,7 @@ public sealed class ProductsClient(IBachsClient bachsClient)
 
     public Task<BachsResponse<Product>> ArchiveAsync(
         string productId,
-        BachsRequestOptions? requestOptions = null,
+        BachsRequestOptions requestOptions,
         CancellationToken cancellationToken = default
     )
     {
@@ -87,7 +87,7 @@ public sealed class ProductsClient(IBachsClient bachsClient)
 
     public Task<BachsResponse<Product>> UnarchiveAsync(
         string productId,
-        BachsRequestOptions? requestOptions = null,
+        BachsRequestOptions requestOptions,
         CancellationToken cancellationToken = default
     )
     {

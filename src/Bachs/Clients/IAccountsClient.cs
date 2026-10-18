@@ -18,7 +18,7 @@ public interface IAccountsClient
     /// <exception cref="BachsSerializationException">Thrown when the response body cannot be deserialized.</exception>
     Task<BachsResponse<Account>> CreateAsync(
         CreateAccountRequest request,
-        BachsRequestOptions? requestOptions = null,
+        BachsRequestOptions requestOptions,
         CancellationToken cancellationToken = default
     );
 
@@ -60,7 +60,7 @@ public interface IAccountsClient
     Task<BachsResponse<Account>> UpdateAsync(
         string accountId,
         UpdateAccountRequest request,
-        BachsRequestOptions? requestOptions = null,
+        BachsRequestOptions requestOptions,
         CancellationToken cancellationToken = default
     );
 
@@ -75,7 +75,7 @@ public interface IAccountsClient
     Task<BachsResponse<AccountLink>> CreateAccountLinkAsync(
         string accountId,
         CreateAccountLinkRequest request,
-        BachsRequestOptions? requestOptions = null,
+        BachsRequestOptions requestOptions,
         CancellationToken cancellationToken = default
     );
 

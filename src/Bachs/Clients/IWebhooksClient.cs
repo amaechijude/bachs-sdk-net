@@ -21,7 +21,7 @@ public interface IWebhooksClient : IWebhookEventValidator
     /// <exception cref="BachsSerializationException">Thrown when the response body cannot be deserialized.</exception>
     Task<BachsResponse<WebhookEndpoint>> CreateEndpointAsync(
         CreateWebhookEndpointRequest request,
-        BachsRequestOptions? requestOptions = null,
+        BachsRequestOptions requestOptions,
         CancellationToken cancellationToken = default
     );
 
@@ -92,7 +92,7 @@ public interface IWebhooksClient : IWebhookEventValidator
     /// <exception cref="BachsSerializationException">Thrown when the response body cannot be deserialized.</exception>
     Task<BachsResponse<SecretRotationResult>> RotateSecretAsync(
         string endpointId,
-        BachsRequestOptions? requestOptions = null,
+        BachsRequestOptions requestOptions,
         CancellationToken cancellationToken = default
     );
 

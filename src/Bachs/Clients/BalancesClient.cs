@@ -33,16 +33,13 @@ public sealed class BalancesClient(IBachsClient bachsClient)
 
     public Task<BachsResponse<BalanceSettings>> UpdateSettingsAsync(
         BalanceSettings settings,
-        BachsRequestOptions? requestOptions = null,
+        BachsRequestOptions requestOptions,
         CancellationToken cancellationToken = default
-    )
-    {
-        ArgumentNullException.ThrowIfNull(settings);
-        return BachsClient.PostAsync<BalanceSettings, BalanceSettings>(
+    ) =>
+        BachsClient.PostAsync<BalanceSettings, BalanceSettings>(
             "v1/balance_settings",
             settings,
             requestOptions,
             cancellationToken
         );
-    }
 }

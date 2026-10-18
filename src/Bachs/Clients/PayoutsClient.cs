@@ -13,7 +13,7 @@ public sealed class PayoutsClient(IBachsClient bachsClient)
 {
     public Task<BachsResponse<Payout>> CreateAsync(
         CreatePayoutRequest request,
-        BachsRequestOptions? requestOptions = null,
+        BachsRequestOptions requestOptions,
         CancellationToken cancellationToken = default
     )
     {
@@ -28,7 +28,7 @@ public sealed class PayoutsClient(IBachsClient bachsClient)
 
     public Task<BachsResponse<PayoutQuote>> CreateQuoteAsync(
         CreatePayoutQuoteRequest request,
-        BachsRequestOptions? requestOptions = null,
+        BachsRequestOptions requestOptions,
         CancellationToken cancellationToken = default
     )
     {
@@ -79,7 +79,7 @@ public sealed class PayoutDestinationsClient(IBachsClient bachsClient)
 {
     public Task<BachsResponse<PayoutDestination>> CreateAsync(
         CreatePayoutDestinationRequest request,
-        BachsRequestOptions? requestOptions = null,
+        BachsRequestOptions requestOptions,
         CancellationToken cancellationToken = default
     )
     {

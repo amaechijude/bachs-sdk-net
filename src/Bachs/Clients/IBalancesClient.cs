@@ -43,7 +43,7 @@ public interface IBalancesClient
     /// <exception cref="BachsSerializationException">Thrown when the response body cannot be deserialized.</exception>
     Task<BachsResponse<BalanceSettings>> UpdateSettingsAsync(
         BalanceSettings settings,
-        BachsRequestOptions? requestOptions = null,
+        BachsRequestOptions requestOptions,
         CancellationToken cancellationToken = default
     );
 }

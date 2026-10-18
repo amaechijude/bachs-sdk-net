@@ -13,7 +13,7 @@ public sealed class RefundsClient(IBachsClient bachsClient)
 {
     public Task<BachsResponse<Refund>> CreateAsync(
         CreateRefundRequest request,
-        BachsRequestOptions? requestOptions = null,
+        BachsRequestOptions requestOptions,
         CancellationToken cancellationToken = default
     )
     {

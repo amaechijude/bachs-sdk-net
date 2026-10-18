@@ -287,8 +287,8 @@ public sealed class CheckoutSessionTests
             .WithPricing(100.00m, BachsCurrency.USD)
             .WithSuccessUrl("https://example.com/success")
             .Build();
-
-        var createRes = await client.CheckoutSessions.CreateAsync(createReq);
+        var options = new BachsRequestOptions("idemtocy key");
+        var createRes = await client.CheckoutSessions.CreateAsync(createReq, options);
         Assert.NotNull(createRes.Data);
         Assert.Equal("chk_created_1", createRes.Data.CheckoutId);
         Assert.Equal("https://checkout.bachs.io/c/test", createRes.Data.CheckoutUrl);

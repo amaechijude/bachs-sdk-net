@@ -19,7 +19,7 @@ public interface IConversionsClient
     /// <exception cref="BachsSerializationException">Thrown when the response body cannot be deserialized.</exception>
     Task<BachsResponse<ConversionQuote>> CreateQuoteAsync(
         CreateConversionQuoteRequest request,
-        BachsRequestOptions? requestOptions = null,
+        BachsRequestOptions requestOptions,
         CancellationToken cancellationToken = default
     );
 
@@ -33,7 +33,7 @@ public interface IConversionsClient
     /// <exception cref="BachsSerializationException">Thrown when the response body cannot be deserialized.</exception>
     Task<BachsResponse<Conversion>> ExecuteAsync(
         ExecuteConversionRequest request,
-        BachsRequestOptions? requestOptions = null,
+        BachsRequestOptions requestOptions,
         CancellationToken cancellationToken = default
     );
 

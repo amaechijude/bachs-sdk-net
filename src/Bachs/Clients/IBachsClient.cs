@@ -123,7 +123,7 @@ public interface IBachsClient
     Task<BachsResponse<TResponse>> PostAsync<TRequest, TResponse>(
         string path,
         TRequest body,
-        BachsRequestOptions? requestOptions = null,
+        BachsRequestOptions requestOptions,
         CancellationToken cancellationToken = default
     );
 
@@ -136,7 +136,7 @@ public interface IBachsClient
     /// <exception cref="BachsSerializationException">Thrown when the response body cannot be deserialized.</exception>
     Task<BachsResponse<TResponse>> PostAsync<TResponse>(
         string path,
-        BachsRequestOptions? requestOptions = null,
+        BachsRequestOptions requestOptions,
         CancellationToken cancellationToken = default
     );
 
@@ -150,7 +150,7 @@ public interface IBachsClient
     Task<BachsResponse<TResponse>> PatchAsync<TRequest, TResponse>(
         string path,
         TRequest body,
-        BachsRequestOptions? requestOptions = null,
+        BachsRequestOptions requestOptions,
         CancellationToken cancellationToken = default
     );
 
@@ -164,7 +164,7 @@ public interface IBachsClient
     Task<BachsResponse<TResponse>> PutAsync<TRequest, TResponse>(
         string path,
         TRequest body,
-        BachsRequestOptions? requestOptions = null,
+        BachsRequestOptions requestOptions,
         CancellationToken cancellationToken = default
     );
 

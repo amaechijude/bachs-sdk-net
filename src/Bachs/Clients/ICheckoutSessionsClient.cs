@@ -22,7 +22,7 @@ public interface ICheckoutSessionsClient
     /// <exception cref="BachsSerializationException">Thrown when the response body cannot be deserialized.</exception>
     Task<BachsResponse<CreateCheckoutSessionResponse>> CreateAsync(
         CreateCheckoutSessionRequest request,
-        BachsRequestOptions? requestOptions = null,
+        BachsRequestOptions requestOptions,
         CancellationToken cancellationToken = default
     );
 

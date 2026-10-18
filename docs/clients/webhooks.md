@@ -1,5 +1,24 @@
 # Webhooks Client & Signature Verification
 
+## Table of Contents
+
+- [Overview](#overview)
+- [Methods Overview](#methods-overview)
+- [Usage Examples](#usage-examples)
+- [Cryptographic Signature Verification](#cryptographic-signature-verification)
+- [Validation Entry Points](#validation-entry-points)
+- [Secret Resolution](#secret-resolution)
+- [Signature Formats](#signature-formats)
+- [Minimal API Implementation (payload bytes)](#minimal-api-implementation-payload-bytes)
+- [Controller Implementation (payload bytes)](#controller-implementation-payload-bytes)
+- [Deduplication by Event Id](#deduplication-by-event-id)
+- [Background Processing with Channels](#background-processing-with-channels)
+- [Standalone `WebhookEventValidator`](#validating-via-standalone-webhookeventvalidator)
+- [Static `BachsWebhook`](#validating-via-static-bachswebhook)
+- [Models](#models)
+
+## Overview
+
 The Webhooks client allows programmatic registration and management of webhook destination endpoints, subscribing to specific event topics, performing zero-downtime secret rotations, and inspecting past delivered webhook events.
 
 In addition to the client, the SDK provides the static [`BachsWebhook`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/WebHooks/BachsWebhook.cs) class for cryptographic signature verification.
@@ -22,8 +41,6 @@ In addition to the client, the SDK provides the static [`BachsWebhook`](https://
 | [`TryValidateTypedEvent`](#cryptographic-signature-verification) | - | Local | Safely validates and parses into a `BachsTypedEvent` without throwing exceptions. |
 | [`ValidateEvent`](#cryptographic-signature-verification) | - | Local | Validates signature, verifies timestamp tolerance, and parses incoming raw webhook event. |
 | [`TryValidateEvent`](#cryptographic-signature-verification) | - | Local | Safely validates an incoming raw webhook delivery without throwing exceptions. |
-| [`ConstructEvent`](#validation-entry-points) | - | Local | Alias of `ValidateEvent`: verifies the signature and deserializes into a `BachsWebhookEvent`. |
-| [`ConstructTypedEvent`](#validation-entry-points) | - | Local | Alias of `ValidateTypedEvent`: verifies the signature and deserializes into a `BachsTypedEvent`. |
 | [`VerifySignature`](#cryptographic-signature-verification) | - | Local | Cryptographically verifies the webhook signature header against payload. |
 | [`CreateEndpointAsync`](#1-create-a-webhook-endpoint) | `POST` | `/v1/webhooks/endpoints` | Registers a new HTTPS destination endpoint and generates a signing secret. |
 | [`GetEndpointAsync`](#2-retrieve-an-endpoint) | `GET` | `/v1/webhooks/endpoints/{endpointId}` | Retrieves endpoint details and subscribed topics. |
@@ -171,14 +188,14 @@ Every validation method shares the same parameter shape (instance APIs make `sec
 ```csharp
 // String payload:
 ValidateEvent(payload, signatureHeader, secret = null, toleranceSeconds = 300, timestampHeader = null)
-// Raw bytes (avoids re-encoding the body):
+// Raw bytes (preferred, avoids re-encoding the body):
 ValidateEvent(payloadBytes, signatureHeader, secret = null, toleranceSeconds = 300, timestampHeader = null)
 ```
 
 - `signatureHeader` comes from `X-Bachs-Signature-V2` (preferred) or `X-Bachs-Signature` (legacy V1).
 - `timestampHeader` is only needed for V1 signatures, where the Unix timestamp travels in `X-Bachs-Timestamp`. V2 headers (`t=<unix>,v1=<hex>`) carry their own timestamp, so it can be left `null`.
 - `toleranceSeconds` is the anti-replay window; it defaults to `BachsWebhook.DefaultToleranceSeconds` (300 seconds / 5 minutes). Deliveries outside the window fail validation.
-- Every method also has a `byte[] payloadBytes` overload that takes the raw request body as-is — use it when your framework hands you the body bytes so the signed content is never re-encoded.
+- **Prefer the `byte[] payloadBytes` overloads.** They take the raw request body as-is and guarantee the signed bytes are never re-encoded or re-serialized.
 
 ### Validation Entry Points
 
@@ -190,7 +207,7 @@ You can validate incoming webhook deliveries in three ways:
 | [`WebhookEventValidator`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/WebHooks/WebhookEventValidator.cs) | Standalone (no API client) validation, e.g. in a worker or test harness, with a default secret configured up front. |
 | Static [`BachsWebhook`](https://github.com/amaechijude/bachs-sdk-net/blob/main/src/Bachs/WebHooks/BachsWebhook.cs) | Fully explicit: the secret is a required parameter on every call. |
 
-The instance entry points expose the same members: `ValidateEvent`, `TryValidateEvent`, `VerifySignature`, `ConstructEvent` (alias of `ValidateEvent`), `ValidateTypedEvent`, `TryValidateTypedEvent`, and `ConstructTypedEvent` (alias of `ValidateTypedEvent`).
+The instance entry points expose the same members: `ValidateEvent`, `TryValidateEvent`, `VerifySignature`, `ValidateTypedEvent`, and `TryValidateTypedEvent`.
 
 #### Secret resolution
 
@@ -198,9 +215,9 @@ The instance entry points expose the same members: `ValidateEvent`, `TryValidate
 
 1. The `secret` argument, when it is a non-empty string.
 2. The configured default: `BachsClientOptions.WebhookSecret` for `IWebhooksClient`, or the secret passed to `new WebhookEventValidator(secret)` / `new WebhookEventValidator(options)`.
-3. Otherwise the throwing methods (`ValidateEvent`, `ValidateTypedEvent`, `ConstructEvent`, `ConstructTypedEvent`, `VerifySignature`) throw **`BachsInvalidOperationException`**, and the `Try*` methods return `false` with a `null` out value.
+3. Otherwise the throwing methods (`ValidateEvent`, `ValidateTypedEvent`, `VerifySignature`) throw **`BachsInvalidOperationException`**, and the `Try*` methods return `false` with a `null` out value.
 
-Once a secret is resolved, the throwing methods (`ValidateEvent`, `ValidateTypedEvent`, `ConstructEvent`, `ConstructTypedEvent`) throw **`BachsException`** when the signature does not match, the timestamp is outside the tolerance window, or the payload cannot be deserialized. `VerifySignature` never throws for a bad signature — it simply returns `false` — and every `Try*` method returns `false` instead of throwing.
+Once a secret is resolved, the throwing methods (`ValidateEvent`, `ValidateTypedEvent`) throw **`BachsException`** when the signature does not match, the timestamp is outside the tolerance window, or the payload cannot be deserialized. `VerifySignature` never throws for a bad signature — it simply returns `false` — and every `Try*` method returns `false` instead of throwing.
 
 #### Signature formats
 
@@ -219,30 +236,59 @@ builder.Services.AddBachsClient(options =>
 });
 ```
 
-Then inject `IWebhooksClient` (or `IWebhookEventValidator`) directly into your webhook handler:
+Then inject `IWebhooksClient` (or `IWebhookEventValidator`) directly into your webhook handler.
+
+### Webhook Processing Flow
+
+```mermaid
+flowchart TD
+    A[Incoming POST /webhooks/bachs] --> B[Read raw request body as bytes]
+    B --> C[Extract X-Bachs-Signature-V2 or X-Bachs-Signature]
+    C --> D[VerifySignature / TryValidateTypedEvent]
+    D -->|Invalid or stale| E[Return 400 Bad Request]
+    D -->|Valid| F[Parse BachsTypedEvent]
+    F --> G{Event id already processed?}
+    G -->|Yes| H[Return 200 OK]
+    G -->|No| I[Register event id for deduplication]
+    I --> J[Write event to Channel]
+    J --> K[Return 202 Accepted]
+    J --> L[BackgroundService consumes channel]
+    L --> M[Pattern-match typed event]
+    M --> N[Execute business logic]
+```
+
+### Minimal API Implementation (payload bytes)
 
 ```csharp
+using System.IO;
 using Bachs.Clients;
 using Bachs.Common;
+using Bachs.WebHooks;
 
-app.MapPost("/webhooks/bachs", async (HttpRequest request, IWebhooksClient webhooks) =>
+
+app.MapPost("/webhooks/bachs", async (HttpRequest request, IWebhooksClient webhooks, WebhookEventChannel channel) =>
 {
-    using var reader = new StreamReader(request.Body);
-    var rawPayload = await reader.ReadToEndAsync();
+    // Prefer raw bytes so the signed body is never re-encoded.
+    using var ms = new MemoryStream();
+    await request.Body.CopyToAsync(ms);
+    var payloadBytes = ms.ToArray();
 
     // Prefer V2 signature, fall back to V1
-    var signature = request.Headers["X-Bachs-Signature-V2"].ToString();
-    if (string.IsNullOrEmpty(signature))
-    {
-        signature = request.Headers["X-Bachs-Signature"].ToString();
-    }
+    var signature = request.Headers.TryGetValue("X-Bachs-Signature-V2", out var v2)
+        ? v2.ToString()
+        : request.Headers["X-Bachs-Signature"].ToString();
 
     var timestamp = request.Headers["X-Bachs-Timestamp"].ToString();
+
+    if (string.IsNullOrWhiteSpace(signature) || string.IsNullOrWhiteSpace(timestamp))
+    {
+        return Results.BadRequest(new { error = "Missing webhook signature or timestamp." });
+    }
 
     // Non-throwing validation: invalid signatures, stale timestamps, missing secrets,
     // or invalid payloads return false.
     if (!webhooks.TryValidateTypedEvent(
-            rawPayload,
+            payloadBytes,
             signature,
             out var bachsEvent,
             timestampHeader: timestamp))
@@ -250,18 +296,77 @@ app.MapPost("/webhooks/bachs", async (HttpRequest request, IWebhooksClient webho
         return Results.BadRequest(new { error = "Invalid webhook signature or payload." });
     }
 
-    // Pattern-match across events with zero magic strings and strongly-typed data payloads:
-    return bachsEvent switch
+    // Deduplicate by event id (at-least-once delivery).
+    if (!TryRegisterEvent(bachsEvent.Id))
     {
-        CollectionSucceededEvent e => HandlePayment(e.Data),           // e.Data is strongly-typed Payment
-        CheckoutCompletedEvent e   => HandleCheckout(e.Data),          // e.Data is GetCheckoutSessionResponse
-        PayoutPaidEvent e          => HandlePayout(e.Data),             // e.Data is Payout
-        SubscriptionCreatedEvent e => HandleSubscription(e.Data),      // e.Data is Subscription
-        InvoicePaidEvent e          => HandleInvoice(e.Data),           // e.Data is InvoiceEventData
-        UnknownBachsEvent e        => Results.Ok(),                    // Forward-compatible fallback
-        _                          => Results.Ok()
-    };
+        return Results.Ok(); // Already processed.
+    }
+
+    // Push to a background channel instead of doing heavy work inline.
+    await channel.Writer.WriteAsync(bachsEvent);
+
+    return Results.Accepted();
 });
+```
+
+### Controller Implementation (payload bytes)
+
+```csharp
+using Microsoft.AspNetCore.Mvc;
+using Bachs.Clients;
+using Bachs.WebHooks;
+
+[ApiController]
+[Route("webhooks/bachs")]
+public sealed class BachsWebhookController : ControllerBase
+{
+    private readonly IWebhooksClient _webhooks;
+    private readonly WebhookEventChannel _channel;
+
+    public BachsWebhookController(IWebhooksClient webhooks, WebhookEventChannel channel)
+    {
+        _webhooks = webhooks;
+        _channel = channel;
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Receive(CancellationToken cancellationToken)
+    {
+        using var ms = new MemoryStream();
+        await Request.Body.CopyToAsync(ms, cancellationToken);
+        var payloadBytes = ms.ToArray();
+
+        var signature = Request.Headers.TryGetValue("X-Bachs-Signature-V2", out var v2)
+            ? v2.ToString()
+            : Request.Headers["X-Bachs-Signature"].ToString();
+
+        var timestamp = Request.Headers["X-Bachs-Timestamp"].ToString();
+
+     if (string.IsNullOrWhiteSpace(signature) || string.IsNullOrWhiteSpace(timestamp))
+    {
+        return BadRequest(new { error = "Missing webhook signature or timestamp." });
+    }
+
+
+        if (!_webhooks.TryValidateTypedEvent(
+                payloadBytes,
+                signature,
+                out var bachsEvent,
+                timestampHeader: timestamp))
+        {
+            return BadRequest(new { error = "Invalid webhook signature or payload." });
+        }
+
+        // Deduplicate by event id.
+        if (!TryRegisterEvent(bachsEvent.Id))
+        {
+            return Ok(); // Already processed.
+        }
+
+        await _channel.Writer.WriteAsync(bachsEvent, cancellationToken);
+        return Accepted();
+    }
+}
 ```
 
 If you prefer exceptions for invalid deliveries, use `ValidateTypedEvent` in a `try-catch` instead:
@@ -270,7 +375,7 @@ If you prefer exceptions for invalid deliveries, use `ValidateTypedEvent` in a `
 try
 {
     var bachsEvent = webhooks.ValidateTypedEvent(
-        rawPayload,
+        payloadBytes,
         signature,
         timestampHeader: timestamp
     );
@@ -284,6 +389,139 @@ catch (BachsException ex)
 
 Replace the `Results.Ok` line with the event switch from the non-throwing example to dispatch each typed event. `ValidateTypedEvent` throws `BachsException` when validation or payload deserialization fails. It can also throw `BachsInvalidOperationException` if no webhook secret is configured or supplied.
 
+### Deduplication by Event Id
+
+Bachs guarantees at-least-once delivery, so the same event may arrive more than once. Use the event `Id` (starts with `evt_`) as the deduplication key. A simple in-memory guard:
+
+```csharp
+using System.Collections.Concurrent;
+
+private static readonly ConcurrentDictionary<string, byte> ProcessedEventIds = new();
+
+private static bool TryRegisterEvent(string eventId)
+{
+    return ProcessedEventIds.TryAdd(eventId, 0);
+}
+```
+
+For multi-instance deployments, replace the in-memory dictionary with a shared store (database unique constraint, Redis `SETNX`, or distributed cache) keyed by the event id.
+
+### Direct Handling (Inline Business Logic)
+
+When the work is fast and safe to run inside the HTTP request, handle the event directly after validation and deduplication instead of pushing it to a channel:
+
+```csharp
+app.MapPost("/webhooks/bachs", async (HttpRequest request, IWebhooksClient webhooks) =>
+{
+    using var ms = new MemoryStream();
+    await request.Body.CopyToAsync(ms);
+    var payloadBytes = ms.ToArray();
+
+    var signature = request.Headers.TryGetValue("X-Bachs-Signature-V2", out var v2)
+        ? v2.ToString()
+        : request.Headers["X-Bachs-Signature"].ToString();
+
+    var timestamp = request.Headers["X-Bachs-Timestamp"].ToString();
+
+    if (!webhooks.TryValidateTypedEvent(payloadBytes, signature, out var bachsEvent, timestampHeader: timestamp))
+    {
+        return Results.BadRequest(new { error = "Invalid webhook signature or payload." });
+    }
+
+    // Deduplicate by event id.
+    if (!TryRegisterEvent(bachsEvent.Id))
+    {
+        return Results.Ok(); // Already processed.
+    }
+
+    // Handle business logic inline.
+    switch (bachsEvent)
+    {
+        case CollectionSucceededEvent paymentEvent:
+            // Fulfill order using paymentEvent.Data
+            break;
+        case CheckoutCompletedEvent checkoutEvent:
+            // Handle checkout completed
+            break;
+        case SubscriptionCreatedEvent subscriptionEvent:
+            // Activate customer subscription
+            break;
+        case UnknownBachsEvent unknownEvent:
+            // Log or safely ignore unrecognized event types.
+            break;
+    }
+
+    return Results.Ok();
+});
+```
+
+### Background Processing with Channels
+
+Avoid doing heavy work inside the HTTP request. Validate, deduplicate, then hand the event to a `System.Threading.Channels.Channel<T>` consumed by a `BackgroundService`:
+
+```csharp
+using System.Threading.Channels;
+using Bachs.WebHooks;
+
+public sealed class WebhookEventChannel
+{
+    public Channel<BachsTypedEvent> Channel { get; } =
+        System.Threading.Channels.Channel.CreateUnbounded<BachsTypedEvent>();
+
+    public ChannelWriter<BachsTypedEvent> Writer => Channel.Writer;
+    public ChannelReader<BachsTypedEvent> Reader => Channel.Reader;
+}
+
+public sealed class WebhookProcessingService : BackgroundService
+{
+    private readonly WebhookEventChannel _channel;
+    private readonly ILogger<WebhookProcessingService> _logger;
+
+    public WebhookProcessingService(WebhookEventChannel channel, ILogger<WebhookProcessingService> logger)
+    {
+        _channel = channel;
+        _logger = logger;
+    }
+
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        await foreach (var evt in _channel.Reader.ReadAllAsync(stoppingToken))
+        {
+            try
+            {
+                switch (evt)
+                {
+                    case CollectionSucceededEvent paymentEvent:
+                        // Fulfill order
+                        break;
+                    case CheckoutCompletedEvent checkoutEvent:
+                        // Handle checkout completed
+                        break;
+                    case SubscriptionCreatedEvent subscriptionEvent:
+                        // Activate customer subscription
+                        break;
+                    case UnknownBachsEvent unknownEvent:
+                        _logger.LogInformation("Unhandled webhook event: {Type}", unknownEvent.Type);
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed processing webhook event {EventId}", evt.Id);
+                // Re-queue, dead-letter, or alert here.
+            }
+        }
+    }
+}
+```
+
+Register the channel and worker in `Program.cs`:
+
+```csharp
+builder.Services.AddSingleton<WebhookEventChannel>();
+builder.Services.AddHostedService<WebhookProcessingService>();
+```
+
 ### Validating via Standalone `WebhookEventValidator`
 
 Use this when you need signature validation without an API client (the validator never makes HTTP calls):
@@ -296,7 +534,7 @@ using Bachs.WebHooks;
 var validator = new WebhookEventValidator(config["Bachs:WebhookSecret"]!);
 // new WebhookEventValidator() + a per-call `secret:` argument also works.
 
-if (validator.TryValidateTypedEvent(rawPayload, signature, out var typedEvent,
+if (validator.TryValidateTypedEvent(payloadBytes, signature, out var typedEvent,
         toleranceSeconds: 300, timestampHeader: timestamp))
 {
     Console.WriteLine($"{typedEvent!.Type} ({typedEvent.Id}) at {typedEvent.CreatedAt:O}");
@@ -308,7 +546,7 @@ else
 
 // Throwing variant — BachsInvalidOperationException when no secret is
 // available, BachsException when verification fails:
-var rawEvent = validator.ValidateEvent(rawPayload, signature);
+var rawEvent = validator.ValidateEvent(payloadBytes, signature);
 ```
 
 ### Validating via Static `BachsWebhook`
@@ -318,18 +556,18 @@ The static API takes an explicit secret on every call:
 ```csharp
 using Bachs.WebHooks;
 
-// Strongly-typed event construction:
-var typedEvent = BachsWebhook.ConstructTypedEvent(
-    rawPayload,
+// Strongly-typed event validation:
+var typedEvent = BachsWebhook.ValidateTypedEvent(
+    payloadBytes,
     signature,
-    secret: config["Bachs:WebhookSecret"]!,
+    config["Bachs:WebhookSecret"]!,
     toleranceSeconds: 300,
     timestampHeader: timestamp
 );
 
 // Non-throwing typed variant:
 BachsWebhook.TryValidateTypedEvent(
-    rawPayload,
+    payloadBytes,
     signature,
     config["Bachs:WebhookSecret"]!,
     out var maybeEvent
@@ -337,13 +575,13 @@ BachsWebhook.TryValidateTypedEvent(
 
 // Signature check only:
 bool ok = BachsWebhook.VerifySignature(
-    rawPayload,
+    payloadBytes,
     signature,
     config["Bachs:WebhookSecret"]!
 );
 
 // Or switch directly on raw event using event constants:
-var rawEvent = BachsWebhook.ConstructEvent(rawPayload, signature, config["Bachs:WebhookSecret"]!);
+var rawEvent = BachsWebhook.ValidateEvent(payloadBytes, signature, config["Bachs:WebhookSecret"]!, timestampHeader: timestamp);
 switch (rawEvent.Type)
 {
     case BachsEventTypes.CollectionSucceeded:

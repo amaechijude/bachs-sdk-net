@@ -19,7 +19,7 @@ public interface ICustomersClient
     /// <exception cref="BachsSerializationException">Thrown when the response body cannot be deserialized.</exception>
     Task<BachsResponse<Customer>> CreateAsync(
         CreateCustomerRequest request,
-        BachsRequestOptions? requestOptions = null,
+        BachsRequestOptions requestOptions,
         CancellationToken cancellationToken = default
     );
 
@@ -62,7 +62,7 @@ public interface ICustomersClient
     Task<BachsResponse<Customer>> UpdateAsync(
         string customerId,
         UpdateCustomerRequest request,
-        BachsRequestOptions? requestOptions = null,
+        BachsRequestOptions requestOptions,
         CancellationToken cancellationToken = default
     );
 
@@ -76,7 +76,7 @@ public interface ICustomersClient
     /// <exception cref="BachsSerializationException">Thrown when the response body cannot be deserialized.</exception>
     Task<BachsResponse<CustomerPortalSession>> CreatePortalSessionAsync(
         string customerId,
-        BachsRequestOptions? requestOptions = null,
+        BachsRequestOptions requestOptions,
         CancellationToken cancellationToken = default
     );
 }
