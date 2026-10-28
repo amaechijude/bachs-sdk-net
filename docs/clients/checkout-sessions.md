@@ -60,7 +60,10 @@ var request = new CreateCheckoutSessionRequest
     CancelUrl = "https://example.com/checkout/cancel"
 };
 
-var response = await client.CheckoutSessions.CreateAsync(request);
+var response = await client.CheckoutSessions.CreateAsync(
+    request,
+    new BachsRequestOptions { IdempotencyKey = "idx_key" }
+    );
 if (!response.IsSuccessStatusCode)
 {
     // Handle the error: log it and take the appropriate action (return, retry, or surface it).

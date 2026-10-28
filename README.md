@@ -106,7 +106,7 @@ using Bachs.Models.Common;
 
 app.MapPost("/create-checkout", async (ICheckoutSessionsClient checkoutClient) =>
 {
-    var response = await checkoutClient.CreateAsync(new CreateCheckoutSessionRequest
+    var request = new CreateCheckoutSessionRequest
     {
         Pricing = new CheckoutPricingRequest
         {
@@ -115,13 +115,17 @@ app.MapPost("/create-checkout", async (ICheckoutSessionsClient checkoutClient) =
         },
         Customer = new CheckoutCustomerRequest
         {
-            Email = "customer@example.com",
+            Email = "jane.doe@example.com",
             Name = "Jane Doe"
         },
         SuccessUrl = "https://example.com/checkout/success",
         CancelUrl = "https://example.com/checkout/cancel"
-    });
+    };
 
+    var response = await client.CheckoutSessions.CreateAsync(
+        request,
+        new BachsRequestOptions { IdempotencyKey = "idx_key" }
+    );
     if (!response.IsSuccessStatusCode)
     {
         // Handle the error: log it, then return an appropriate problem response to the caller.
@@ -156,6 +160,7 @@ builder.Services.AddBachsClient(options =>
     options.MaxRetries = 2;
     options.RetryDelay = TimeSpan.FromSeconds(5); // Bachs official delay is 5 seconds
 
+    options.EnableCircuitBreaker = true; // default is true. false disables it.
     options.CircuitBreakerFailureRatio = 0.2;
     options.CircuitBreakerMinimumThroughput = 20;
     options.CircuitBreakerSamplingDuration = TimeSpan.FromSeconds(30);
@@ -288,7 +293,7 @@ using Bachs.Models.Common;
 using Bachs.Models.Products;
 
 // Create a recurring subscription product (Pro Plan, $29/month, 14-day trial)
-var response = await client.Products.CreateAsync(new CreateProductRequest
+var request = new CreateProductRequest
 {
     Name = "Pro Plan",
     Description = "Monthly access to Pro features",
@@ -308,7 +313,12 @@ var response = await client.Products.CreateAsync(new CreateProductRequest
         Interval = "day",
         Frequency = 14
     }
-});
+};
+
+var response = await client.Products.CreateAsync(
+    request,
+    new BachsRequestOptions { IdempotencyKey = "idx_key" }
+);
 
 if (!response.IsSuccessStatusCode)
 {
@@ -338,13 +348,17 @@ app.MapPost("/api/webhooks/bachs", async (HttpRequest request, IWebhooksClient w
     var payloadBytes = ms.ToArray();
 
     // Prefer X-Bachs-Signature-V2 header
-    var signature = request.Headers["X-Bachs-Signature-V2"].ToString();
-    if (string.IsNullOrEmpty(signature))
-    {
-        signature = request.Headers["X-Bachs-Signature"].ToString();
-    }
+    var signature = request.Headers.TryGetValue("X-Bachs-Signature-V2", out var v2)
+        ? v2.ToString()
+        : request.Headers["X-Bachs-Signature"].ToString();
 
     var timestamp = request.Headers["X-Bachs-Timestamp"].ToString();
+
+    if (string.IsNullOrWhiteSpace(signature) || string.IsNullOrWhiteSpace(timestamp))
+    {
+         // Handle
+        return Results.Problem(statusCode: 400);
+    }
 
     // Validates the signature, enforces the 5-minute timestamp tolerance, and parses a typed event.
     // Uses the configured BachsClientOptions.WebhookSecret when secret is omitted.
@@ -352,6 +366,13 @@ app.MapPost("/api/webhooks/bachs", async (HttpRequest request, IWebhooksClient w
     {
         return Results.BadRequest(new { error = "Invalid webhook signature or payload." });
     }
+
+    // Deduplicate by event id.
+    if (!TryRegisterEvent(bachsEvent.Id))
+    {
+        return Results.Ok(); // Already processed.
+    }
+
 
     switch (webhookEvent)
     {
