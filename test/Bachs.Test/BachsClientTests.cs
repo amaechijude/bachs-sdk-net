@@ -4,7 +4,6 @@ using Bachs.Clients;
 using Bachs.Common;
 using Bachs.Models.Checkout;
 using Bachs.Models.Common;
-using Bachs.Models.Products;
 
 namespace Bachs.Test;
 

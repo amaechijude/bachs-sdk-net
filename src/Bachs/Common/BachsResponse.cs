@@ -1,6 +1,4 @@
 using System.Net;
-using System.Net.Http.Headers;
-using Bachs.Exceptions;
 
 namespace Bachs.Common;
 

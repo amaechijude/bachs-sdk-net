@@ -172,7 +172,7 @@ public sealed class BachsClientOptions
         if (!string.IsNullOrWhiteSpace(BaseUrl))
             return BachsEnvironment.Custom;
 
-        if (ApiKey.StartsWith(LiveKeyPrefix, StringComparison.OrdinalIgnoreCase))
+        if (ApiKey.StartsWith(LiveKeyPrefix, StringComparison.Ordinal))
             return BachsEnvironment.Live;
 
         // Sandbox key or unrecognized key: default to sandbox for safety.
@@ -199,6 +199,33 @@ public sealed class BachsClientOptions
             _ => throw new BachsInvalidOperationException(
                 "BaseUrl is required when Environment is Custom."
             ),
+        };
+    }
+
+    /// <summary>
+    /// Resolves the effective base URL based on the provided <paramref name="requestOptions"/>.
+    /// If <paramref name="requestOptions"/> is <see langword="null"/> or does not contain a scoped API key, the default base URL is returned.
+    /// If a scoped API key is provided, the base URL is determined based on the key's prefix (live or sandbox).
+    /// </summary>
+    /// <param name="requestOptions"></param>
+    /// <returns></returns>
+    /// <exception cref="BachsInvalidOperationException"></exception>
+    public Uri GetEffectiveBaseUrl(BachsRequestOptions? requestOptions)
+    {
+        if (requestOptions is null || string.IsNullOrWhiteSpace(requestOptions.ScopedApiKey))
+        {
+            return GetEffectiveBaseUrl();
+        }
+
+        return requestOptions.ScopedApiKey switch
+        {
+            string key when key.StartsWith(LiveKeyPrefix, StringComparison.Ordinal) => new Uri(
+                DefaultProductionBaseUrl + "/"
+            ),
+            string key when key.StartsWith(SandboxKeyPrefix, StringComparison.Ordinal) => new Uri(
+                DefaultSandboxBaseUrl + "/"
+            ),
+            _ => throw new BachsInvalidOperationException("Invalid scoped API key."),
         };
     }
 
@@ -241,7 +268,7 @@ public sealed class BachsClientOptions
         // Guard against pointing a key at the wrong environment.
         if (
             environment == BachsEnvironment.Live
-            && !ApiKey.StartsWith(LiveKeyPrefix, StringComparison.OrdinalIgnoreCase)
+            && !ApiKey.StartsWith(LiveKeyPrefix, StringComparison.Ordinal)
         )
         {
             throw new BachsInvalidOperationException(
@@ -251,7 +278,7 @@ public sealed class BachsClientOptions
 
         if (
             environment == BachsEnvironment.Sandbox
-            && !ApiKey.StartsWith(SandboxKeyPrefix, StringComparison.OrdinalIgnoreCase)
+            && !ApiKey.StartsWith(SandboxKeyPrefix, StringComparison.Ordinal)
         )
         {
             throw new BachsInvalidOperationException(

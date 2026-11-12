@@ -1,7 +1,5 @@
 using System.Net.Http.Headers;
-using System.Net.Http.Json;
 using System.Text.Json;
-using Bachs.Clients;
 using Bachs.Common;
 using Bachs.Exceptions;
 using Bachs.Serialization;
@@ -149,7 +147,8 @@ public sealed class BachsClient : IBachsClient, IDisposable
             headers.UserAgent.Add(new ProductInfoHeaderValue("Bachs.Net", SdkVersion));
     }
 
-    private Uri BuildRequestUri(string path) => new(Options.GetEffectiveBaseUrl(), path);
+    private Uri BuildRequestUri(string path, BachsRequestOptions? requestOptions) =>
+        new(Options.GetEffectiveBaseUrl(requestOptions), path);
 
     // ------------------------------------------------------------------
     // Public HTTP verbs. These intentionally are not `async`: they hand the Task straight
@@ -279,7 +278,10 @@ public sealed class BachsClient : IBachsClient, IDisposable
     )
     {
         // Disposing the request also disposes its content.
-        using var httpRequest = new HttpRequestMessage(method, BuildRequestUri(path))
+        using var httpRequest = new HttpRequestMessage(
+            method,
+            BuildRequestUri(path, requestOptions)
+        )
         {
             Content = content,
         };
@@ -321,48 +323,41 @@ public sealed class BachsClient : IBachsClient, IDisposable
         // immediately after we read the content streams.
         using (httpResponse)
         {
-            string body;
-            try
-            {
-                body = await httpResponse
-                    .Content.ReadAsStringAsync(cancellationToken)
-                    .ConfigureAwait(false);
-            }
-            catch (JsonException ex)
-            {
-                throw new BachsSerializationException(ex);
-            }
+            var body = await httpResponse
+                .Content.ReadAsStreamAsync(cancellationToken)
+                .ConfigureAwait(false);
 
             if (httpResponse.IsSuccessStatusCode)
             {
                 TResponse? data = default;
-                if (!string.IsNullOrWhiteSpace(body))
+
+                try
                 {
-                    try
-                    {
-                        data = BachsJsonSerializer.Deserialize<TResponse>(body);
-                    }
-                    catch (JsonException ex)
-                    {
-                        throw new BachsSerializationException(ex);
-                    }
+                    data = await BachsJsonSerializer.DeserializeAsync<TResponse>(
+                        body,
+                        cancellationToken
+                    );
+                }
+                catch (JsonException ex)
+                {
+                    throw new BachsSerializationException(ex);
                 }
 
                 return BachsResponse<TResponse>.Success<TResponse>(data!, httpResponse.StatusCode);
             }
 
             BachsError? errorBody = null;
-            if (!string.IsNullOrWhiteSpace(body))
+            try
             {
-                try
-                {
-                    errorBody = BachsJsonSerializer.Deserialize<BachsError>(body);
-                }
-                catch (JsonException)
-                {
-                    // Non-JSON or unexpected error body: keep the status code, drop the body.
-                    errorBody = null;
-                }
+                errorBody = await BachsJsonSerializer.DeserializeAsync<BachsError>(
+                    body,
+                    cancellationToken
+                );
+            }
+            catch (JsonException)
+            {
+                // Non-JSON or unexpected error body: keep the status code, drop the body.
+                errorBody = null;
             }
 
             return BachsResponse<TResponse>.Failure(errorBody, httpResponse.StatusCode);

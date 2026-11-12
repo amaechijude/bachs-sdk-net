@@ -1,5 +1,4 @@
 using System.Diagnostics.CodeAnalysis;
-using Bachs.Common;
 using Bachs.Exceptions;
 
 namespace Bachs.WebHooks;

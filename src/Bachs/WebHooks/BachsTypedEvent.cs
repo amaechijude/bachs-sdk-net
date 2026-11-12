@@ -1,12 +1,4 @@
 using System.Text.Json;
-using Bachs.Models.Checkout;
-using Bachs.Models.Conversions;
-using Bachs.Models.Customers;
-using Bachs.Models.Disputes;
-using Bachs.Models.Payments;
-using Bachs.Models.Payouts;
-using Bachs.Models.Refunds;
-using Bachs.Models.Subscriptions;
 using Bachs.Serialization;
 using Bachs.WebHooks.EventData;
 

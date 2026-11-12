@@ -1,5 +1,4 @@
 using System.Diagnostics.CodeAnalysis;
-using Bachs.Clients;
 using Bachs.Common;
 using Bachs.Exceptions;
 using Bachs.Models.Webhooks;

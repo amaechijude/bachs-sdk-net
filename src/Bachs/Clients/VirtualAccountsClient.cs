@@ -1,4 +1,3 @@
-using Bachs.Clients;
 using Bachs.Common;
 using Bachs.Models.Common;
 using Bachs.Models.VirtualAccounts;
