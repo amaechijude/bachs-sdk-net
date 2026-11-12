@@ -29,6 +29,16 @@ public static class BachsJsonSerializer
     public static T? Deserialize<T>(string message) =>
         JsonSerializer.Deserialize<T>(message, DefaultSerializerOptions);
 
+    public static async Task<T?> DeserializeAsync<T>(
+        Stream message,
+        CancellationToken cancellationToken = default
+    ) =>
+        await JsonSerializer.DeserializeAsync<T>(
+            message,
+            DefaultSerializerOptions,
+            cancellationToken
+        );
+
     /// <summary>
     /// Gets the shared default <see cref="JsonSerializerOptions"/> configured for the Bachs API.
     /// </summary>
