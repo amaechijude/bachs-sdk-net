@@ -7,7 +7,8 @@
 
     <!-- NuGet Package Properties -->
     <PackageId>Bachs.Sdk</PackageId>
-    <Version>1.0.1</Version>
+    <Version>2.0.0</Version>
+    <PackageReleaseNotes>Major release: dropped .NET 8 and .NET 9 targets. See the changelog: https://github.com/amaechijude/Bachs.Net/blob/main/CHANGELOG.md</PackageReleaseNotes>
     <Title>Bachs SDK for .NET</Title>
     <Authors>Amaechi Ugwu</Authors>
     <Copyright>Copyright (c) Amaechi Ugwu 2026</Copyright>

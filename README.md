@@ -1,8 +1,12 @@
 # Bachs SDK For .Net
 
-> Modern, Developer-first C# / .NET 8+ SDK for [Bachs](https://docs.bachs.io/) payments, billing, hosted checkout, subscriptions, and webhooks.
+> Modern, Developer-first C# / .NET 10+ SDK for [Bachs](https://docs.bachs.io/) payments, billing, hosted checkout, subscriptions, and webhooks.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+
+## Version 2.0.0
+
+Version 2.0.0 drops the .NET 8 and .NET 9 targets and supports .NET 10 and .NET 11. This is a major version because consumers on the dropped frameworks cannot use this release. See the [changelog](CHANGELOG.md) for all changes.
 
 ## Disclaimer
 
