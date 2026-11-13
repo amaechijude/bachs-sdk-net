@@ -244,6 +244,15 @@ public sealed class BachsClient : IBachsClient, IDisposable
             request.Headers.Remove(IdempotencyKeyHeader);
             request.Headers.Add(IdempotencyKeyHeader, requestOptions.IdempotencyKey);
         }
+        if (
+            string.IsNullOrWhiteSpace(requestOptions?.IdempotencyKey)
+            && request.Method != HttpMethod.Get
+            && request.Method != HttpMethod.Delete
+        )
+        {
+            request.Headers.Remove(IdempotencyKeyHeader);
+            request.Headers.Add(IdempotencyKeyHeader, Guid.NewGuid().ToString("N"));
+        }
 
         // 3. Connected Account ID
         var accountId = requestOptions?.AccountId ?? Options.AccountId;
@@ -277,14 +286,19 @@ public sealed class BachsClient : IBachsClient, IDisposable
         CancellationToken cancellationToken
     )
     {
-        // Disposing the request also disposes its content.
-        using var httpRequest = new HttpRequestMessage(
-            method,
-            BuildRequestUri(path, requestOptions)
-        )
+        Uri uri;
+        try
         {
-            Content = content,
-        };
+            uri = BuildRequestUri(path, requestOptions);
+        }
+        catch
+        {
+            content?.Dispose(); // request doesn't own it yet
+            throw;
+        }
+
+        // From here on, disposing the request also disposes its content.
+        using var httpRequest = new HttpRequestMessage(method, uri) { Content = content };
 
         ApplyRequestHeaders(httpRequest, requestOptions);
         HttpResponseMessage httpResponse;
@@ -313,10 +327,6 @@ public sealed class BachsClient : IBachsClient, IDisposable
             // Treat transport-level timeouts (e.g. HttpClient.Timeout) as SDK timeouts,
             // but let genuine caller cancellation propagate unchanged.
             throw new BachsTimeoutException(ex);
-        }
-        catch (JsonException ex)
-        {
-            throw new BachsSerializationException(ex);
         }
 
         // Use a 'using' block or declaration to ensure it's disposed

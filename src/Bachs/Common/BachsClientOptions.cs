@@ -2,13 +2,6 @@ using Bachs.Exceptions;
 
 namespace Bachs.Common;
 
-public enum BachsEnvironment
-{
-    Live,
-    Sandbox,
-    Custom,
-}
-
 /// <summary>
 /// Configuration options for the Bachs API client.
 /// </summary>

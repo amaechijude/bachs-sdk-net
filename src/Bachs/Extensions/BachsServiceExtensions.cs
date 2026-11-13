@@ -1,6 +1,7 @@
 using System.Net;
 using Bachs.Clients;
 using Bachs.Common;
+using Bachs.Exceptions;
 using Bachs.WebHooks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -34,18 +35,25 @@ public static class BachsServiceExtensions
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(configureOptions);
 
-        services.Configure(configureOptions);
-        services.PostConfigure<BachsClientOptions>(options => options.Validate());
+        services.AddOptions<BachsClientOptions>().Configure(configureOptions).ValidateOnStart();
+
+        services.TryAddEnumerable(
+            ServiceDescriptor.Singleton<
+                IValidateOptions<BachsClientOptions>,
+                BachsClientOptionsValidator
+            >()
+        );
+
         return RegisterClientCore(services);
     }
 
     /// <summary>
-    /// Registers the Bachs API client with a secret API key.
+    /// Registers the Bachs API client and sub-clients in the dependency injection container with the specified API key and webhook secret.
     /// </summary>
-    /// <param name="services">The <see cref="IServiceCollection"/> to add the client to.</param>
-    /// <param name="apiKey">The Bachs secret key (sk_sandbox_... or sk_live_...).</param>
-    /// <param name="webhookSecret">The Bachs webhook secret (whsec_...).</param>
-    /// <returns>An <see cref="IServiceCollection"/> for configuring the underlying HTTP client and resilience pipelines.</returns>
+    /// <param name="services"></param>
+    /// <param name="apiKey"></param>
+    /// <param name="webhookSecret"></param>
+    /// <returns>The service collection for further service registration.</returns>
     public static IServiceCollection AddBachsClient(
         this IServiceCollection services,
         string apiKey,
@@ -53,6 +61,7 @@ public static class BachsServiceExtensions
     )
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(apiKey);
+        ArgumentException.ThrowIfNullOrWhiteSpace(webhookSecret);
         return services.AddBachsClient(options =>
         {
             options.ApiKey = apiKey;
