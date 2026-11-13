@@ -1,7 +1,6 @@
 using System.Net;
 using Bachs.Clients;
 using Bachs.Common;
-using Bachs.Exceptions;
 using Bachs.WebHooks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
